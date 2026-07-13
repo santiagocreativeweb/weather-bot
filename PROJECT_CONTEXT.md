@@ -828,6 +828,17 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   top-2 no inferior y p<0,05 a 45 días. La fila guarda observation-valid, availability +15min,
   innovation y fórmula completa;
   el auditor prohíbe ASOS posterior al freeze. No modifica playbook ni acciones.
+- LAMP físico multivariable: se extrajeron 810 station-days (9×90), 0 duplicados y 0 runtimes
+  posteriores al freeze, con 48 features de la misma corrida LAV: curva térmica, punto de rocío,
+  viento/dirección, nubosidad, precipitación, techo y visibilidad. Protocolo congelado: fit
+  10–31/05, validación 01–20/06 y test 21/06–11/07. Los seis regresores/clasificadores perdieron
+  contra LAMPX ya en validación: **58,2% base vs 46,7%** el mejor (`ETR3`), por lo que el baseline
+  gana y ningún challenger debía abrir el holdout. La primera versión del lab forzó por error el
+  mejor no-baseline y expuso el test descriptivo: **45,5% → 44,4% exacto** (−1,1pp, p=0,6319),
+  top-2 igual 74,6%; sólo mejoró MAE 1,414 → 1,231. Se corrigió el protocolo para detenerse en
+  validación por defecto; `--descriptive-test` reproduce transparentemente la exposición inicial.
+  **Rechazado y sin nueva sombra**. Reproducible con `backfill_lamp_features.py` y
+  `lab_lamp_physical.py`.
 - Observabilidad operativa: `playbook.py` muestra los buckets/mu de LAMPX y LAMPNOW después de que
   la acción ya fue calculada (display-only, sin acceso al edge/sizing). El loader descarta fuentes
   posteriores al freeze. `export_data.py` materializa captura y scores en SQLite y en las hojas
