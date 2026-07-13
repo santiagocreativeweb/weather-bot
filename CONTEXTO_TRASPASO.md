@@ -133,6 +133,13 @@
   14/07, gate forward a 45 días; captura solo precios y CITYX publicados antes del cutoff.
   `check_accumulation.py` exige una fila por snapshot elegible y frena si forecast/precio cae después
   del cutoff, si el precio tiene >8h o si hay menos de cuatro buckets cotizados.
+- **CITYX2, expansión honesta a 29 ciudades:** las 17 nuevas ya tenían Single Runs pero su holdout
+  Gamma nunca se había mirado. Se bajaron 1.515 ganadores (17/17 estaciones, reglas correctas), se
+  seleccionó receta solo en DEV 10/05-20/06 y se abrió TEST 21/06-11/07 una vez: baseline 31,6% ->
+  **41,8% exacto** (+10,2pp, p=0,0001), top-2 63,8% -> 67,8%. Combinado con las 12 originales:
+  n=604, 29 ciudades, 32,0% -> **40,9% exacto** (+8,9pp, p<1/30.000), top-2 64,2% -> 66,6%.
+  `CITYX2-20260713` acumula las 29 en sombra; para las 17 nuevas los offsets se entrenan con
+  Gamma+IEM, no con ceros. V2 producción no cambia hasta gate forward.
 
 ## 11. Invariantes que NO se rompen sin avisar (de CLAUDE.md)
 1. `evaluate_market()` en `wxbt/engine.py` es función PURA (sin I/O ni estado oculto).

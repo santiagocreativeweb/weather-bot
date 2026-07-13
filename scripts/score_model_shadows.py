@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from check_predictions import fetch_obs_iem, resolved_buckets, winner_by_temp  # noqa: E402
 from dashboard import freeze_utc  # noqa: E402
 from wxbt.forward_scoring import frozen_forecast  # noqa: E402
+from wxbt.exact_selector import SHADOW0 as CITYX_SHADOW0, VERSION as CITYX_VERSION  # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 MODELS = {"gfs13", "ecmwf", "aifs", "icon", "arpege", "ukmo", "jma", "cma"}
@@ -95,6 +96,9 @@ def exact_selector_frozen():
         return pd.DataFrame(columns=["station", "target", "mu_cityx"])
     x = pd.read_csv(path, parse_dates=["capture_utc"])
     x["target"] = pd.to_datetime(x.target).dt.date
+    if "version" in x.columns:
+        x = x[x.version == CITYX_VERSION]
+    x = x[x.target >= dt.date.fromisoformat(CITYX_SHADOW0)]
     x = x.sort_values("capture_utc").drop_duplicates(["station", "target"], keep="last")
     return x[["station", "target", "mu"]].rename(columns={"mu": "mu_cityx"})
 
@@ -153,9 +157,21 @@ def main():
               f"{med_out.hit_v2.mean():.1%} V2 -> {med_out.hit_med8.mean():.1%} MED8 ({delta:+.1%}).")
     city = out.dropna(subset=["hit_cityx"])
     if not city.empty:
-        print(f"SOMBRA CITYX1: {len(city)} mercados/{city.target.nunique()} dias; exacto "
-              f"{city.hit_v2.mean():.1%} V2 -> {city.hit_cityx.mean():.1%} CITYX1 "
-              f"({city.hit_cityx.mean()-city.hit_v2.mean():+.1%}).")
+        city_days = city.target.nunique()
+        city_delta = city.hit_cityx.mean()-city.hit_v2.mean()
+        print(f"SOMBRA {CITYX_VERSION}: {len(city)} mercados/{city.target.nunique()} dias; exacto "
+              f"{city.hit_v2.mean():.1%} V2 -> {city.hit_cityx.mean():.1%} CITYX "
+              f"({city_delta:+.1%}).")
+        if city_days >= 45:
+            daily_city = city.assign(delta_row=city.hit_cityx-city.hit_v2).groupby(
+                "target")["delta_row"].mean().to_numpy()
+            rng_city = np.random.default_rng(20260713)
+            boot_city = rng_city.choice(daily_city, size=(20000, len(daily_city)), replace=True).mean(axis=1)
+            p_city = float(np.mean(boot_city <= 0))
+            verdict_city = "ADOPTAR" if city_delta > 0 and p_city < .05 else "NO adoptar"
+            print(f"Gate {CITYX_VERSION}: p(delta<=0)={p_city:.4f} -> {verdict_city}.")
+        else:
+            print(f"Gate {CITYX_VERSION}: {city_days}/45 días; no decidir antes.")
     if not med_out.empty and days >= 45:
         daily = med_out.assign(delta_row=med_out.hit_med8 - med_out.hit_v2).groupby("target")["delta_row"].mean().to_numpy()
         rng = np.random.default_rng(20260712)

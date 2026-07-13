@@ -1,9 +1,12 @@
 import datetime as dt
 
+import pandas as pd
+
 from scripts import backfill_single_runs as backfill
 from scripts import backfill_regional_runs as regional
 from scripts import lab_single_runs as lab
-from wxbt.exact_selector import RECIPES, VERSION
+from scripts.accumulate_exact_selector import station_truth
+from wxbt.exact_selector import CITYX1_RECIPES, CITYX2_NEW_RECIPES, RECIPES, SHADOW0, VERSION
 
 
 def test_conservative_run_is_available_before_freeze():
@@ -49,6 +52,21 @@ def test_regional_run_is_published_before_freeze():
 
 
 def test_city_selector_is_frozen_for_all_live_stations():
-    assert VERSION == "CITYX1-20260713"
-    assert len(RECIPES) == 12
+    assert VERSION == "CITYX2-20260713"
+    assert SHADOW0 == "2026-07-14"
+    assert len(CITYX1_RECIPES) == 12
+    assert len(CITYX2_NEW_RECIPES) == 17
+    assert len(RECIPES) == 29
     assert RECIPES["LEMD"] == "BUCKET_ACC60|X60"
+    assert RECIPES["LTAC"] == "ALL_MEAN|X60"
+
+
+def test_cityx2_truth_falls_back_to_gamma_plus_observation():
+    day = dt.date(2026, 7, 10)
+    backfill = pd.DataFrame(columns=["station", "d", "lead", "max_real", "win_mkt"])
+    labels = pd.DataFrame([{"station": "LTAC", "d": day, "win_mkt": "31°C"}])
+    obs = pd.DataFrame([{"station": "LTAC", "d": day, "tmax": 31.2}])
+    got = station_truth("LTAC", backfill, labels, obs)
+    assert len(got) == 1
+    assert got.iloc[0].max_real == 31.2
+    assert got.iloc[0].win_mkt == "31°C"

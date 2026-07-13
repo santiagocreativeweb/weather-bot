@@ -14,6 +14,8 @@ import datetime as dt
 import pandas as pd
 
 from dashboard import freeze_utc
+from wxbt.exact_selector import (RECIPES as CITYX_RECIPES, SHADOW0 as CITYX_SHADOW0,
+                                 VERSION as CITYX_VERSION)
 from wxbt.market_consensus import (CUTOFF_HOURS_BEFORE_FREEZE, MAX_PRICE_AGE_H,
                                    SHADOW0, STATIONS as MKT_STATIONS)
 
@@ -138,6 +140,39 @@ def main(a):
                   f"esperados={expected_pairs}")
         except FileNotFoundError:
             issues.append(f"[models_forward] {MODELS_FORWARD} no existe")
+
+    # --- CITYX2: one frozen recipe for every station with an eligible model snapshot ---
+    cityx0 = dt.date.fromisoformat(CITYX_SHADOW0)
+    if through >= cityx0:
+        try:
+            cx = pd.read_csv(EXACT_SELECTOR, parse_dates=["capture_utc"])
+            cx["target_d"] = pd.to_datetime(cx.target).dt.date
+            cx = cx[(cx.version == CITYX_VERSION) & (cx.target_d >= cityx0)]
+            cx_capture = cx.capture_utc.dt.tz_convert("UTC").dt.tz_localize(None)
+            bad = []
+            for idx, r in cx.iterrows():
+                if cx_capture.loc[idx] > freeze_utc(r.station, r.target_d):
+                    bad.append(idx)
+            if bad:
+                issues.append(f"[CITYX2] {len(bad)} forecasts posteriores al freeze")
+            if cx.duplicated(["station", "target", "capture_utc", "version"]).any():
+                issues.append("[CITYX2] snapshots duplicados")
+            mf2 = pd.read_csv(MODELS_FORWARD, parse_dates=["capture_utc"])
+            mf2["target_d"] = pd.to_datetime(mf2.target).dt.date
+            eligible = set()
+            for (station, target, capture), group in mf2.groupby(["station", "target_d", "capture_utc"]):
+                cap = capture.tz_convert("UTC").tz_localize(None)
+                if (station in CITYX_RECIPES and cityx0 <= target <= through and
+                        cap <= freeze_utc(station, target) and group.model.nunique() >= 3):
+                    eligible.add((station, target))
+            actual = set(zip(cx.station, cx.target_d))
+            missing = sorted(eligible-actual)
+            if missing:
+                issues.append(f"[CITYX2] {len(missing)} estaciones-target elegibles sin pick: " +
+                              ", ".join(f"{s}/{d}" for s, d in missing[:8]))
+            print(f"[CITYX2] filas={len(cx)} pares={len(actual)}/{len(eligible)} elegibles")
+        except FileNotFoundError:
+            issues.append(f"[CITYX2] {EXACT_SELECTOR} no existe")
 
     # --- MKTWX1: consenso meteorología + CLOB, totalmente anterior al cutoff ---
     shadow0 = dt.date.fromisoformat(SHADOW0)

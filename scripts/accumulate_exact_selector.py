@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture CITYX1 forecasts from coherent eight-model snapshots before freeze."""
+"""Capture frozen CITYX forecasts from coherent eight-model snapshots before freeze."""
 import csv
 import datetime as dt
 import os
@@ -18,17 +18,33 @@ D = os.path.join(os.path.dirname(__file__), "..", "data")
 OUT = os.path.join(D, "exact_selector_forward.csv")
 
 
+def station_truth(station, backfill, labels=None, obs=None):
+    """Build resolved training truth, falling back to Gamma+IEM for CITYX2 cities."""
+    truth = backfill[(backfill.station == station) & (backfill.lead == 2) &
+                     backfill.max_real.notna() & backfill.win_mkt.notna()][
+                         ["station", "d", "max_real", "win_mkt"]].copy()
+    if truth.empty and labels is not None and obs is not None:
+        truth = labels[labels.station == station][["station", "d", "win_mkt"]].merge(
+            obs[obs.station == station][["station", "d", "tmax"]], on=["station", "d"])
+        truth = truth.rename(columns={"tmax": "max_real"})
+    return truth.sort_values("d").drop_duplicates(["station", "d"], keep="last")
+
+
 def histories_before(station, target):
     sr = pd.read_csv(os.path.join(D, "single_runs.csv"))
     sr["d"] = pd.to_datetime(sr.target).dt.date
     wide = sr[sr.station == station].pivot_table(
         index=["station", "d", "unit"], columns="model", values="tmax",
         aggfunc="last").reset_index()
-    truth = pd.read_csv(os.path.join(D, "backfill_check.csv"))
-    truth["d"] = pd.to_datetime(truth.target).dt.date
-    truth = truth[(truth.station == station) & (truth.lead == 2) &
-                  truth.max_real.notna() & truth.win_mkt.notna()]
-    truth = truth.sort_values("d").drop_duplicates(["station", "d"], keep="last")
+    backfill = pd.read_csv(os.path.join(D, "backfill_check.csv"))
+    backfill["d"] = pd.to_datetime(backfill.target).dt.date
+    labels = obs = None
+    if os.path.exists(os.path.join(D, "gamma_labels.csv")):
+        labels = pd.read_csv(os.path.join(D, "gamma_labels.csv"))
+        labels["d"] = pd.to_datetime(labels.target).dt.date
+        obs = pd.read_csv(os.path.join(D, "obs.csv"))
+        obs["d"] = pd.to_datetime(obs.date).dt.date
+    truth = station_truth(station, backfill, labels, obs)
     data = wide.merge(truth[["station", "d", "max_real", "win_mkt"]],
                       on=["station", "d"]).sort_values("d")
     mh, bh = {}, {}
@@ -68,7 +84,7 @@ def city_mu(station, target, unit, values):
 def main():
     path = os.path.join(D, "models_forward.csv")
     if not os.path.exists(path):
-        print("CITYX1: models_forward.csv no existe"); return
+        print(f"{VERSION}: models_forward.csv no existe"); return
     mf = pd.read_csv(path, parse_dates=["capture_utc"])
     mf["target"] = pd.to_datetime(mf.target).dt.date
     mf = mf[mf.station.isin(RECIPES) & mf.model.isin(MODELS)]
@@ -78,7 +94,7 @@ def main():
         if r.capture_utc.to_pydatetime() <= cutoff:
             eligible.append(r)
     if not eligible:
-        print("CITYX1: sin snapshots anteriores al freeze"); return
+        print(f"{VERSION}: sin snapshots anteriores al freeze"); return
     e = pd.DataFrame(eligible, columns=mf.columns)
     counts = e.groupby(["station", "target", "capture_utc"]).model.nunique().reset_index(name="n")
     complete = counts[counts.n >= 3].sort_values("capture_utc").drop_duplicates(
@@ -88,10 +104,10 @@ def main():
     done = set()
     if os.path.exists(OUT):
         old = pd.read_csv(OUT)
-        done = set(zip(old.station, old.target.astype(str), old.capture_utc.astype(str)))
+        done = set(zip(old.station, old.target.astype(str), old.capture_utc.astype(str), old.version))
     rows = []
     for (station, target, capture), group in e.groupby(["station", "target", "capture_utc"]):
-        key = (station, target.isoformat(), capture.isoformat())
+        key = (station, target.isoformat(), capture.isoformat(), VERSION)
         if key in done:
             continue
         values = dict(zip(group.model, group.tmax.astype(float)))
@@ -108,7 +124,7 @@ def main():
                 w.writerow(["capture_utc", "station", "target", "version", "recipe",
                             "unit", "mu", "freeze_utc"])
             w.writerows(rows)
-    print(f"CITYX1: +{len(rows)} snapshots -> {OUT}")
+    print(f"{VERSION}: +{len(rows)} snapshots -> {OUT}")
 
 
 if __name__ == "__main__":

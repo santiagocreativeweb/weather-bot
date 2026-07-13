@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from check_predictions import CITY_OF, MONTHS_EN, parse_bucket  # noqa: E402
 from dashboard import freeze_utc  # noqa: E402
-from wxbt.exact_selector import RECIPES  # noqa: E402
+from wxbt.exact_selector import RECIPES, VERSION as CITYX_VERSION  # noqa: E402
 from wxbt.market_consensus import (CUTOFF_HOURS_BEFORE_FREEZE, MAX_PRICE_AGE_H,
     SHADOW0, STATIONS, VERSION, rank_consensus)  # noqa: E402
 
@@ -67,7 +67,8 @@ def main():
         print("MKTWX1: exact_selector_forward.csv no existe"); return
     x = pd.read_csv(src, parse_dates=["capture_utc"])
     x["target"] = pd.to_datetime(x.target).dt.date
-    x = x[x.station.isin(STATIONS) & (x.target >= dt.date.fromisoformat(SHADOW0))]
+    x = x[x.station.isin(STATIONS) & (x.target >= dt.date.fromisoformat(SHADOW0)) &
+          (x.version == CITYX_VERSION)]
     done = set()
     if os.path.exists(OUT):
         old = pd.read_csv(OUT)

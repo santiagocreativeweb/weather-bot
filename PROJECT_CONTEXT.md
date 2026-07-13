@@ -764,6 +764,11 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
 - Consenso histórico CLOB+CITYX1 a freeze−3h: 42,6% -> 46,8% (+4,3pp) en test, pero p=0,1088;
   política por estación +2,1pp, p=0,235. Señal positiva insuficiente. `MKTWX1-20260713` queda en
   sombra forward desde 14/07 con mezcla fija 50/50 y gate de 45 días, sin tocar producción.
+- Expansión CITYX2 a las 17 estaciones nuevas, usando un holdout Gamma que no había sido inspeccionado:
+  1.515 labels oficiales; DEV 10/05-20/06, TEST 21/06-11/07. Exacto 31,6% -> **41,8%** (+10,2pp,
+  p=0,0001), top-2 63,8% -> 67,8%. Agregado independiente de las dos cohortes: 604 mercados,
+  29 ciudades, baseline 32,0% -> **CITYX2 40,9%** (+8,9pp, bootstrap p≈0), top-2 66,6%.
+  Se promueve a sombra `CITYX2-20260713`, no a V2 productivo; offsets nuevos usan Gamma+IEM.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
