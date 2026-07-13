@@ -833,6 +833,19 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   exploratorio porque las etiquetas ya habían sido vistas; reproducible con
   `backfill_station_mos.py` y `lab_station_mos.py`.
 
+### Kernel de confusión exacta por modelo (2026-07-13)
+
+- Se probó una transformación discreta distinta al clasificador directo previo: cada uno de los
+  ocho modelos aporta la distribución rolling de su desplazamiento respecto del bucket Gamma
+  pagado. Candidatos congelados: local 30d, local 60d y 60d con shrink hacia un prior global por
+  modelo equivalente a 15 observaciones. Las 29 ciudades de cada target se predicen antes de que
+  ese día actualice historiales, evitando leakage transversal.
+- Ganó `SHRINK60` en DEV. En el test descriptivo de 604 mercados: CITYX2 **40,9%** vs kernel
+  **39,9% exacto** (-1,0pp, p=0,6839); top-2 66,6% → 68,5%. Usar CITYX-top1 y kernel-top1 como
+  las dos selecciones cubre sólo 55,6%, peor que el top-2 probabilístico de CITYX.
+- Resultado: **rechazado para exacto y para top-2 combinado**. No se abre sombra. Reproducible con
+  `lab_confusion_kernel.py`.
+
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
 - `evaluate_market()` es una función pura (snapshot→orden) y es la MISMA en backtest/paper/live.
