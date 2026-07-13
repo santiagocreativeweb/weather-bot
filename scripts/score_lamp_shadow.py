@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from check_predictions import resolved_buckets  # noqa: E402
 from lab_single_runs import gamma_hit, top2_hit  # noqa: E402
-from wxbt.lamp_shadow import (GATE_DAYS, NOW_VERSION, SIGMA_F, VERSION,  # noqa: E402
-                              gate, now_gate)
+from wxbt.lamp_shadow import (GATE_DAYS, MIN_RESOLVED_COVERAGE, NOW_VERSION,  # noqa: E402
+                              SIGMA_F, VERSION, gate, now_gate)
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 SOURCE = os.path.join(D, "lamp_shadow_forward.csv")
@@ -71,21 +71,26 @@ def main():
         print(f"{VERSION}: {len(data)} capturas, 0 mercados resueltos"); return
     result.to_csv(OUT, index=False)
     days = result.target.nunique()
+    eligible_captures = data[data.target <= result.target.max()]
+    resolved_coverage = len(result)/len(eligible_captures) if len(eligible_captures) else 0.0
     exact, base = result.hit_lampx.mean(), result.hit_cityx.mean()
     top2, base_top2 = result.top2_lampx.mean(), result.top2_cityx.mean()
     p, ci = bootstrap(result)
-    verdict = gate(exact, base, top2, base_top2, p, days)
+    verdict = gate(exact, base, top2, base_top2, p, days, resolved_coverage)
     print(f"{VERSION}: {len(result)} mercados/{days} días; exacto {base:.1%} CITYX -> "
           f"{exact:.1%} LAMPX ({exact-base:+.1%}); top2 {base_top2:.1%} -> {top2:.1%}; "
-          f"p={p:.4f}, CI90 [{ci[0]:+.1%},{ci[1]:+.1%}].")
+          f"p={p:.4f}, CI90 [{ci[0]:+.1%},{ci[1]:+.1%}], "
+          f"cobertura resuelta={resolved_coverage:.1%}.")
     if days < GATE_DAYS:
         print(f"Gate: {days}/{GATE_DAYS} días; no decidir antes.")
     else:
-        print("Gate exacto>39.6%, delta>0, top2 no baja, p<0.05 -> " +
+        print(f"Gate cobertura>={MIN_RESOLVED_COVERAGE:.0%}, exacto>39.6%, delta>0, "
+              "top2 no baja, p<0.05 -> " +
               ("ADOPTAR" if verdict else "NO adoptar"))
     now_exact, now_top2 = result.hit_nowx.mean(), result.top2_nowx.mean()
     pn, cin = bootstrap_now(result)
-    now_verdict = now_gate(verdict, now_exact, exact, now_top2, top2, pn, days)
+    now_verdict = now_gate(verdict, now_exact, exact, now_top2, top2, pn, days,
+                           resolved_coverage)
     print(f"{NOW_VERSION}: exacto {exact:.1%} LAMPX -> {now_exact:.1%} NOW "
           f"({now_exact-exact:+.1%}); top2 {top2:.1%} -> {now_top2:.1%}; "
           f"p={pn:.4f}, CI90 [{cin[0]:+.1%},{cin[1]:+.1%}].")

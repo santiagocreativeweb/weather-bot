@@ -12,17 +12,19 @@ def test_lamp_prediction_is_frozen_blend_plus_offset():
 
 
 def test_lamp_gate_requires_every_preregistered_condition():
-    assert gate(.45, .40, .75, .70, .01, 45)
-    assert not gate(.45, .40, .75, .70, .01, 44)
-    assert not gate(.45, .46, .75, .70, .01, 45)
-    assert not gate(.45, .40, .69, .70, .01, 45)
+    assert gate(.45, .40, .75, .70, .01, 45, .90)
+    assert not gate(.45, .40, .75, .70, .01, 44, .90)
+    assert not gate(.45, .46, .75, .70, .01, 45, .90)
+    assert not gate(.45, .40, .69, .70, .01, 45, .90)
+    assert not gate(.45, .40, .75, .70, .01, 45, .79)
 
 
 def test_nowcast_is_clipped_and_gate_is_hierarchical():
     assert now_prediction(80, 2) == 80.5
     assert now_prediction(80, 20) == 81
-    assert now_gate(True, .47, .45, .76, .75, .01, 45)
-    assert not now_gate(False, .47, .45, .76, .75, .01, 45)
+    assert now_gate(True, .47, .45, .76, .75, .01, 45, .90)
+    assert not now_gate(False, .47, .45, .76, .75, .01, 45, .90)
+    assert not now_gate(True, .47, .45, .76, .75, .01, 45, .70)
 
 
 def test_cityx_parent_must_be_frozen_before_cutoff(monkeypatch):

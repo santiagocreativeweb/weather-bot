@@ -6,6 +6,7 @@ PARENT_VERSION = "CITYX2-20260713"
 SHADOW0 = "2026-07-14"
 GATE_DAYS = 45
 MIN_EXACT = 0.396
+MIN_RESOLVED_COVERAGE = 0.80
 AVAIL_LAG_HOURS = 2.0
 NOW_ALPHA = 0.25
 NOW_CLIP_F = 4.0
@@ -38,13 +39,16 @@ def now_prediction(lamp_mu, innovation):
     return float(lamp_mu) + NOW_ALPHA*clipped
 
 
-def gate(exact, cityx_exact, top2, cityx_top2, p_value, days):
+def gate(exact, cityx_exact, top2, cityx_top2, p_value, days, resolved_coverage):
     """Return the preregistered promotion verdict; no trading side effects."""
-    return (days >= GATE_DAYS and exact > MIN_EXACT and exact > cityx_exact and
+    return (days >= GATE_DAYS and resolved_coverage >= MIN_RESOLVED_COVERAGE and
+            exact > MIN_EXACT and exact > cityx_exact and
             top2 >= cityx_top2 and p_value < 0.05)
 
 
-def now_gate(lamp_passed, exact, lamp_exact, top2, lamp_top2, p_value, days):
+def now_gate(lamp_passed, exact, lamp_exact, top2, lamp_top2, p_value, days,
+             resolved_coverage):
     """Hierarchical gate: NOW is tested only after the parent LAMP gate passes."""
-    return (lamp_passed and days >= GATE_DAYS and exact > lamp_exact and
+    return (lamp_passed and days >= GATE_DAYS and
+            resolved_coverage >= MIN_RESOLVED_COVERAGE and exact > lamp_exact and
             top2 >= lamp_top2 and p_value < 0.05)

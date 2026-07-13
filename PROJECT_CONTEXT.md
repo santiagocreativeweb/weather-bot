@@ -812,6 +812,7 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   `BLEND50|X60`, lag de publicación LAV +2h, offsets y sigma por estación entrenados sólo con
   labels hasta 11/07. Cada fila conserva runtime/availability/freeze LAV y el snapshot CITYX2 padre;
   el auditor rechaza cualquier timestamp tardío o cambio de fórmula. Gate único a 45 días:
+  cobertura Gamma resuelta >=80% de los pares capturados hasta el último target resuelto,
   exacto >39,6%, delta vs CITYX2 >0, top-2 no baja y bootstrap por día p<0,05. La sombra no modifica
   el playbook ni las acciones. Reproducible con `backfill_lamp.py`, `lab_lamp.py --frozen-test`,
   `accumulate_lamp_shadow.py` y `score_lamp_shadow.py`. Fuentes:
@@ -823,8 +824,9 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (+1,1pp), top-2 74,6% → 75,7%, MAE 1,414 → 1,412, p=0,3225. Es señal débil, no promoción.
 - `LAMPNOW1-20260713` se conserva dentro de la misma captura forward desde 14/07 porque la prueba
   point-in-time es irrepetible. Es jerárquico, no una apuesta separada: sólo puede adoptarse si
-  primero LAMPX pasa su gate y luego NOW mejora LAMPX con delta>0, top-2 no inferior y p<0,05 a
-  45 días. La fila guarda observation-valid, availability +15min, innovation y fórmula completa;
+  primero LAMPX pasa su gate y luego NOW mejora LAMPX con cobertura resuelta >=80%, delta>0,
+  top-2 no inferior y p<0,05 a 45 días. La fila guarda observation-valid, availability +15min,
+  innovation y fórmula completa;
   el auditor prohíbe ASOS posterior al freeze. No modifica playbook ni acciones.
 - Observabilidad operativa: `playbook.py` muestra los buckets/mu de LAMPX y LAMPNOW después de que
   la acción ya fue calculada (display-only, sin acceso al edge/sizing). El loader descarta fuentes
