@@ -798,6 +798,20 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   Gate 45 días: cobertura >=35%, exacto seleccionado >=45%, delta vs CITYX-all >0 y p<0,05.
   Las primeras 76 capturas point-in-time contienen 23 selecciones; no cambia V2/CITYX ni acciones.
 
+### NOAA LAMP/LAV exact-first (2026-07-13)
+
+- Challenger independiente para las nueve estaciones Fahrenheit, obtenido del archivo MOS de IEM
+  con runtime y forecast-time explícitos. Se elige la última corrida cuya publicación conservadora
+  (`runtime + lag`) precede el freeze local: 810 station-days, 90 por ciudad.
+- La familia LAV/mezcla 50-50 con CITYX y correcciones RAW/B60/X60 fue fijada antes de abrir el
+  holdout. Ganó globalmente `BLEND50|X60`. Con offsets congelados al inicio del test: **39,2% →
+  46,6% exacto**, top-2 67,7% → 74,6%, pero p=0,0270 no supera el gate Bonferroni p<0,025.
+- Robustez con latencia +2h: 45,5% exacto, top-2 74,6%, p=0,0454. La política por ciudad tampoco
+  pasa. Resultado: señal prometedora, **no promovida ni conectada a apuestas**; requiere muestra
+  forward nueva. Reproducible con `backfill_lamp.py` y `lab_lamp.py --frozen-test`. Fuentes:
+  NOAA MDL LAMP (`vlab.noaa.gov/web/mdl/lamp`) e IEM MOS archive
+  (`mesonet.agron.iastate.edu/cgi-bin/request/mos.py?help=`).
+
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
 - `evaluate_market()` es una función pura (snapshot→orden) y es la MISMA en backtest/paper/live.
