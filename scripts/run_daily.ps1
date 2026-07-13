@@ -13,6 +13,8 @@ python scripts/accumulate_predictions.py --date $today
 python scripts/accumulate_models_forward.py --date $today
 python scripts/accumulate_exact_selector.py
 python scripts/accumulate_cityx_confidence.py
+# NOAA LAMP exact challenger: archive-explicit runtime +2h before freeze; shadow only.
+python scripts/accumulate_lamp_shadow.py --date $today
 python scripts/capture_market_consensus.py
 # Capturadores de fuentes calibradas (agregados 2026-07-10): NBM (KLGA/KORD), MOSMIX TTT y TX
 # nativo. Exit 1 con [SKIP] cuando el ciclo ya fue capturado = benigno (guard de idempotencia).
@@ -25,6 +27,7 @@ python scripts/capture_jma.py        --date $today
 python scripts/capture_qweather.py   --date $today
 python scripts/validate_sources.py
 python scripts/score_model_shadows.py
+python scripts/score_lamp_shadow.py
 python scripts/score_market_consensus.py
 # Leaderboard + estadisticas (track record vivo) y consolidacion a SQLite + Excel (#7/#8).
 python scripts/leaderboard.py

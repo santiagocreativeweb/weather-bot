@@ -807,8 +807,14 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   holdout. Ganó globalmente `BLEND50|X60`. Con offsets congelados al inicio del test: **39,2% →
   46,6% exacto**, top-2 67,7% → 74,6%, pero p=0,0270 no supera el gate Bonferroni p<0,025.
 - Robustez con latencia +2h: 45,5% exacto, top-2 74,6%, p=0,0454. La política por ciudad tampoco
-  pasa. Resultado: señal prometedora, **no promovida ni conectada a apuestas**; requiere muestra
-  forward nueva. Reproducible con `backfill_lamp.py` y `lab_lamp.py --frozen-test`. Fuentes:
+  pasa. Resultado: señal prometedora, **no promovida ni conectada a apuestas**.
+- `LAMPX1-20260713` acumula una muestra forward desde target 14/07. Política inmutable:
+  `BLEND50|X60`, lag de publicación LAV +2h, offsets y sigma por estación entrenados sólo con
+  labels hasta 11/07. Cada fila conserva runtime/availability/freeze LAV y el snapshot CITYX2 padre;
+  el auditor rechaza cualquier timestamp tardío o cambio de fórmula. Gate único a 45 días:
+  exacto >39,6%, delta vs CITYX2 >0, top-2 no baja y bootstrap por día p<0,05. La sombra no modifica
+  el playbook ni las acciones. Reproducible con `backfill_lamp.py`, `lab_lamp.py --frozen-test`,
+  `accumulate_lamp_shadow.py` y `score_lamp_shadow.py`. Fuentes:
   NOAA MDL LAMP (`vlab.noaa.gov/web/mdl/lamp`) e IEM MOS archive
   (`mesonet.agron.iastate.edu/cgi-bin/request/mos.py?help=`).
 

@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+"""Capture LAMPX1 after freeze but before the target local day has ended.
+
+The IEM archive exposes explicit LAV runtimes.  Selection admits only a runtime
+whose conservative publication time (runtime + 2 h) preceded the operational
+CITYX freeze.  The forecast is a shadow and never changes an action.
+"""
+import argparse
+import csv
+import datetime as dt
+import os
+import sys
+
+import pandas as pd
+
+sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from backfill_lamp import fetch_station, select_daily  # noqa: E402
+from dashboard import freeze_utc  # noqa: E402
+from show_live import local_offset  # noqa: E402
+from wxbt.lamp_shadow import (AVAIL_LAG_HOURS, OFFSETS_F, PARENT_VERSION,  # noqa: E402
+                              RECIPE, SHADOW0, VERSION, prediction)
+
+D = os.path.join(os.path.dirname(__file__), "..", "data")
+OUT = os.path.join(D, "lamp_shadow_forward.csv")
+LOG = os.path.join(D, "accumulator.log")
+
+
+def local_day_end_utc(station, target):
+    midnight = dt.datetime.combine(target + dt.timedelta(days=1), dt.time())
+    return midnight - dt.timedelta(hours=local_offset(station, target))
+
+
+def capture_window_open(station, target, captured):
+    """The archived final pre-freeze run is knowable only after freeze, before outcome."""
+    naive = captured.astimezone(dt.timezone.utc).replace(tzinfo=None)
+    return freeze_utc(station, target) <= naive <= local_day_end_utc(station, target)
+
+
+def eligible_cityx(frame, station, target):
+    x = frame.copy()
+    x["target_d"] = pd.to_datetime(x.target).dt.date
+    x["capture_utc"] = pd.to_datetime(x.capture_utc, utc=True)
+    cutoff = pd.Timestamp(freeze_utc(station, target), tz="UTC")
+    x = x[(x.station == station) & (x.target_d == target) &
+          (x.version == PARENT_VERSION) & (x.capture_utc <= cutoff)]
+    if x.empty:
+        return None
+    return x.sort_values("capture_utc").iloc[-1]
+
+
+def build_row(station, target, lav, cityx, captured):
+    return {
+        "capture_utc": captured.isoformat(), "station": station,
+        "target": target.isoformat(), "version": VERSION,
+        "parent_version": PARENT_VERSION, "recipe": RECIPE, "unit": "F",
+        "lav_runtime_utc": lav["runtime_utc"], "lav_avail_utc": lav["avail_utc"],
+        "freeze_utc": lav["freeze_utc"], "lav_tmax": round(float(lav["tmax"]), 4),
+        "cityx_capture_utc": cityx.capture_utc.isoformat(),
+        "mu_cityx": round(float(cityx.mu), 4), "offset_f": OFFSETS_F[station],
+        "mu_lampx": round(prediction(station, lav["tmax"], cityx.mu), 4),
+    }
+
+
+def log_run(target, status, detail):
+    stamp = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+    with open(LOG, "a", encoding="utf-8") as handle:
+        handle.write(f"{stamp} | lamp_shadow | {target} | {status} | {detail}\n")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--date", required=True, help="target local date YYYY-MM-DD")
+    args = ap.parse_args()
+    target = dt.date.fromisoformat(args.date)
+    if target < dt.date.fromisoformat(SHADOW0):
+        print(f"{VERSION}: target anterior al inicio forward"); return
+    captured = dt.datetime.now(dt.timezone.utc)
+    cityx_path = os.path.join(D, "exact_selector_forward.csv")
+    if not os.path.exists(cityx_path):
+        log_run(target, "FAIL", "exact_selector_forward.csv missing")
+        raise SystemExit("[ABORT] falta CITYX2 forward")
+    cityx = pd.read_csv(cityx_path)
+    done = set()
+    if os.path.exists(OUT):
+        old = pd.read_csv(OUT)
+        done = set(zip(old.station, old.target.astype(str), old.version))
+    rows, failures = [], []
+    for station in OFFSETS_F:
+        if (station, target.isoformat(), VERSION) in done:
+            continue
+        if not capture_window_open(station, target, captured):
+            failures.append(f"{station}: fuera de ventana freeze..fin del dia local")
+            continue
+        parent = eligible_cityx(cityx, station, target)
+        if parent is None:
+            failures.append(f"{station}: sin CITYX2 pre-freeze")
+            continue
+        try:
+            raw = fetch_station(station, target, target)
+            selected = select_daily(raw, station, target, target, AVAIL_LAG_HOURS)
+            if len(selected) != 1:
+                raise ValueError("sin runtime LAV elegible")
+            rows.append(build_row(station, target, selected[0], parent, captured))
+        except Exception as exc:
+            failures.append(f"{station}: {exc}")
+    if rows:
+        new = not os.path.exists(OUT)
+        with open(OUT, "a", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+            if new:
+                writer.writeheader()
+            writer.writerows(rows)
+    status = "OK" if len(rows) == len(OFFSETS_F) or not rows and not failures else "WARN"
+    log_run(target, status, f"rows={len(rows)} failures={len(failures)}")
+    print(f"{VERSION}: +{len(rows)} forecasts -> {OUT}")
+    for failure in failures:
+        print(f"[WARN] {failure}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
