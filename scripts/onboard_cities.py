@@ -21,6 +21,8 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from download_openmeteo import (PREV_RUNS, MODELS, LEAD_COL, SIGMA_FLOOR,   # noqa: E402
                                 MIN_DAY_HOURS, daily_tmax, expanding_s2)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from wxbt.observations import fetch_iem_maxima  # noqa: E402
 
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
 OBS = os.path.join(D, "obs.csv")
@@ -67,6 +69,15 @@ def iem_station(code):
 
 
 def fetch_obs(code, net, unit):
+    # Raw hourly ASOS is mandatory for Fahrenheit settlement compatibility.
+    maxima = fetch_iem_maxima(code, net, dt.date.fromisoformat(OBS_START),
+                              dt.date.fromisoformat(YDAY), unit)
+    rows = [[code, day.isoformat(), round(value, 2), int(math.floor(value + 0.5))]
+            for day, value in sorted(maxima.items())]
+    obs_map = {day: int(math.floor(value + 0.5)) for day, value in maxima.items()}
+    return rows, obs_map
+
+    # Legacy daily-endpoint implementation retained below only for historical diff context.
     """[(station,date,tmax,tmax_int)] de IEM daily max (mismo formato/redondeo que download_iem_obs)."""
     p = dict(network=net, stations=iem_station(code), var="max_temp_f",
              year1=OBS_START[:4], month1=OBS_START[5:7], day1=OBS_START[8:10],

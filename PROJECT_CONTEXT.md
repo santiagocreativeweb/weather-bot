@@ -773,6 +773,15 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (delta mínimo +7,7pp, máximo +9,6pp). Hubo 129 aciertos exclusivos de CITYX2 contra 75 del
   baseline. `scripts/playbook.py` muestra la predicción CITYX2 y si coincide con V2, pero la marca
   explícitamente como SOMBRA y no modifica ninguna acción hasta completar el gate forward.
+- **Corrección del ground truth °F (2026-07-13):** `lab_metar_precision.py` comparó 746 mercados
+  Gamma de KLGA/KORD/KMIA/KSFO/KLAX/KDAL/KATL/KHOU/KAUS contra METAR crudo. IEM `daily.py`
+  coincidía sólo 59,6-83,9%; el máximo horario `tmpf` coincidió **98,4-100%**. El T-group en décimas
+  con half-up produjo el mismo resultado. La aparente mediana −0,5°F del lab WU anterior era en parte
+  geometría del centro de buckets de 2°F, no un sesgo que debiera restarse al forecast.
+  Se centralizó la lectura en `wxbt/observations.py`: ASOS horario y timezone local para °F; daily
+  permanece para °C. Backfill, evaluación, downloaders y dashboard usan esa ruta. La reselección DEV
+  con verdad corregida cambió 7/29 recetas pero **empeoró** el holdout abierto (39,6% vs 40,6% con
+  recetas CITYX2; en °F 34,9% vs baseline 36,0%); no se crea CITYX3 ni se altera CITYX2 durante su gate.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 

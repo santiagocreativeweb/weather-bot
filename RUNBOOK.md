@@ -35,6 +35,10 @@ modo flat y alerta, no "degradado".
 - **HALT?** No global; degrada por estación. Alertar si >1 día seguido (posible cambio de API).
 
 ### 1b. Obs de IEM llega tarde o con huecos
+- **Regla de fuente (auditada 2026-07-13):** para mercados °F NO usar el endpoint `daily.py`.
+  Usar ASOS horario `asos.py?data=tmpf`, agrupado por fecha local DST-aware. En 746 mercados de
+  nueve estaciones °F reprodujo Gamma/WU en 98,4-100%; `daily.py` sólo en 59,6-83,9%.
+  Para mercados °C se mantiene `daily.py` (acuerdo histórico 98-100%).
 - **Impacto:** la obs alimenta CALIBRACIÓN (EMOS sobre anomalías) y, en backtest, resolución. En VIVO la
   resolución de PnL es por mercado (Gamma), así que un hueco de obs NO afecta el pago — solo atrasa el
   re-fit de d,e. **La calibración usa una ventana; un día faltante no la rompe.**

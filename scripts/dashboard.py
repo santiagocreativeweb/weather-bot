@@ -336,6 +336,8 @@ def fetch_obs_live(today):
     out = {}
     d0, d1 = today - dt.timedelta(days=1), today + dt.timedelta(days=1)
     for code, (lat, lon, off, unit) in STATIONS.items():
+        if unit == "F":
+            continue  # daily.py corrupts °F buckets; the raw-ASOS pass below is authoritative.
         try:
             p = dict(network=NETWORKS[code],
                      stations=code.lstrip("K") if code.startswith("K") else code,
@@ -366,7 +368,9 @@ def fetch_obs_live(today):
         try:
             for d, (mx, mn) in _fresh_metar_extremes(code, today, unit).items():
                 cur = out.get((code, d), {})
-                nmx = max([v for v in (cur.get("max"), mx) if v is not None], default=None)
+                # IEM daily is not WU-compatible for °F; raw hourly ASOS is authoritative there.
+                nmx = (mx if unit == "F" and mx is not None else
+                       max([v for v in (cur.get("max"), mx) if v is not None], default=None))
                 nmn = min([v for v in (cur.get("min"), mn) if v is not None], default=None)
                 out[(code, d)] = {"max": nmx, "min": nmn}
         except Exception as e:

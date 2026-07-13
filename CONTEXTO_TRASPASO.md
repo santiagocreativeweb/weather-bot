@@ -29,6 +29,10 @@
   (`wxbt/market.py`) es half-up; correr mu −0.5 lo vuelve floor exacto SIN tocar el motor/tests.
 - Se corrigió un half-up en °C que subreportaba aciertos: al pasar todo a floor, el hit calibrado
   saltó de 0.44 a 0.62 en la medición vs Gamma.
+- **Fuente °F corregida (13/07):** IEM `daily.py` NO reproduce el oráculo. En 746 mercados de nueve
+  estaciones daba 59,6-83,9% de acuerdo; el máximo de METAR horario `tmpf`, por día local, dio
+  **98,4-100%**. `wxbt/observations.py` impone ASOS horario para °F. El floor sigue aplicándose al
+  valor observado/predicho; no sumar ni restar el falso “sesgo WU −0,5°F”.
 
 ## 4. Estado del EDGE (leer antes de creer cualquier número de backtest)
 - **Bug #5 (invalidó el backtest de 18 meses)**: la API Previous-Runs de Open-Meteo ancla al VALID

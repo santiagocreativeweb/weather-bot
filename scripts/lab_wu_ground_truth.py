@@ -48,11 +48,35 @@ def win_repr(wb, unit):
     return (lo + hi) / 2.0
 
 
+def bucket_displacement(value, wb):
+    """Smallest integer shift needed for floor(value) to enter the paid bucket."""
+    observed = int(math.floor(value))
+    lo, hi = wb
+    if lo is None:
+        return 0.0 if observed <= hi else float(hi-observed)
+    if hi is None:
+        return 0.0 if observed >= lo else float(lo-observed)
+    if observed < lo:
+        return float(lo-observed)
+    if observed > hi:
+        return float(hi-observed)
+    return 0.0
+
+
 def main():
     bk = pd.read_csv(f"{D}/backfill_check.csv")
     bk["target"] = pd.to_datetime(bk["target"]).dt.date
     bk = bk[(bk.lead == 2) & bk.win_mkt.notna() & bk.max_real.notna()].copy()
-    print(f"backfill lead2 con WU(win_mkt)+IEM(max_real): {len(bk)} filas, "
+    precision_path = f"{D}/lab_metar_precision.csv"
+    if os.path.exists(precision_path):
+        precision = pd.read_csv(precision_path)
+        precision = precision[precision.candidate == "raw_tmpf"]
+        precision["target"] = pd.to_datetime(precision.target).dt.date
+        precision = precision[["station", "target", "value"]].drop_duplicates(
+            ["station", "target"])
+        bk = bk.merge(precision, on=["station", "target"], how="left")
+        bk["max_real"] = bk.value.fillna(bk.max_real)
+    print(f"backfill lead2 con WU(win_mkt)+truth(max_real; METAR hourly override °F): {len(bk)} filas, "
           f"{bk.target.min()}..{bk.target.max()}\n")
 
     rows = []
@@ -70,12 +94,14 @@ def main():
             agree = ib[1] <= wb[1]
         else:
             agree = ib == wb
-        delta = win_repr(wb, unit) - r.max_real                 # WU - IEM (grados nativos)
+        # Do not subtract the centre of a 2°F bucket: that manufactures a -0.5°F
+        # "bias" even on exact agreement. Delta is zero whenever truth is in-bucket.
+        delta = bucket_displacement(r.max_real, wb)
         rows.append(dict(st=r.station, unit=unit, d=r.target, mu=r.mu_cal,
                          agree=int(agree), delta=delta, win=r.win_mkt))
     df = pd.DataFrame(rows)
 
-    print("=== 1) DIAGNOSTICO por estacion (WU via Gamma vs IEM) ===")
+    print("=== 1) DIAGNOSTICO por estacion (WU via Gamma vs truth compatible) ===")
     print(f"{'st':6}{'unit':5}{'n':>4}  {'acuerdo':>8}  {'delta_med(WU-IEM)':>18}  {'delta_std':>10}")
     diag = {}
     for st in sorted(df.st.unique()):
@@ -140,7 +166,7 @@ def main():
 
     R.to_csv(f"{D}/lab_wu_ground_truth.csv", index=False)
     print(f"\ndetalle -> {os.path.relpath(D)}/lab_wu_ground_truth.csv")
-    print("NOTA: solo se corrige el PICK (para el % de mercado); el mu de calibracion (IEM) no se toca.")
+    print("NOTA: H5 queda vacía: no hay sesgo de fuente estable que aplicar al pick.")
 
 
 if __name__ == "__main__":

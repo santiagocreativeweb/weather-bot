@@ -28,6 +28,7 @@ from wxbt import config as C                                    # noqa: E402
 from wxbt.engine import fit_all, clim_val, _lead_day            # noqa: E402
 from wxbt.calibration import predict, predict_raw, crps_normal  # noqa: E402
 from wxbt.market import bucket_prob, resolve_bucket             # noqa: E402
+from wxbt.observations import fetch_iem_maxima                  # noqa: E402
 from show_live import (STATIONS, GAMMA, PREV_RUNS, CITY_SERIES, CITY_STATION,  # noqa: E402
                        parse_bucket, daily_tmax)
 from check_predictions import fetch_obs_iem                     # noqa: E402
@@ -193,24 +194,11 @@ def main(a):
     # obs reales BATCH: 1 request por estacion para todo el rango (no 1 por dia — con 12x31 dias
     # serian ~370 llamadas a IEM)
     obs_real = {}
-    for code in STATIONS:
+    from check_predictions import NETWORKS
+    for code, (_, _, _, unit) in STATIONS.items():
         try:
-            from check_predictions import NETWORKS
-            p = dict(network=NETWORKS[code], stations=code.lstrip("K") if code.startswith("K") else code,
-                     var="max_temp_f", year1=d0.year, month1=d0.month, day1=d0.day,
-                     year2=d1.year, month2=d1.month, day2=d1.day, format="csv")
-            r = requests.get("https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py",
-                             params=p, timeout=90)
-            lines = [l for l in r.text.splitlines() if l and not l.startswith("#")]
-            hdr = lines[0].split(",")
-            for l in lines[1:]:
-                row = dict(zip(hdr, l.split(",")))
-                v = row.get("max_temp_f")
-                if not v or v in ("None", "M"):
-                    continue
-                tf = float(v)
-                val = tf if code.startswith("K") else (tf - 32) * 5 / 9
-                obs_real[(code, dt.date.fromisoformat(row["day"]))] = val
+            maxima = fetch_iem_maxima(code, NETWORKS[code], d0, d1, unit, timeout=90)
+            obs_real.update({(code, day): value for day, value in maxima.items()})
         except Exception as e:
             print(f"[WARN] IEM batch {code}: {e}", file=sys.stderr)
 

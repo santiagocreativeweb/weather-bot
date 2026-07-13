@@ -43,6 +43,7 @@ import requests
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from wxbt.market import bucket_prob  # noqa: E402
+from wxbt.observations import US_F_TZ, fetch_iem_maxima  # noqa: E402
 
 GAMMA = "https://gamma-api.polymarket.com"
 PREV_RUNS = "https://previous-runs-api.open-meteo.com/v1/forecast"
@@ -274,6 +275,16 @@ def fetch_obs_iem(network, sid, start, end, unit):
     """{date: tmax en unidad del MERCADO} desde IEM daily (1 llamada por rango completo)."""
     if not network or not sid:
         return {}
+    if unit == "F":
+        station = sid if sid.startswith("K") else "K" + sid
+        if station not in US_F_TZ:
+            print(f"  [WARN] {station}: falta timezone para ASOS horario; no usar IEM daily en °F",
+                  file=sys.stderr)
+            return {}
+        try:
+            return fetch_iem_maxima(station, network, start, end, unit)
+        except Exception:
+            return {}
     p = dict(network=network, stations=sid, var="max_temp_f",
              year1=start.year, month1=start.month, day1=start.day,
              year2=end.year, month2=end.month, day2=end.day, format="csv")

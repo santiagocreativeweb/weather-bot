@@ -20,6 +20,10 @@ OUT = os.path.join(D, "exact_selector_forward.csv")
 
 def station_truth(station, backfill, labels=None, obs=None):
     """Build resolved training truth, falling back to Gamma+IEM for CITYX2 cities."""
+    # VERSION CITYX2-20260713 was frozen with this exact historical source chain.
+    # Do not inject the later METAR-hourly correction mid-gate: that would change
+    # B/MSE histories and make forward snapshots incomparable. A future selector
+    # version may use wxbt.observations, but must start a new forward gate.
     truth = backfill[(backfill.station == station) & (backfill.lead == 2) &
                      backfill.max_real.notna() & backfill.win_mkt.notna()][
                          ["station", "d", "max_real", "win_mkt"]].copy()

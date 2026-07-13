@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 from wxbt.market import bucket_prob, resolve_bucket             # noqa: E402
 from wxbt.calibration import crps_normal, Phi                   # noqa: E402
+from wxbt.observations import fetch_iem_maxima                  # noqa: E402
 from show_live import CITY_SERIES, CITY_STATION, parse_bucket, STATIONS, GAMMA  # noqa: E402
 import requests                                                 # noqa: E402
 import re                                                       # noqa: E402
@@ -92,6 +93,13 @@ def fetch_obs_iem(station, d):
     net = NETWORKS.get(station)
     if not net:
         return None
+    try:
+        unit = STATIONS[station][3]
+        return fetch_iem_maxima(station, net, d, d, unit, timeout=60).get(d)
+    except Exception:
+        return None
+
+    # Legacy daily endpoint below is intentionally unreachable.
     url = "https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py"
     p = dict(network=net, stations=station.lstrip("K") if station.startswith("K") else station,
              var="max_temp_f", year1=d.year, month1=d.month, day1=d.day,
