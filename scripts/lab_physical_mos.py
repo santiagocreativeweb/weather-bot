@@ -5,6 +5,7 @@ Split fixed before feature download on 2026-07-13:
 train 2026-05-10..06-06, validation 06-07..06-27, test 06-28..07-11.
 The final test is evaluated once after selecting one algorithm on validation.
 """
+import argparse
 import datetime as dt
 import os
 import sys
@@ -31,7 +32,21 @@ STATIONS = ["KLGA", "KORD", "LEMD", "EGLC"]
 TEMP_SUFFIXES = ("_tmax", "_t_peak", "_temp_trend")
 
 
-def load_data():
+def apply_metar_truth(truth):
+    """Override only Fahrenheit physical targets with audited hourly ASOS maxima."""
+    path = os.path.join(D, "lab_metar_precision.csv")
+    if not os.path.exists(path):
+        raise FileNotFoundError("run scripts/lab_metar_precision.py first")
+    precision = pd.read_csv(path)
+    precision = precision[precision.candidate == "raw_tmpf"].copy()
+    precision["d"] = pd.to_datetime(precision.target).dt.date
+    precision = precision[["station", "d", "value"]].drop_duplicates(["station", "d"])
+    out = truth.merge(precision, on=["station", "d"], how="left")
+    out["max_real"] = out.value.fillna(out.max_real)
+    return out.drop(columns="value")
+
+
+def load_data(oracle_truth=False):
     f = pd.read_csv(os.path.join(D, "mos_features.csv"))
     f["d"] = pd.to_datetime(f.target).dt.date
     id_cols = ["station", "d", "unit"]
@@ -51,6 +66,8 @@ def load_data():
     truth = truth[(truth.lead == 2) & truth.station.isin(STATIONS) &
                   truth.max_real.notna() & truth.win_mkt.notna()]
     truth = truth.sort_values("d").drop_duplicates(["station", "d"], keep="last")
+    if oracle_truth:
+        truth = apply_metar_truth(truth)
     data = wide.merge(base, on=["station", "d"]).merge(
         truth[["station", "d", "max_real", "win_mkt"]], on=["station", "d"])
     return data.sort_values(["d", "station"]).reset_index(drop=True)
@@ -115,7 +132,11 @@ def metrics(data, mu, sigma_by_station):
 
 
 def main():
-    data = load_data()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--oracle-truth", action="store_true",
+                    help="replace KLGA/KORD daily labels with hourly ASOS maxima")
+    args = ap.parse_args()
+    data = load_data(args.oracle_truth)
     train = data[data.d <= TRAIN_END].copy()
     valid = data[(data.d >= VALID0) & (data.d <= VALID1)].copy()
     test = data[(data.d >= TEST0) & (data.d <= TEST1)].copy()
@@ -138,7 +159,11 @@ def main():
         ["exact", "top2", "mae"], ascending=[False, False, True])
     eligible = ranking[ranking.candidate != "BASE_CITYX1"]
     winner = eligible.iloc[0].candidate
-    print(f"MOS fisico pre-registrado: train n={len(train)}, valid n={len(valid)}, test n={len(test)}")
+    truth_name = "METAR-hourly °F" if args.oracle_truth else "legacy IEM-daily"
+    print(f"MOS fisico pre-registrado ({truth_name}): train n={len(train)}, "
+          f"valid n={len(valid)}, test n={len(test)}")
+    if args.oracle_truth:
+        print("SENSIBILIDAD POSTERIOR por corrección de fuente: no constituye un holdout nuevo.")
     print("\nVALIDACION (seleccion del algoritmo):")
     print(ranking.to_string(index=False, formatters={"exact": "{:.1%}".format,
           "top2": "{:.1%}".format, "mae": "{:.3f}".format}))
@@ -154,7 +179,8 @@ def main():
     detail["mu_mos"] = mu; detail["hit_base"] = hit_b; detail["hit"] = hit
     detail["top2_base"] = top2_b; detail["top2"] = top2
     detail["ae_base"] = ae_b; detail["ae"] = ae
-    detail.to_csv(os.path.join(D, "lab_physical_mos_detail.csv"), index=False)
+    suffix = "_oracle" if args.oracle_truth else ""
+    detail.to_csv(os.path.join(D, f"lab_physical_mos_detail{suffix}.csv"), index=False)
     p, ci = bootstrap_day(detail)
     print(f"\nTEST FINAL UNA SOLA VEZ ({TEST0}..{TEST1}, n={len(test)}):")
     print(f" exacto CITYX1 {hit_b.mean():.1%} -> MOS {hit.mean():.1%} "
@@ -164,6 +190,8 @@ def main():
     print(f" bootstrap por dia P(delta<=0)={p:.4f}, CI90 [{ci[0]:+.1%},{ci[1]:+.1%}]")
     passed = hit.mean() > .396 and hit.mean() > hit_b.mean() and top2.mean() >= top2_b.mean() and p < .05
     print("GATE >39.6%, mejora pareada, top2 no baja, p<0.05: " + ("PASO" if passed else "NO PASO"))
+    if args.oracle_truth:
+        print("Promoción prohibida desde este test ya abierto; cualquier variante requiere gate forward.")
     print("\nPor ciudad:")
     by = detail.groupby("station").agg(n=("hit", "size"), base=("hit_base", "mean"),
         mos=("hit", "mean"), top2=("top2", "mean"), mae=("ae", "mean"))

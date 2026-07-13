@@ -33,6 +33,9 @@
   estaciones daba 59,6-83,9% de acuerdo; el máximo de METAR horario `tmpf`, por día local, dio
   **98,4-100%**. `wxbt/observations.py` impone ASOS horario para °F. El floor sigue aplicándose al
   valor observado/predicho; no sumar ni restar el falso “sesgo WU −0,5°F”.
+- **MOS físico reprobado también con verdad corregida:** mismo split/features/algoritmos, sólo
+  KLGA/KORD pasan a METAR horario. Exacto 53,6% -> **37,5%** (−16,1pp), MAE 1,138 -> 0,947,
+  top-2 igual. Sirve para temperatura continua, no para cruzar correctamente buckets exactos.
 
 ## 4. Estado del EDGE (leer antes de creer cualquier número de backtest)
 - **Bug #5 (invalidó el backtest de 18 meses)**: la API Previous-Runs de Open-Meteo ancla al VALID

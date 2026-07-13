@@ -782,6 +782,12 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   permanece para °C. Backfill, evaluación, downloaders y dashboard usan esa ruta. La reselección DEV
   con verdad corregida cambió 7/29 recetas pero **empeoró** el holdout abierto (39,6% vs 40,6% con
   recetas CITYX2; en °F 34,9% vs baseline 36,0%); no se crea CITYX3 ni se altera CITYX2 durante su gate.
+- Se repitió el MOS físico sin cambiar features, grilla ni split, reemplazando únicamente las
+  etiquetas KLGA/KORD por METAR horario. El algoritmo elegido en validación pasó de ET_D2 a RF_D2,
+  pero en test el exacto cayó **53,6% -> 37,5%** (−16,1pp; p=0,9944), aunque MAE mejoró
+  1,138 -> 0,947 y top-2 agregado quedó igual. Resultado: rechazo definitivo para exact-first;
+  Open-Meteo Professional no se justifica por este MOS. Reproducible con
+  `python scripts/lab_physical_mos.py --oracle-truth`.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
