@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import dashboard as D   # noqa: E402  (importar NO arranca servidor; solo define funciones/const)
 from wxbt.exact_selector import VERSION as CITYX_VERSION  # noqa: E402
 from wxbt.cityx_confidence import VERSION as CONF_VERSION  # noqa: E402
+from wxbt.lamp_shadow import NOW_VERSION, VERSION as LAMP_VERSION  # noqa: E402
 
 # TIERS por track record real (leaderboard vivo + backtest 45d, regla floor). Revisar al re-medir.
 STRONG = {"KORD", "LEMD", "LIMC", "EGLC", "LFPB"}   # exacto alto / MAE bajo -> operables
@@ -108,6 +109,40 @@ def load_cityx_confidence(path=None):
     return latest
 
 
+def load_lamp_shadow(path=None):
+    """Latest timestamp-valid LAMPX/LAMPNOW capture; display-only."""
+    import csv as _csv
+    path = path or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
+                                "lamp_shadow_forward.csv")
+    latest = {}
+    if not os.path.exists(path):
+        return latest
+    with open(path, encoding="utf-8") as f:
+        for r in _csv.DictReader(f):
+            if r.get("version") != LAMP_VERSION or r.get("now_version") != NOW_VERSION:
+                continue
+            try:
+                target = dt.date.fromisoformat(r["target"])
+                capture = dt.datetime.fromisoformat(r["capture_utc"].replace("Z", "+00:00"))
+                capture = capture.astimezone(dt.timezone.utc).replace(tzinfo=None)
+                freeze = dt.datetime.fromisoformat(r["freeze_utc"].replace("Z", "+00:00"))
+                freeze = freeze.astimezone(dt.timezone.utc).replace(tzinfo=None)
+                lav_avail = dt.datetime.fromisoformat(r["lav_avail_utc"].replace("Z", "+00:00"))
+                lav_avail = lav_avail.astimezone(dt.timezone.utc).replace(tzinfo=None)
+                obs_avail = dt.datetime.fromisoformat(r["obs_avail_utc"].replace("Z", "+00:00"))
+                obs_avail = obs_avail.astimezone(dt.timezone.utc).replace(tzinfo=None)
+                if lav_avail > freeze or obs_avail > freeze:
+                    continue
+                value = {"mu_lampx": float(r["mu_lampx"]), "mu_nowx": float(r["mu_nowx"]),
+                         "innovation": float(r["innovation"]), "capture": capture}
+            except (KeyError, TypeError, ValueError):
+                continue
+            key = (r["station"], target)
+            if key not in latest or capture > latest[key]["capture"]:
+                latest[key] = value
+    return latest
+
+
 def main(a):
     today = dt.date.fromisoformat(a.date) if a.date else dt.date.today()
     fc = D.fetch_forecast_minmax(today, 2)
@@ -116,6 +151,7 @@ def main(a):
     snap = D.load_preds(today)
     cityx = load_cityx_shadow()
     cityconf = load_cityx_confidence()
+    lamp = load_lamp_shadow()
     now_utc = dt.datetime.now(dt.timezone.utc)
 
     rows = []
@@ -227,6 +263,21 @@ def main(a):
                     level = "ALTA" if cc["selected"] else "BAJA"
                     action += f" | {CONF_VERSION}: {level} (spread {cc['spread']:.2f} buckets)"
 
+            # Appended only after `action` is decided: shadow metadata cannot
+            # affect edge, rank, execution, or sizing.
+            lx = lamp.get((code, d))
+            if lx:
+                def shadow_bucket(value):
+                    integer = math.floor(value)
+                    return next((lab for lab, lo, hi, _ in priced
+                        if (lo is None or integer >= lo) and (hi is None or integer <= hi)),
+                        "sin bucket")
+                lpick = shadow_bucket(lx["mu_lampx"])
+                npick = shadow_bucket(lx["mu_nowx"])
+                action += (f" | SOMBRA {LAMP_VERSION}: {lpick} (mu {lx['mu_lampx']:.1f}F)"
+                           f" | {NOW_VERSION}: {npick} (mu {lx['mu_nowx']:.1f}F, "
+                           f"innovation {lx['innovation']:+.1f}F)")
+
             rows.append((ti, code, d, state, mu, unit, t1, t2, action + gate))
 
     order = {"FUERTE": 0, "MEDIA": 1, "DEBIL": 2}
@@ -246,6 +297,7 @@ def main(a):
     print("Fuertes operables: " + ", ".join(sorted(STRONG)) + " | Debiles a evitar: " + ", ".join(sorted(WEAK)))
     print(f"Sombra visible: {CITYX_VERSION} (40.9% exacto en holdout init-anclado; NO cambia acciones hasta gate forward).")
     print(f"Confianza visible: {CONF_VERSION} (ALTA sólo si spread <=1.1 buckets; NO cambia acciones hasta gate forward).")
+    print(f"Sombras US visibles: {LAMP_VERSION} + {NOW_VERSION} (sólo display; gate jerárquico, no cambian acciones).")
 
 
 if __name__ == "__main__":

@@ -826,6 +826,10 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   primero LAMPX pasa su gate y luego NOW mejora LAMPX con delta>0, top-2 no inferior y p<0,05 a
   45 días. La fila guarda observation-valid, availability +15min, innovation y fórmula completa;
   el auditor prohíbe ASOS posterior al freeze. No modifica playbook ni acciones.
+- Observabilidad operativa: `playbook.py` muestra los buckets/mu de LAMPX y LAMPNOW después de que
+  la acción ya fue calculada (display-only, sin acceso al edge/sizing). El loader descarta fuentes
+  posteriores al freeze. `export_data.py` materializa captura y scores en SQLite y en las hojas
+  `Sombra LAMP-NOW` / `Score LAMP-NOW`; antes de la primera fila crea placeholders válidos.
 - Gate de confianza LAMP exploratorio: familia prediction-only de acuerdo de bucket LAMPX–CITYX y
   dispersión del ensemble, cobertura DEV mínima 35%. Ganó `SAME_SPREAD15`: DEV 68,3% exacto con
   51,4% de cobertura, pero en test cayó a **47,0%** vs 45,5% de LAMPX-all (+1,5pp, cobertura 52,9%,
