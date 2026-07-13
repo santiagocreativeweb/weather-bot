@@ -754,6 +754,11 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   negativos para evitar repetir variantes.
 - Open-Meteo gratuito es no comercial. Si esto se usa para trading real corresponde plan comercial
   o self-host de las fuentes abiertas. Gamma continúa siendo el oráculo autoritativo del payout.
+- Prueba posterior de **MOS físico multivariable** en KLGA/KORD/LEMD/EGLC: corridas exactas de
+  HRRR/NBM/UKV/ICON-EU/ARPEGE-EU, 560 filas y 19 features (curva térmica, humedad, nubes,
+  radiación, precipitación, viento). Algoritmo elegido únicamente en validación: ExtraTrees D2.
+  Test final 28/06-11/07: CITYX1 53,6% vs MOS 48,2% exacto (−5,4pp, p=0,9559); top-2 igual
+  80,4%; MAE mejora 1,141 -> 1,057. Resultado: señal para error continuo, **no para bucket exacto**.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 

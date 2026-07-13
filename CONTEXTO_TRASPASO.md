@@ -120,6 +120,11 @@
   mismo corte: **39,4% -> 37,3% exacto**, rechazados para exacto aunque mejoraron algo MAE/top-2.
 - El selector por ciudad queda como challenger reproducible; no se mezcla silenciosamente con V2.
   El nivel vivo continúa acumulándose forward y Gamma sigue siendo la verdad del payout.
+- **MOS físico Open Data, 4 ciudades (hipótesis posterior):** 560 filas de corridas exactas HRRR,
+  NBM, UKV, ICON-EU y ARPEGE-EU con humedad, nubes, radiación, precipitación y viento. Split fijado
+  antes de bajar features: train hasta 06/06, validación 07/06-27/06, test 28/06-11/07. ET_D2 fue
+  congelado en validación. Test: CITYX1 **53,6%** vs MOS **48,2%** exacto (−5,4pp, p=0,9559),
+  top-2 80,4% ambos; MAE 1,141 -> 1,057. **RECHAZADO para exacto**. No justifica pagar Professional.
 
 ## 11. Invariantes que NO se rompen sin avisar (de CLAUDE.md)
 1. `evaluate_market()` en `wxbt/engine.py` es función PURA (sin I/O ni estado oculto).
