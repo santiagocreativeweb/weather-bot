@@ -16,10 +16,11 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from backfill_lamp import fetch_station, select_daily  # noqa: E402
+from backfill_lamp_nowcast import fetch_asos, select_features  # noqa: E402
 from dashboard import freeze_utc  # noqa: E402
 from show_live import local_offset  # noqa: E402
-from wxbt.lamp_shadow import (AVAIL_LAG_HOURS, OFFSETS_F, PARENT_VERSION,  # noqa: E402
-                              RECIPE, SHADOW0, VERSION, prediction)
+from wxbt.lamp_shadow import (AVAIL_LAG_HOURS, NOW_VERSION, OFFSETS_F,  # noqa: E402
+    PARENT_VERSION, RECIPE, SHADOW0, VERSION, now_prediction, prediction)
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 OUT = os.path.join(D, "lamp_shadow_forward.csv")
@@ -49,7 +50,8 @@ def eligible_cityx(frame, station, target):
     return x.sort_values("capture_utc").iloc[-1]
 
 
-def build_row(station, target, lav, cityx, captured):
+def build_row(station, target, lav, cityx, captured, nowcast):
+    mu_lampx = prediction(station, lav["tmax"], cityx.mu)
     return {
         "capture_utc": captured.isoformat(), "station": station,
         "target": target.isoformat(), "version": VERSION,
@@ -58,7 +60,13 @@ def build_row(station, target, lav, cityx, captured):
         "freeze_utc": lav["freeze_utc"], "lav_tmax": round(float(lav["tmax"]), 4),
         "cityx_capture_utc": cityx.capture_utc.isoformat(),
         "mu_cityx": round(float(cityx.mu), 4), "offset_f": OFFSETS_F[station],
-        "mu_lampx": round(prediction(station, lav["tmax"], cityx.mu), 4),
+        "mu_lampx": round(mu_lampx, 4), "now_version": NOW_VERSION,
+        "obs_valid_utc": nowcast["obs_valid_utc"],
+        "obs_avail_utc": nowcast["obs_avail_utc"], "n_obs": nowcast["n_obs"],
+        "obs_latest": round(nowcast["obs_latest"], 4),
+        "lav_at_obs": round(nowcast["lav_at_obs"], 4),
+        "innovation": round(nowcast["innovation"], 4),
+        "mu_nowx": round(now_prediction(mu_lampx, nowcast["innovation"]), 4),
     }
 
 
@@ -101,7 +109,11 @@ def main():
             selected = select_daily(raw, station, target, target, AVAIL_LAG_HOURS)
             if len(selected) != 1:
                 raise ValueError("sin runtime LAV elegible")
-            rows.append(build_row(station, target, selected[0], parent, captured))
+            observed = fetch_asos(station, target, target)
+            nowcast = select_features(raw, observed, station, target, target)
+            if len(nowcast) != 1:
+                raise ValueError("sin ASOS pre-freeze elegible")
+            rows.append(build_row(station, target, selected[0], parent, captured, nowcast[0]))
         except Exception as exc:
             failures.append(f"{station}: {exc}")
     if rows:

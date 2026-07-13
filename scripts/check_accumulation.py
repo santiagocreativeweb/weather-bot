@@ -21,9 +21,9 @@ from wxbt.market_consensus import (CUTOFF_HOURS_BEFORE_FREEZE, MAX_PRICE_AGE_H,
                                    SHADOW0, STATIONS as MKT_STATIONS)
 from wxbt.cityx_confidence import (MAX_SPREAD_BUCKETS, PARENT_VERSION as CONF_PARENT,
     SHADOW0 as CONF_SHADOW0, VERSION as CONF_VERSION)
-from wxbt.lamp_shadow import (AVAIL_LAG_HOURS as LAMP_LAG, OFFSETS_F as LAMP_OFFSETS,
-    PARENT_VERSION as LAMP_PARENT, SHADOW0 as LAMP_SHADOW0, VERSION as LAMP_VERSION,
-    prediction as lamp_prediction)
+from wxbt.lamp_shadow import (AVAIL_LAG_HOURS as LAMP_LAG, NOW_VERSION,
+    OFFSETS_F as LAMP_OFFSETS, PARENT_VERSION as LAMP_PARENT, SHADOW0 as LAMP_SHADOW0,
+    VERSION as LAMP_VERSION, now_prediction, prediction as lamp_prediction)
 
 BOOKS = "data/books_forward.csv"
 ENSEMBLE = "data/ensemble_forward.csv"
@@ -221,7 +221,8 @@ def main(a):
     if through >= lamp0:
         try:
             lx = pd.read_csv(LAMP_SHADOW, parse_dates=["capture_utc", "lav_runtime_utc",
-                "lav_avail_utc", "freeze_utc", "cityx_capture_utc"])
+                "lav_avail_utc", "freeze_utc", "cityx_capture_utc", "obs_valid_utc",
+                "obs_avail_utc"])
             lx["target_d"] = pd.to_datetime(lx.target).dt.date
             lx = lx[(lx.version == LAMP_VERSION) & (lx.target_d >= lamp0) &
                     (lx.target_d <= through)]
@@ -240,6 +241,14 @@ def main(a):
                            for r in lx.itertuples(index=False)]
             if not np.allclose(lx.mu_lampx, expected_mu, atol=1e-4):
                 issues.append("[LAMPX1] mu no coincide con receta congelada")
+            if (lx.now_version != NOW_VERSION).any():
+                issues.append("[LAMPNOW1] version incorrecta")
+            if (lx.obs_avail_utc > lx.freeze_utc).any():
+                issues.append("[LAMPNOW1] observacion disponible despues del freeze")
+            expected_now = [now_prediction(r.mu_lampx, r.innovation)
+                            for r in lx.itertuples(index=False)]
+            if not np.allclose(lx.mu_nowx, expected_now, atol=1e-4):
+                issues.append("[LAMPNOW1] mu no coincide con correccion congelada")
             ex = pd.read_csv(EXACT_SELECTOR, parse_dates=["capture_utc"])
             ex["target_d"] = pd.to_datetime(ex.target).dt.date
             expected = set()

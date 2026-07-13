@@ -4,7 +4,7 @@ import pandas as pd
 
 from scripts.accumulate_lamp_shadow import build_row, capture_window_open, eligible_cityx
 from scripts.score_lamp_shadow import winner_label
-from wxbt.lamp_shadow import VERSION, gate, prediction
+from wxbt.lamp_shadow import NOW_VERSION, VERSION, gate, now_gate, now_prediction, prediction
 
 
 def test_lamp_prediction_is_frozen_blend_plus_offset():
@@ -16,6 +16,13 @@ def test_lamp_gate_requires_every_preregistered_condition():
     assert not gate(.45, .40, .75, .70, .01, 44)
     assert not gate(.45, .46, .75, .70, .01, 45)
     assert not gate(.45, .40, .69, .70, .01, 45)
+
+
+def test_nowcast_is_clipped_and_gate_is_hierarchical():
+    assert now_prediction(80, 2) == 80.5
+    assert now_prediction(80, 20) == 81
+    assert now_gate(True, .47, .45, .76, .75, .01, 45)
+    assert not now_gate(False, .47, .45, .76, .75, .01, 45)
 
 
 def test_cityx_parent_must_be_frozen_before_cutoff(monkeypatch):
@@ -50,10 +57,15 @@ def test_capture_row_preserves_provenance():
            "avail_utc": "2026-07-14T08:00:00Z",
            "freeze_utc": "2026-07-14T08:30:00Z", "tmax": 84}
     cityx = pd.Series({"capture_utc": pd.Timestamp("2026-07-13T13:00:00Z"), "mu": 82})
+    nowcast = {"obs_valid_utc": "2026-07-14T08:00:00Z",
+               "obs_avail_utc": "2026-07-14T08:15:00Z", "n_obs": 4,
+               "obs_latest": 80, "lav_at_obs": 78, "innovation": 2}
     row = build_row("KLGA", dt.date(2026, 7, 14), lav, cityx,
-                    dt.datetime(2026, 7, 14, 15, tzinfo=dt.timezone.utc))
+                    dt.datetime(2026, 7, 14, 15, tzinfo=dt.timezone.utc), nowcast)
     assert row["version"] == VERSION
     assert row["mu_lampx"] == 83
+    assert row["now_version"] == NOW_VERSION
+    assert row["mu_nowx"] == 83.5
     assert row["lav_avail_utc"] < row["freeze_utc"]
 
 

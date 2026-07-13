@@ -817,6 +817,15 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   `accumulate_lamp_shadow.py` y `score_lamp_shadow.py`. Fuentes:
   NOAA MDL LAMP (`vlab.noaa.gov/web/mdl/lamp`) e IEM MOS archive
   (`mesonet.agron.iastate.edu/cgi-bin/request/mos.py?help=`).
+- Nowcast pre-freeze exploratorio: último ASOS con `valid + 15min <= freeze`, emparejado con la
+  temperatura LAV horaria del runtime seleccionado. Cuatro coeficientes fijados (25/50/75/100%)
+  sobre innovation recortado a ±4°F; ganó 25% en DEV. Test: LAMPX +2h **45,5% → 46,6% exacto**
+  (+1,1pp), top-2 74,6% → 75,7%, MAE 1,414 → 1,412, p=0,3225. Es señal débil, no promoción.
+- `LAMPNOW1-20260713` se conserva dentro de la misma captura forward desde 14/07 porque la prueba
+  point-in-time es irrepetible. Es jerárquico, no una apuesta separada: sólo puede adoptarse si
+  primero LAMPX pasa su gate y luego NOW mejora LAMPX con delta>0, top-2 no inferior y p<0,05 a
+  45 días. La fila guarda observation-valid, availability +15min, innovation y fórmula completa;
+  el auditor prohíbe ASOS posterior al freeze. No modifica playbook ni acciones.
 
 ### MOS de estación GFS/NAM/NBM (2026-07-13)
 

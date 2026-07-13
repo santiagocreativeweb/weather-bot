@@ -1,11 +1,14 @@
 """Frozen definition of the forward-only NOAA LAMP exact challenger."""
 
 VERSION = "LAMPX1-20260713"
+NOW_VERSION = "LAMPNOW1-20260713"
 PARENT_VERSION = "CITYX2-20260713"
 SHADOW0 = "2026-07-14"
 GATE_DAYS = 45
 MIN_EXACT = 0.396
 AVAIL_LAG_HOURS = 2.0
+NOW_ALPHA = 0.25
+NOW_CLIP_F = 4.0
 
 # Selected globally on DEV through 2026-06-20.  The offsets and uncertainty
 # below were refit once using resolved history through 2026-07-11, before the
@@ -29,7 +32,19 @@ def prediction(station, lav_tmax, cityx_mu):
     return (float(lav_tmax) + float(cityx_mu)) / 2 + OFFSETS_F[station]
 
 
+def now_prediction(lamp_mu, innovation):
+    """Immutable secondary correction from the last pre-freeze ASOS report."""
+    clipped = max(min(float(innovation), NOW_CLIP_F), -NOW_CLIP_F)
+    return float(lamp_mu) + NOW_ALPHA*clipped
+
+
 def gate(exact, cityx_exact, top2, cityx_top2, p_value, days):
     """Return the preregistered promotion verdict; no trading side effects."""
     return (days >= GATE_DAYS and exact > MIN_EXACT and exact > cityx_exact and
             top2 >= cityx_top2 and p_value < 0.05)
+
+
+def now_gate(lamp_passed, exact, lamp_exact, top2, lamp_top2, p_value, days):
+    """Hierarchical gate: NOW is tested only after the parent LAMP gate passes."""
+    return (lamp_passed and days >= GATE_DAYS and exact > lamp_exact and
+            top2 >= lamp_top2 and p_value < 0.05)
