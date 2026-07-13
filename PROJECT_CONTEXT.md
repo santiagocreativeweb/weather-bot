@@ -818,6 +818,21 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   NOAA MDL LAMP (`vlab.noaa.gov/web/mdl/lamp`) e IEM MOS archive
   (`mesonet.agron.iastate.edu/cgi-bin/request/mos.py?help=`).
 
+### MOS de estación GFS/NAM/NBM (2026-07-13)
+
+- IEM conserva runtimes explícitos de GFS/MAV, NAM/MET, MEX, NBS y NBE. Se descargaron 4.050
+  forecasts nativos (9 estaciones × 5 productos × 90 días), con cobertura 90/90 y cero fallos.
+  Se usó el máximo nativo `n_x`/`txn`, fecha local y un lag uniforme conservador de +4h; ninguna
+  corrida elegida excede el freeze. NBS/NBE corresponden al régimen NBM v5 iniciado el 05/05/2026.
+- Familia cerrada antes de mirar hits: cinco productos, mediana MOS, promedio NBM, stack con LAMP
+  y mezclas 50/50 con CITYX; sólo RAW/X60. Ganador DEV global: `STACKCITY50|RAW` (mediana de los
+  cinco MOS + LAMP, mezclada 50/50 con CITYX). En el test descriptivo ya abierto: **39,2% → 45,0%**
+  exacto (+5,8pp), top-2 67,7% → 74,1%, MAE 1,679 → 1,445, p=0,0581.
+- No supera LAMPX (45,5-46,6% según sensibilidad de lag) ni alcanza p<0,05. Resultado:
+  **rechazado como challenger adicional**, sin nueva sombra ni cambios de acciones. El test es
+  exploratorio porque las etiquetas ya habían sido vistas; reproducible con
+  `backfill_station_mos.py` y `lab_station_mos.py`.
+
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
 - `evaluate_market()` es una función pura (snapshot→orden) y es la MISMA en backtest/paper/live.
