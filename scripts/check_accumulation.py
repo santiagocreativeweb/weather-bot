@@ -16,10 +16,12 @@ import pandas as pd
 BOOKS = "data/books_forward.csv"
 ENSEMBLE = "data/ensemble_forward.csv"
 PRED = "data/predictions_forward.csv"
+MODELS_FORWARD = "data/models_forward.csv"
 LOG = "data/accumulator.log"
 CITIES = {"nyc", "chicago", "london", "paris", "tokyo", "seoul"}
 STATIONS = {"KLGA", "KORD", "EGLC", "LFPB", "RJTT", "RKSI"}
 START = dt.date(2026, 7, 8)   # 1er snapshot forward
+MODELS_START = dt.date(2026, 7, 12)
 
 
 def daterange(a, b):
@@ -29,14 +31,14 @@ def daterange(a, b):
         d += dt.timedelta(days=1)
 
 
-def check_days(name, dates_present, through, issues):
-    expected = set(daterange(START, through))
+def check_days(name, dates_present, through, issues, start=START):
+    expected = set(daterange(start, through)) if through >= start else set()
     missing = sorted(expected - dates_present)
     if missing:
         issues.append(f"[{name}] {len(missing)} dias SIN snapshot: "
                       f"{', '.join(str(d) for d in missing[:8])}{' ...' if len(missing) > 8 else ''}")
     else:
-        print(f"[{name}] OK: {len(expected)} dias presentes, sin huecos ({START}..{through})")
+        print(f"[{name}] OK: {len(expected)} dias presentes, sin huecos ({start}..{through})")
 
 
 def main(a):
@@ -105,6 +107,31 @@ def main(a):
               f"cobertura estaciones/dia: min={cov.min()} med={int(cov.median())}")
     except FileNotFoundError:
         issues.append(f"[predictions] {PRED} no existe — el accumulator nunca escribio")
+
+    # --- ocho modelos deterministas point-in-time (MED8/W8 shadow) ---
+    if through >= MODELS_START:
+        try:
+            mf = pd.read_csv(MODELS_FORWARD, parse_dates=["capture_utc"])
+            # El wrapper usa fecha calendario Argentina; una corrida nocturna puede caer en el
+            # dia UTC siguiente. Convertir antes de chequear huecos evita un falso faltante.
+            mf["d"] = mf.capture_utc.dt.tz_convert("America/Argentina/Buenos_Aires").dt.date
+            check_days("models_forward", set(mf.d.unique()), through, issues, MODELS_START)
+            pairs = mf.groupby("d").apply(
+                lambda g: g[["station", "model"]].drop_duplicates().shape[0],
+                include_groups=False)
+            expected_pairs = mf.station.nunique() * 8
+            low = pairs[pairs < expected_pairs]
+            if len(low):
+                issues.append(f"[models_forward] {len(low)} dias incompletos: minimo "
+                              f"{int(pairs.min())}/{expected_pairs} pares estacion-modelo")
+            bad = mf.tmax.dropna()
+            bad = bad[(bad < -100) | (bad > 150)]
+            if len(bad):
+                issues.append(f"[models_forward] {len(bad)} tmax fuera de rango [-100,150]")
+            print(f"[models_forward] filas={len(mf)} pares/dia min={int(pairs.min())} "
+                  f"esperados={expected_pairs}")
+        except FileNotFoundError:
+            issues.append(f"[models_forward] {MODELS_FORWARD} no existe")
 
     # --- log de corridas: los OK del log deben cubrir los dias esperados ---
     try:

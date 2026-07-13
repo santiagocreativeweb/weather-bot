@@ -6,7 +6,8 @@
 # Regla (coherente con leaderboard/check_predictions/dashboard): pick = floor(mu_cal); top-2/3 por
 # bucket_prob(mu-0.5, sigma, lo, hi); ganador = Gamma (o fisica IEM floreada si el dia paso sin
 # ganador de mercado). WU FLOOREA la obs SIEMPRE. Verdicto por mercado: EXACTO / TOP-2 / TOP-3 / PERDIDA.
-import math, os, sys
+import concurrent.futures as cf
+import json, math, os, sys
 import datetime as dt
 import pandas as pd
 
@@ -15,6 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from dashboard import STATION_META, CSS, ddmmyyyy, fecha_es, STATIONS               # noqa: E402
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp        # noqa: E402
 from wxbt.market import bucket_prob                                                  # noqa: E402
+from wxbt.forward_scoring import frozen_forecast                                     # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -36,6 +38,26 @@ def records(today):
     p["target"] = p["target"].dt.date
     due = p[p["target"] <= today].sort_values("lead_h").drop_duplicates(
         ["station", "target"], keep="first")
+    # IEM por red, fila por fila, hacia que la tarea diaria tardara minutos. La historia local es
+    # la fuente validada; solo completar en paralelo las fechas forward que aun no llegaron a obs.csv.
+    obs_cache = {}
+    try:
+        oh = pd.read_csv(os.path.join(D, "obs.csv"), parse_dates=["date"])
+        oh["date"] = oh.date.dt.date
+        obs_cache = {(r.station, r.date): float(r.tmax) for r in oh.itertuples()}
+    except (OSError, ValueError, AttributeError):
+        pass
+    missing = [k for k in due[["station", "target"]].itertuples(index=False, name=None)
+               if k not in obs_cache]
+    if missing:
+        with cf.ThreadPoolExecutor(max_workers=8) as pool:
+            vals = pool.map(lambda k: fetch_obs_iem(*k), missing)
+            obs_cache.update({k: v for k, v in zip(missing, vals) if v is not None})
+    try:
+        with open(os.path.join(D, "forecast_audit.json"), encoding="utf-8") as fh:
+            audit = json.load(fh)
+    except (OSError, ValueError):
+        audit = {}
     resb = resolved_buckets(list(due[["station", "target"]].itertuples(index=False, name=None)))
     recs = []
     for r in due.itertuples():
@@ -43,14 +65,18 @@ def records(today):
         if not info or not info["buckets"]:
             continue
         buckets, winner, res = info["buckets"], info["winner"], "mercado"
-        obs = fetch_obs_iem(r.station, r.target)
+        obs = obs_cache.get((r.station, r.target))
         if winner is None and r.target < today and obs is not None:
             winner, res = winner_by_temp(buckets, int(math.floor(obs))), "fisica"
         if winner is None:
             continue
         unit = STATIONS[r.station][3]
-        pick = winner_by_temp(buckets, int(math.floor(r.mu_cal)))
-        probs = [bucket_prob(r.mu_cal - 0.5, r.sigma_cal, lo, hi) for lo, hi in buckets]
+        mu, sigma, forecast_source = frozen_forecast(
+            audit, r.station, r.target, r.mu_cal, r.sigma_cal)
+        if forecast_source == "forward-fallback":
+            continue  # no acreditar un resultado sin snapshot congelado/reconstruible
+        pick = winner_by_temp(buckets, int(math.floor(mu)))
+        probs = [bucket_prob(mu - 0.5, sigma, lo, hi) for lo, hi in buckets]
         order = sorted(range(len(buckets)), key=lambda i: -probs[i])
         rank_w = order.index(buckets.index(winner)) + 1
         exact = int(pick == winner)
@@ -60,8 +86,8 @@ def records(today):
         recs.append(dict(station=r.station, target=r.target, unit=unit, res=res,
                          pick=lbl_of(pick, unit) if pick else "—",
                          win=lbl_of(winner, unit), nivel=nivel, exact=exact, top2=top2, top3=top3,
-                         err=(abs(r.mu_cal - obs) if obs is not None else None),
-                         mu=r.mu_cal, real=obs))
+                         err=(abs(mu - obs) if obs is not None else None),
+                         mu=mu, real=obs, forecast_source=forecast_source))
     return recs
 
 

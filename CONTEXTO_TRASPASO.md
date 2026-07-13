@@ -106,9 +106,20 @@
 - **SQLite** `data/wxbt.db` + **Excel** `data/wxbt_export.xlsx` (12 hojas) via `export_data.py`.
 - `run_daily.ps1` encadena: accumulate_books/ensemble/predictions + capture_nbm/mosmix/accumulate_mosmix/
   cwa/jma/qweather + validate_sources + leaderboard + stats_page + export_data.
-- **PENDIENTE CRÍTICO**: `run_daily.ps1` NO está registrado en Task Scheduler (comandos schtasks entregados
-  varias veces, Santiago aún no los corrió). Hoy la acumulación diaria depende de disparo manual o del botón
-  "sincronización completa" del dashboard.
+- **HECHO 2026-07-13**: `run_daily.ps1` registrado en Task Scheduler como `wxbt-accumulate`, diario
+  12:00 hora local, modo interactivo; corrida manual verificada con Last Result=0. También puede
+  dispararse manualmente con el botón "sincronización completa" del dashboard.
+
+### Auditoría init-anclada de exactitud (2026-07-13)
+- Se reemplazó Previous-Runs por **Single Runs con `run=` explícito**, corrida conservadora cuya
+  publicación (`run + lag`) es anterior al freeze. Archivo reproducible: `backfill_single_runs.py`.
+- 19.197 predicciones, 90 targets, 29 estaciones, 8 modelos globales; cero `avail > freeze`.
+- Corte anidado: DEV 10/05-20/06; HOLDOUT intacto 21/06-11/07. Una receta global perdió; el selector
+  congelado por ciudad subió **32,4% -> 39,6% exacto** (+7,2pp, p=0,0085), top-2 **64,8% -> 64,8%**.
+- Los regionales (HRRR/NBM/ICON-EU/AROME/HARMONIE/UKV/JMA-MSM/ICON-2I) fueron testeados con el
+  mismo corte: **39,4% -> 37,3% exacto**, rechazados para exacto aunque mejoraron algo MAE/top-2.
+- El selector por ciudad queda como challenger reproducible; no se mezcla silenciosamente con V2.
+  El nivel vivo continúa acumulándose forward y Gamma sigue siendo la verdad del payout.
 
 ## 11. Invariantes que NO se rompen sin avisar (de CLAUDE.md)
 1. `evaluate_market()` en `wxbt/engine.py` es función PURA (sin I/O ni estado oculto).
@@ -133,7 +144,7 @@
 - **Bajar la sangría de las débiles**: validar CWA/JMA/QWeather forward (n≥15-20 días) y, si ganan, meterlas
   como miembro del ensemble por estación (validar en calib_lab antes).
 - **calib_lab D1 dinámico** + extender backfill_check semanalmente (el refresh del bias hoy se congela).
-- **Registrar schtasks** de run_daily.ps1 (Santiago).
+- **Task Scheduler registrado**; vigilar semanalmente Last Result y `check_accumulation.py`.
 - **Alta de ciudades nuevas** ADD (Wellington/Ankara/Miami/Singapore/KL/Shenzhen superan la mediana) — gate:
   verificar acuerdo IEM-vs-Gamma antes de operar.
 - Seguir puliendo dashboard/stats según feedback.

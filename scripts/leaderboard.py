@@ -9,7 +9,7 @@
 # TOP-2, TOP-3 y las PERDIDAS de esa estacion. + timestamp de ultima actualizacion de la tabla.
 #
 # Reglas (coherentes con check_predictions.py / dashboard):
-#   * Por (station, target) se usa el snapshot MAS FRESCO (min lead_h) = la ultima palabra del bot.
+#   * Por (station, target) se scorea el forecast CONGELADO a la hora de entrada.
 #   * Pick oficial = floor(mu_cal) -> su bucket (WU FLOOREA la obs SIEMPRE).
 #   * top-2/3 = ranking de buckets por bucket_prob(mu-0.5, sigma, lo, hi).
 #   * Resolucion MERCADO (Gamma outcomePrices) primaria; FISICA (obs IEM floreada) secundaria.
@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from dashboard import STATION_META, CSS, ddmmyyyy, to_art, STATIONS               # noqa: E402
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp     # noqa: E402
 from wxbt.market import bucket_prob                                               # noqa: E402
+from wxbt.forward_scoring import frozen_forecast                                  # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -48,7 +49,12 @@ def live_records(today):
     p = pd.read_csv(os.path.join(D, "predictions_forward.csv"), parse_dates=["target"])
     p["target"] = p["target"].dt.date
     due = p[p["target"] <= today].sort_values("lead_h").drop_duplicates(
-        ["station", "target"], keep="first")                    # min lead_h = ultima palabra
+        ["station", "target"], keep="first")  # fallback si el audit historico no existe
+    try:
+        with open(os.path.join(D, "forecast_audit.json"), encoding="utf-8") as fh:
+            audit = json.load(fh)
+    except (OSError, ValueError):
+        audit = {}
     resb = resolved_buckets(list(due[["station", "target"]].itertuples(index=False, name=None)))
     recs = []
     for r in due.itertuples():
@@ -63,8 +69,12 @@ def live_records(today):
         if winner is None:
             continue                                            # todavia no resuelto -> no cuenta
         unit = STATIONS[r.station][3]
-        pick = winner_by_temp(buckets, int(math.floor(r.mu_cal)))
-        probs = [bucket_prob(r.mu_cal - 0.5, r.sigma_cal, lo, hi) for lo, hi in buckets]
+        mu, sigma, forecast_source = frozen_forecast(
+            audit, r.station, r.target, r.mu_cal, r.sigma_cal)
+        if forecast_source == "forward-fallback":
+            continue  # sin evidencia point-in-time del pick operable: no entra al KPI oficial
+        pick = winner_by_temp(buckets, int(math.floor(mu)))
+        probs = [bucket_prob(mu - 0.5, sigma, lo, hi) for lo, hi in buckets]
         order = sorted(range(len(buckets)), key=lambda i: -probs[i])
         rank_w = order.index(buckets.index(winner)) + 1         # 1 = nuestro bucket mas probable
         exact = int(pick == winner)
@@ -73,7 +83,8 @@ def live_records(today):
         nivel = ("EXACTO" if exact else ("TOP-2" if top2 else ("TOP-3" if top3 else "PERDIDA")))
         recs.append(dict(station=r.station, target=r.target, res=res, exact=exact,
                          top2=top2, top3=top3, pwin=probs[buckets.index(winner)], nivel=nivel,
-                         pick_lbl=lbl_of(pick, unit), win_lbl=lbl_of(winner, unit)))
+                         pick_lbl=lbl_of(pick, unit), win_lbl=lbl_of(winner, unit),
+                         forecast_source=forecast_source))
     return pd.DataFrame(recs)
 
 
@@ -243,6 +254,9 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
         labs = f"{r['lab']:.0%}" if r["lab"] == r["lab"] else "-"
         print(f"  {i:2d}. {r['st']} ({r['ciudad']}): exactos {r['ex']}/{r['n']}  "
               f"top2 {r['t2']}/{r['n']}  top3 {r['t3']}/{r['n']}  pwin {pws}  lab60d {labs}")
+    if len(df):
+        src = df["forecast_source"].value_counts().to_dict()
+        print("Fuente temporal del score: " + ", ".join(f"{k}={v}" for k, v in src.items()))
 
 
 if __name__ == "__main__":

@@ -5,11 +5,13 @@
 # = floor(real IEM). Reporta hit exacto y MAE de la FUENTE vs el BOT. Cuando la fuente le gane
 # consistentemente (n>=~15-20 dias), recien ahi se justifica meterla al ensemble.
 # USO: python scripts/validate_sources.py
-import os, sys, csv, math
+import os, sys, csv, json, math
 import datetime as dt
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from check_predictions import fetch_obs_iem   # noqa: E402  (obs fisica IEM, real del dia)
+from dashboard import freeze_utc              # noqa: E402  (deadline operativo por estacion)
+from wxbt.forward_scoring import frozen_forecast  # noqa: E402
 
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
 # fuente -> (csv, estacion, col_valor, col_corrida, unidad)
@@ -21,8 +23,14 @@ SOURCES = {
 }
 
 
-def latest_src(csvname, station, val_col, key_col):
-    """{target_date: valor} usando la corrida MAS RECIENTE por target."""
+def _utc(value):
+    """ISO timestamp -> aware UTC datetime."""
+    x = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return x.replace(tzinfo=dt.timezone.utc) if x.tzinfo is None else x.astimezone(dt.timezone.utc)
+
+
+def latest_src_before_freeze(csvname, station, val_col, key_col):
+    """{target_date: valor} usando solo corridas publicadas antes del freeze."""
     p = os.path.join(D, csvname)
     out = {}
     if not os.path.exists(p):
@@ -31,33 +39,43 @@ def latest_src(csvname, station, val_col, key_col):
         for r in csv.DictReader(f):
             if r.get("station") != station or r.get(val_col) in (None, ""):
                 continue
-            tgt = r["target"]
-            if tgt not in out or r[key_col] > out[tgt][0]:
-                out[tgt] = (r[key_col], float(r[val_col]))
-    return {dt.date.fromisoformat(k): v[1] for k, v in out.items()}
+            tgt = dt.date.fromisoformat(r["target"])
+            published = _utc(r[key_col])
+            cutoff = freeze_utc(station, tgt).replace(tzinfo=dt.timezone.utc)
+            if published > cutoff:
+                continue
+            if tgt not in out or published > out[tgt][0]:
+                out[tgt] = (published, float(r[val_col]))
+    return {k: v[1] for k, v in out.items()}
 
 
 def bot_mu(station):
-    """{target_date: mu_cal} del snapshot forward MAS FRESCO (min lead_h) por target."""
+    """{target_date: mu_cal} del forecast congelado (fallback forward explicito)."""
     p = os.path.join(D, "predictions_forward.csv")
-    out = {}
+    rows = {}
     if not os.path.exists(p):
         return out
     with open(p, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             if r.get("station") != station:
                 continue
-            tgt = r["target"]; lh = float(r.get("lead_h", 99))
-            if tgt not in out or lh < out[tgt][0]:
-                out[tgt] = (lh, float(r["mu_cal"]))
-    return {dt.date.fromisoformat(k): v[1] for k, v in out.items()}
+            tgt = dt.date.fromisoformat(r["target"]); lh = float(r.get("lead_h", 99))
+            if tgt not in rows or lh < rows[tgt][0]:
+                rows[tgt] = (lh, float(r["mu_cal"]), float(r["sigma_cal"]))
+    try:
+        with open(os.path.join(D, "forecast_audit.json"), encoding="utf-8") as f:
+            audit = json.load(f)
+    except (OSError, ValueError):
+        audit = {}
+    return {tgt: frozen_forecast(audit, station, tgt, mu, sg)[0]
+            for tgt, (_, mu, sg) in rows.items()}
 
 
 def main():
     today = dt.date.today()
     print("=== VALIDACION FORWARD fuentes locales vs bot (targets resueltos) ===\n")
     for name, (csvname, st, vcol, kcol, unit) in SOURCES.items():
-        src = latest_src(csvname, st, vcol, kcol)
+        src = latest_src_before_freeze(csvname, st, vcol, kcol)
         bot = bot_mu(st)
         recs = []
         for tgt, sval in sorted(src.items()):

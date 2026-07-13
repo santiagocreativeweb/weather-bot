@@ -507,9 +507,35 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
    calib/stats/leaderboard/export quedaron dentro de live y sync; ids viejos siguen por URL.
    (d) **Limpiar alertas SERVER-SIDE** (`/action?do=alerts_clear` vacía alerts.json items,
    conserva base) → limpia en todos los dispositivos; el ✕ del panel solo oculta por navegador.
-   **PENDIENTE DE COHERENCIA (importante):** stats_page/leaderboard scorean el snapshot más
-   fresco de predictions_forward, NO el pick congelado del audit — con el freeze a 04:30 hay que
-   unificar: scorear SIEMPRE el froze del forecast_audit.json (próxima sesión).
+   **COHERENCIA RESUELTA (2026-07-12):** stats_page/leaderboard ahora scorean primero el payload
+   inmutable `froze.mu/sg` de forecast_audit.json. Para filas legacy sin payload usan la última
+   revisión pre-deadline del audit; filas sin ninguna evidencia congelada se excluyen del KPI
+   oficial (predictions_forward queda solo como fallback técnico, no scoreable). La selección vive
+   en la función pura `wxbt.forward_scoring.frozen_forecast` y tiene tests propios.
+   **AUDITORÍA FORWARD + SOMBRA HONESTA (2026-07-12):** `validate_sources.py` tenía dos look-ahead
+   operativos: comparaba la fuente local más fresca (aunque fuera posterior al freeze) contra el
+   snapshot más fresco del bot. Ahora ambos lados se cortan al freeze por estación; al corregirlo,
+   CWA/JMA/QWeather todavía tienen 0 targets resueltos elegibles (la evidencia previa no contaba).
+   Para probar MED8/W8 sin la ambigüedad retrospectiva de Previous-Runs se agregó
+   `accumulate_models_forward.py`: captura los 8 modelos en vivo para las 29 estaciones mediante
+   16 requests multi-location (232/232 pares verificados) y `check_accumulation.py` controla huecos.
+   `score_model_shadows.py` toma una captura coherente anterior al freeze, aplica bias60 histórico
+   a MED8 y la compara pareada contra V2 congelado/Gamma. Gate inmutable: una sola evaluación con
+   >=45 días, delta exacto >0 y bootstrap por día P(delta<=0)<0.05. Integrado en `run_daily.ps1`.
+   **AUTOMATIZACIÓN ACTIVADA (2026-07-13):** tarea Windows `wxbt-accumulate`, diaria 12:00 hora
+   local, acción `run_daily.ps1`, modo interactivo (corre con sesión iniciada o bloqueada; no con
+   sesión cerrada), verificada mediante corrida manual: Last Result=0. La corrida capturó 232/232
+   pares de los 8 modelos para las 29 estaciones; `check_accumulation --through 2026-07-13` OK.
+   Durante la prueba `stats_page.py` resultó cuello de botella por pedir IEM serialmente por cada
+   mercado: ahora usa primero obs.csv y sólo completa faltantes en paralelo; la tarea completa.
+   **GATE HISTÓRICO MULTIVENTANA vs GAMMA (2026-07-13):** `lab_gate_windows.py` une los mu de
+   `lab_city_models_detail.csv` con el bucket ganador oficial `win_mkt` de Gamma y compara MED8/V2
+   pareado: 90d (63 días efectivos/754 mercados) 36.3→37.5%, +1.2pp p_boot=.224; 60d 36.9→37.9%,
+   +1.0pp p=.269; 30d 33.5→34.1%, +0.6pp p=.404; 15d 33.3→35.6%, +2.2pp p=.217; 7d
+   33.3→40.5%, +7.1pp p=.032 sin corrección. MED8 gana nominalmente las cinco ventanas, señal
+   direccional consistente, pero ninguna pasa inferencia familiar: el 7d deja p≈.16 con Bonferroni
+   por cinco miradas y sólo tiene 7 bloques diarios. NO adoptar aún. Este test valida el ganador
+   Gamma/WU, pero los forecasts retrospectivos mantienen bug #5; la sombra forward sigue mandando.
    **SCOUT + VOLUMEN (city_scout.csv, backtest 60d + vol 30d):** candidatas que SUPERAN a la
    mayoría de las 12 actuales: **Wellington NZWN 55% exacto/83% top2/MAE 0.57/$110k · Miami KMIA
    51%/81%/$73k · Ankara LTAC 52%/72%/$75k** (tier-1); Singapore 45%/$84k, KL 43%/$76k, Shenzhen
@@ -714,6 +740,20 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
    DESPUÉS. Prerequisito adicional: `RUNBOOK.md` (modos de falla) con los HALT como chequeos automáticos
    (Task #5). Si al validar el book real da hs_eff > 6¢ → edge real pero no tradeable a esta liquidez;
    frenar sin conectar.
+
+### Auditoría honesta de modelos init-anclados (2026-07-13)
+
+- `scripts/backfill_single_runs.py` usa Single Runs con inicialización explícita y una latencia
+  conservadora anterior al freeze. Resultado: 19.197 pronósticos, 90 targets, 29 estaciones y
+  8 modelos globales, sin violaciones `avail > freeze`.
+- Validación temporal anidada: desarrollo 10/05-20/06, holdout intacto 21/06-11/07. La receta global
+  única falló (32,5% -> 31,7%). El selector congelado por ciudad pasó el gate: **32,4% -> 39,6%**
+  exacto (+7,2pp; bootstrap por día p=0,0085; CI90 +2,1 a +12,4pp) y top-2 sin cambio (64,8%).
+- Se backfillearon además modelos regionales de alta resolución. Su selector DEV perdió exactitud
+  en holdout (**39,4% -> 37,3%**, p=0,7603); no se promueve. La investigación conserva resultados
+  negativos para evitar repetir variantes.
+- Open-Meteo gratuito es no comercial. Si esto se usa para trading real corresponde plan comercial
+  o self-host de las fuentes abiertas. Gamma continúa siendo el oráculo autoritativo del payout.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 

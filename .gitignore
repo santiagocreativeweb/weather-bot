@@ -26,6 +26,7 @@ wheels/
 # IDE
 .vscode/
 .idea/
+.claude/settings.local.json
 *.swp
 *.swo
 *~
@@ -49,6 +50,8 @@ htmlcov/
 .env.local
 secrets/
 credentials/
+cookies.json
+data/.qweather_key
 
 # Project specific
 .cache/
