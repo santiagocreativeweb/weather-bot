@@ -131,6 +131,8 @@
   Mezcla 50/50 a freeze−3h: 42,6% -> 46,8% exacto (+4,3pp) pero p=0,1088; selector por estación
   +2,1pp, p=0,235. No se adopta. Queda pre-registrado `MKTWX1-20260713` en sombra desde targets
   14/07, gate forward a 45 días; captura solo precios y CITYX publicados antes del cutoff.
+  `check_accumulation.py` exige una fila por snapshot elegible y frena si forecast/precio cae después
+  del cutoff, si el precio tiene >8h o si hay menos de cuatro buckets cotizados.
 
 ## 11. Invariantes que NO se rompen sin avisar (de CLAUDE.md)
 1. `evaluate_market()` en `wxbt/engine.py` es función PURA (sin I/O ni estado oculto).

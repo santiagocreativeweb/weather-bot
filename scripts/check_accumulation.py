@@ -13,10 +13,16 @@ import argparse, sys
 import datetime as dt
 import pandas as pd
 
+from dashboard import freeze_utc
+from wxbt.market_consensus import (CUTOFF_HOURS_BEFORE_FREEZE, MAX_PRICE_AGE_H,
+                                   SHADOW0, STATIONS as MKT_STATIONS)
+
 BOOKS = "data/books_forward.csv"
 ENSEMBLE = "data/ensemble_forward.csv"
 PRED = "data/predictions_forward.csv"
 MODELS_FORWARD = "data/models_forward.csv"
+EXACT_SELECTOR = "data/exact_selector_forward.csv"
+MARKET_CONSENSUS = "data/market_consensus_forward.csv"
 LOG = "data/accumulator.log"
 CITIES = {"nyc", "chicago", "london", "paris", "tokyo", "seoul"}
 STATIONS = {"KLGA", "KORD", "EGLC", "LFPB", "RJTT", "RKSI"}
@@ -132,6 +138,50 @@ def main(a):
                   f"esperados={expected_pairs}")
         except FileNotFoundError:
             issues.append(f"[models_forward] {MODELS_FORWARD} no existe")
+
+    # --- MKTWX1: consenso meteorología + CLOB, totalmente anterior al cutoff ---
+    shadow0 = dt.date.fromisoformat(SHADOW0)
+    if through >= shadow0:
+        try:
+            mc = pd.read_csv(MARKET_CONSENSUS, parse_dates=["capture_utc", "cutoff_utc", "price_utc"])
+            mc["target_d"] = pd.to_datetime(mc.target).dt.date
+            duplicates = mc.duplicated(["station", "target", "version"]).sum()
+            if duplicates:
+                issues.append(f"[MKTWX1] {duplicates} picks duplicados")
+            bad_capture = mc[mc.capture_utc.dt.tz_convert("UTC").dt.tz_localize(None) > mc.cutoff_utc]
+            bad_price = mc[mc.price_utc > mc.cutoff_utc]
+            age_h = (mc.cutoff_utc-mc.price_utc).dt.total_seconds()/3600
+            bad_age = mc[(age_h < 0) | (age_h > MAX_PRICE_AGE_H)]
+            if len(bad_capture):
+                issues.append(f"[MKTWX1] {len(bad_capture)} forecasts posteriores al cutoff")
+            if len(bad_price):
+                issues.append(f"[MKTWX1] {len(bad_price)} precios posteriores al cutoff")
+            if len(bad_age):
+                issues.append(f"[MKTWX1] {len(bad_age)} precios con edad fuera de [0,{MAX_PRICE_AGE_H}]h")
+            if (mc.n_priced < 4).any():
+                issues.append(f"[MKTWX1] {(mc.n_priced < 4).sum()} filas con menos de 4 buckets cotizados")
+
+            # Every CITYX snapshot available by the frozen cutoff must eventually
+            # yield one consensus row. This catches API/scheduler gaps while the
+            # 3-month CLOB history can still be reconstructed.
+            ex = pd.read_csv(EXACT_SELECTOR, parse_dates=["capture_utc"])
+            ex["target_d"] = pd.to_datetime(ex.target).dt.date
+            expected = set()
+            for r in ex.itertuples(index=False):
+                if r.station not in MKT_STATIONS or not (shadow0 <= r.target_d <= through):
+                    continue
+                cutoff = freeze_utc(r.station, r.target_d)-dt.timedelta(hours=CUTOFF_HOURS_BEFORE_FREEZE)
+                capture = r.capture_utc.tz_convert("UTC").tz_localize(None)
+                if capture <= cutoff:
+                    expected.add((r.station, r.target_d))
+            actual = set(zip(mc.station, mc.target_d))
+            missing = sorted(expected-actual)
+            if missing:
+                issues.append(f"[MKTWX1] {len(missing)} picks elegibles sin captura: " +
+                              ", ".join(f"{s}/{d}" for s, d in missing[:8]))
+            print(f"[MKTWX1] filas={len(mc)} esperadas={len(expected)} timestamps pre-cutoff OK")
+        except FileNotFoundError:
+            issues.append(f"[MKTWX1] {MARKET_CONSENSUS} no existe")
 
     # --- log de corridas: los OK del log deben cubrir los dias esperados ---
     try:
