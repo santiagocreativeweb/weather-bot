@@ -826,6 +826,12 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   primero LAMPX pasa su gate y luego NOW mejora LAMPX con delta>0, top-2 no inferior y p<0,05 a
   45 días. La fila guarda observation-valid, availability +15min, innovation y fórmula completa;
   el auditor prohíbe ASOS posterior al freeze. No modifica playbook ni acciones.
+- Gate de confianza LAMP exploratorio: familia prediction-only de acuerdo de bucket LAMPX–CITYX y
+  dispersión del ensemble, cobertura DEV mínima 35%. Ganó `SAME_SPREAD15`: DEV 68,3% exacto con
+  51,4% de cobertura, pero en test cayó a **47,0%** vs 45,5% de LAMPX-all (+1,5pp, cobertura 52,9%,
+  p=0,3004). La enorme degradación DEV→test indica inestabilidad/overfit temporal. **Rechazado**;
+  no se abre otra sombra. Las capturas LAMPX + CITYCONF existentes preservan las features para una
+  reevaluación forward posterior. Reproducible con `lab_lamp_confidence.py`.
 
 ### MOS de estación GFS/NAM/NBM (2026-07-13)
 
