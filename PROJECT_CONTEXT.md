@@ -839,6 +839,12 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   no se abre otra sombra. Las capturas LAMPX + CITYCONF existentes preservan las features para una
   reevaluación forward posterior. Reproducible con `lab_lamp_confidence.py`.
 
+- Concurrencia operativa: `accumulate_lamp_shadow.py` protege toda la secuencia
+  lectura-idempotencia-escritura con un lock atómico por proceso. Una segunda ejecución simultánea
+  termina sin tocar el CSV; un lock con PID muerto se recupera y un lock ilegible sólo se considera
+  abandonado después de una hora. Esto permite que Task Scheduler y una ejecución manual se solapen
+  sin duplicar filas ni corromper la muestra forward.
+
 ### MOS de estación GFS/NAM/NBM (2026-07-13)
 
 - IEM conserva runtimes explícitos de GFS/MAV, NAM/MET, MEX, NBS y NBE. Se descargaron 4.050

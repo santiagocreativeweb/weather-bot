@@ -41,6 +41,7 @@ wheels/
 
 # Logs & temp
 *.log
+*.lock
 .pytest_cache/
 .coverage
 htmlcov/

@@ -8,8 +8,10 @@ CITYX freeze.  The forecast is a shadow and never changes an action.
 import argparse
 import csv
 import datetime as dt
+import json
 import os
 import sys
+import time
 
 import pandas as pd
 
@@ -25,6 +27,71 @@ from wxbt.lamp_shadow import (AVAIL_LAG_HOURS, NOW_VERSION, OFFSETS_F,  # noqa: 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 OUT = os.path.join(D, "lamp_shadow_forward.csv")
 LOG = os.path.join(D, "accumulator.log")
+LOCK = os.path.join(D, ".lamp_shadow.lock")
+CORRUPT_LOCK_STALE_SECONDS = 3600
+
+
+def pid_alive(pid):
+    """Return whether a lock owner still exists without signalling it on Windows."""
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return False
+    if os.name == "nt":
+        import ctypes
+
+        process_query_limited_information = 0x1000
+        handle = ctypes.windll.kernel32.OpenProcess(
+            process_query_limited_information, False, pid)
+        if not handle:
+            return False
+        ctypes.windll.kernel32.CloseHandle(handle)
+        return True
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def acquire_lock(path=LOCK):
+    """Atomically acquire a cross-process lock, recovering only dead owners."""
+    for _ in range(3):
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError:
+            try:
+                with open(path, encoding="utf-8") as handle:
+                    owner = json.load(handle)
+                stale = not pid_alive(owner.get("pid"))
+            except (OSError, ValueError, AttributeError):
+                try:
+                    stale = time.time()-os.path.getmtime(path) > CORRUPT_LOCK_STALE_SECONDS
+                except OSError:
+                    continue
+            if not stale:
+                return False
+            try:
+                os.remove(path)
+            except FileNotFoundError:
+                pass
+            continue
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump({"pid": os.getpid(), "created_utc":
+                       dt.datetime.now(dt.timezone.utc).isoformat()}, handle)
+            handle.flush(); os.fsync(handle.fileno())
+        return True
+    return False
+
+
+def release_lock(path=LOCK):
+    try:
+        with open(path, encoding="utf-8") as handle:
+            owner = json.load(handle)
+        if int(owner.get("pid")) == os.getpid():
+            os.remove(path)
+    except (OSError, ValueError, TypeError, AttributeError):
+        pass
 
 
 def local_day_end_utc(station, target):
@@ -83,51 +150,59 @@ def main():
     target = dt.date.fromisoformat(args.date)
     if target < dt.date.fromisoformat(SHADOW0):
         print(f"{VERSION}: target anterior al inicio forward"); return
-    captured = dt.datetime.now(dt.timezone.utc)
-    cityx_path = os.path.join(D, "exact_selector_forward.csv")
-    if not os.path.exists(cityx_path):
-        log_run(target, "FAIL", "exact_selector_forward.csv missing")
-        raise SystemExit("[ABORT] falta CITYX2 forward")
-    cityx = pd.read_csv(cityx_path)
-    done = set()
-    if os.path.exists(OUT):
-        old = pd.read_csv(OUT)
-        done = set(zip(old.station, old.target.astype(str), old.version))
-    rows, failures = [], []
-    for station in OFFSETS_F:
-        if (station, target.isoformat(), VERSION) in done:
-            continue
-        if not capture_window_open(station, target, captured):
-            failures.append(f"{station}: fuera de ventana freeze..fin del dia local")
-            continue
-        parent = eligible_cityx(cityx, station, target)
-        if parent is None:
-            failures.append(f"{station}: sin CITYX2 pre-freeze")
-            continue
-        try:
-            raw = fetch_station(station, target, target)
-            selected = select_daily(raw, station, target, target, AVAIL_LAG_HOURS)
-            if len(selected) != 1:
-                raise ValueError("sin runtime LAV elegible")
-            observed = fetch_asos(station, target, target)
-            nowcast = select_features(raw, observed, station, target, target)
-            if len(nowcast) != 1:
-                raise ValueError("sin ASOS pre-freeze elegible")
-            rows.append(build_row(station, target, selected[0], parent, captured, nowcast[0]))
-        except Exception as exc:
-            failures.append(f"{station}: {exc}")
-    if rows:
-        new = not os.path.exists(OUT)
-        with open(OUT, "a", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
-            if new:
-                writer.writeheader()
-            writer.writerows(rows)
-    status = "OK" if len(rows) == len(OFFSETS_F) or not rows and not failures else "WARN"
-    log_run(target, status, f"rows={len(rows)} failures={len(failures)}")
-    print(f"{VERSION}: +{len(rows)} forecasts -> {OUT}")
-    for failure in failures:
-        print(f"[WARN] {failure}", file=sys.stderr)
+    if not acquire_lock():
+        print(f"{VERSION}: [SKIP] otra captura LAMP está activa")
+        return
+    try:
+        captured = dt.datetime.now(dt.timezone.utc)
+        cityx_path = os.path.join(D, "exact_selector_forward.csv")
+        if not os.path.exists(cityx_path):
+            log_run(target, "FAIL", "exact_selector_forward.csv missing")
+            raise SystemExit("[ABORT] falta CITYX2 forward")
+        cityx = pd.read_csv(cityx_path)
+        done = set()
+        if os.path.exists(OUT):
+            old = pd.read_csv(OUT)
+            done = set(zip(old.station, old.target.astype(str), old.version))
+        rows, failures = [], []
+        for station in OFFSETS_F:
+            if (station, target.isoformat(), VERSION) in done:
+                continue
+            if not capture_window_open(station, target, captured):
+                failures.append(f"{station}: fuera de ventana freeze..fin del dia local")
+                continue
+            parent = eligible_cityx(cityx, station, target)
+            if parent is None:
+                failures.append(f"{station}: sin CITYX2 pre-freeze")
+                continue
+            try:
+                raw = fetch_station(station, target, target)
+                selected = select_daily(raw, station, target, target, AVAIL_LAG_HOURS)
+                if len(selected) != 1:
+                    raise ValueError("sin runtime LAV elegible")
+                observed = fetch_asos(station, target, target)
+                nowcast = select_features(raw, observed, station, target, target)
+                if len(nowcast) != 1:
+                    raise ValueError("sin ASOS pre-freeze elegible")
+                rows.append(build_row(station, target, selected[0], parent, captured, nowcast[0]))
+            except Exception as exc:
+                failures.append(f"{station}: {exc}")
+        if rows:
+            new = not os.path.exists(OUT)
+            with open(OUT, "a", newline="", encoding="utf-8") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+                if new:
+                    writer.writeheader()
+                writer.writerows(rows)
+        already = sum((station, target.isoformat(), VERSION) in done for station in OFFSETS_F)
+        completed = already+len(rows)
+        status = "OK" if completed == len(OFFSETS_F) and not failures else "WARN"
+        log_run(target, status, f"rows={len(rows)} completed={completed}/9 failures={len(failures)}")
+        print(f"{VERSION}: +{len(rows)} forecasts -> {OUT}")
+        for failure in failures:
+            print(f"[WARN] {failure}", file=sys.stderr)
+    finally:
+        release_lock()
 
 
 if __name__ == "__main__":

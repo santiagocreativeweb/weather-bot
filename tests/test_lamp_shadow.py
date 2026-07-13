@@ -1,8 +1,12 @@
 import datetime as dt
+import json
+import os
+import time
 
 import pandas as pd
 
-from scripts.accumulate_lamp_shadow import build_row, capture_window_open, eligible_cityx
+from scripts.accumulate_lamp_shadow import (acquire_lock, build_row, capture_window_open,
+                                            eligible_cityx, release_lock)
 from scripts.score_lamp_shadow import winner_label
 from wxbt.lamp_shadow import NOW_VERSION, VERSION, gate, now_gate, now_prediction, prediction
 
@@ -75,3 +79,26 @@ def test_gamma_tuple_is_rendered_for_existing_scoring_helpers():
     assert winner_label((84, 85)) == "84-85°F"
     assert winner_label((None, 81)) == "<= 81°F"
     assert winner_label((88, None)) == ">= 88°F"
+
+
+def test_process_lock_is_exclusive_and_reusable(tmp_path):
+    path = str(tmp_path / "lamp.lock")
+    assert acquire_lock(path)
+    assert not acquire_lock(path)
+    release_lock(path)
+    assert acquire_lock(path)
+    release_lock(path)
+    assert not os.path.exists(path)
+
+
+def test_process_lock_recovers_dead_owner_but_not_fresh_corruption(tmp_path):
+    path = tmp_path / "lamp.lock"
+    path.write_text(json.dumps({"pid": 99999999}), encoding="utf-8")
+    assert acquire_lock(str(path))
+    release_lock(str(path))
+    path.write_text("partial", encoding="utf-8")
+    assert not acquire_lock(str(path))
+    old = time.time()-7200
+    os.utime(path, (old, old))
+    assert acquire_lock(str(path))
+    release_lock(str(path))
