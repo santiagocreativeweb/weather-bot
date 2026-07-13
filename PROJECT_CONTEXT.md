@@ -839,6 +839,13 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   validación por defecto; `--descriptive-test` reproduce transparentemente la exposición inicial.
   **Rechazado y sin nueva sombra**. Reproducible con `backfill_lamp_features.py` y
   `lab_lamp_physical.py`.
+- Pool discreto LAMPX+CLOB: para KLGA/KORD se combinaron las probabilidades LAMP por bucket con
+  mids del mercado capturados antes del freeze (edad media 0,61h), usando pools lineales/log y
+  pesos LAMP 25/50/75% fijados antes de correr. En DEV (61 pares) ganó el lineal 75% LAMP:
+  67,2% → 68,9% exacto, aunque top-2 bajó 91,8% → 88,5%. En el período posterior ya expuesto
+  (37 pares), exacto 40,5% → **43,2%** (+2,7pp), top-2 73,0% → 70,3%, p=0,3893,
+  CI90 −5,3..+10,5pp. La señal es pequeña, pierde cobertura top-2 y no es significativa;
+  **rechazado sin nueva sombra**. Reproducible con `lab_lamp_market.py`.
 - Observabilidad operativa: `playbook.py` muestra los buckets/mu de LAMPX y LAMPNOW después de que
   la acción ya fue calculada (display-only, sin acceso al edge/sizing). El loader descarta fuentes
   posteriores al freeze. `export_data.py` materializa captura y scores en SQLite y en las hojas
