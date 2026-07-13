@@ -1,0 +1,18 @@
+{
+  "generated": "2026-07-08",
+  "source": "analisis de convergencia sobre data/prices.csv (18 meses, 1536 mercados con ganador)",
+  "curve": [
+    {"hours_to_close_bucket": "72-60", "mean_winner_price": 0.30, "n": 2644},
+    {"hours_to_close_bucket": "60-48", "mean_winner_price": 0.31, "n": 5878},
+    {"hours_to_close_bucket": "48-36", "mean_winner_price": 0.32, "n": 14677},
+    {"hours_to_close_bucket": "36-24", "mean_winner_price": 0.33, "n": 16829},
+    {"hours_to_close_bucket": "24-18", "mean_winner_price": 0.35, "n": 8413},
+    {"hours_to_close_bucket": "18-12", "mean_winner_price": 0.37, "n": 8712},
+    {"hours_to_close_bucket": "12-9", "mean_winner_price": 0.39, "n": 4362},
+    {"hours_to_close_bucket": "9-6", "mean_winner_price": 0.43, "n": 4374},
+    {"hours_to_close_bucket": "6-3", "mean_winner_price": 0.51, "n": 4341},
+    {"hours_to_close_bucket": "3-0", "mean_winner_price": 0.53, "n": 4268}
+  ],
+  "entry_window_conclusion": "El precio del bucket ganador esta PLANO entre 72h y 24h antes del cierre (0.30→0.33) — en esa ventana el mercado todavia no distingue al ganador y queda ~0.67 de convergencia por delante. La aceleracion ocurre DENTRO de las ultimas 24h. En KLGA (la mas liquida) los repricings con drift hacia el ganador coinciden con la llegada de corridas: 00Z (05-08 UTC ≈ 02-05h AR, +0.010-0.012/h) y 12Z (18-19 UTC ≈ 15-16h AR). En las asiaticas el driver dominante es la observacion del pico en vivo (nowcast), no los modelos. Ventana practica: entrar la tarde/noche previa (tras el 12Z de la vispera) o la madrugada del target (tras el 00Z), ANTES de que el mercado incorpore la corrida.",
+  "caveat": "Esto describe CUANDO converge el precio (microestructura), NO rentabilidad: capturar el movimiento requiere que la señal propia le gane al mercado en ese instante, y el edge del backtest esta invalidado por bug #5 (look-ahead). La unica medicion honesta del edge es la validacion forward de 90 dias. Ademas los precios historicos cortan ~12h antes de la resolucion (close nominal 12 UTC), asi que la cola final de convergencia no esta en la curva para las estaciones no-asiaticas."
+}

@@ -1,0 +1,27 @@
+# scripts/run_daily.ps1 — wrapper DIARIO de acumulacion forward. Registrar en Task Scheduler.
+# Calcula la fecha de HOY y corre ambos acumuladores (books + ensemble). Ambos loguean a
+# data/accumulator.log y son idempotentes (guard anti doble-corrida), asi que re-disparar es seguro.
+# El default de fallo es "no escribir" (fail-loud); el check semanal detecta huecos.
+$ErrorActionPreference = "Continue"
+Set-Location (Split-Path $PSScriptRoot -Parent)   # raiz del repo (los scripts usan rutas data/ relativas)
+$today = (Get-Date).ToString("yyyy-MM-dd")
+python scripts/accumulate_books.py       --date $today
+python scripts/accumulate_ensemble.py    --date $today
+python scripts/accumulate_predictions.py --date $today
+# Capturadores de fuentes calibradas (agregados 2026-07-10): NBM (KLGA/KORD), MOSMIX TTT y TX
+# nativo. Exit 1 con [SKIP] cuando el ciclo ya fue capturado = benigno (guard de idempotencia).
+# NBM/MOSMIX publican 4 ciclos/dia: correr este wrapper mas de 1 vez/dia captura ciclos extra.
+python scripts/capture_nbm.py        --date $today
+python scripts/capture_mosmix.py     --date $today
+python scripts/accumulate_mosmix.py  --date $today
+python scripts/capture_cwa.py        --date $today
+python scripts/capture_jma.py        --date $today
+python scripts/capture_qweather.py   --date $today
+python scripts/validate_sources.py
+# Leaderboard + estadisticas (track record vivo) y consolidacion a SQLite + Excel (#7/#8).
+python scripts/leaderboard.py
+python scripts/stats_page.py
+python scripts/export_data.py        --date $today
+# Los sub-scripts idempotentes salen con code 1 en los SKIP (benigno); el estado real de cada uno
+# queda en data/accumulator.log. Salir 0 para que Task Scheduler marque la corrida como exitosa.
+exit 0

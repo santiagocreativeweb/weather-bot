@@ -1,0 +1,12 @@
+sanity checks: OK
+[taker] {'roi': 35.66796540090372, 'max_dd': -0.06858950286240817, 'sharpe': 11.274637589611217, 'n_trades': 4132, 'n_resolved': 1646, 'hit_rate': 0.9034021871202916, 'brier_entry': 0.15337219090639817, 'ev_por_trade': 17.26804621686513, 'pnl_total': 71351.56696808671}
+[mid] {'roi': 39.95954771142726, 'max_dd': -0.0609784537099779, 'sharpe': 11.083868622533497, 'n_trades': 4174, 'n_resolved': 1694, 'hit_rate': 0.8955135773317592, 'brier_entry': 0.14970106224310187, 'ev_por_trade': 19.150630471761918, 'pnl_total': 79934.73158913424}
+[mid/RAW sin calibrar] {'roi': 33.046110562082085, 'max_dd': -0.10325191964638225, 'sharpe': 10.248866877965328, 'n_trades': 3656, 'n_resolved': 1753, 'hit_rate': 0.8014831717056474, 'brier_entry': 0.16047389619815305, 'ev_por_trade': 18.08201785843643, 'pnl_total': 66107.85729044359}
+[null seed=1 taker] roi=-0.9617 trades=552
+[null seed=1 mid] roi=-0.9324 trades=752
+[null seed=2 taker] roi=-0.9534 trades=776
+[null seed=2 mid] roi=-0.9379 trades=934
+[null seed=3 taker] roi=-0.9634 trades=855
+[null seed=3 mid] roi=-0.8598 trades=1102
+
+reporte escrito en report/report_fase4.md

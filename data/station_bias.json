@@ -1,0 +1,20 @@
+{
+ "asof": "2026-07-11",
+ "window_days": 60,
+ "variant": "V2",
+ "note": "mu_corregido = mu_EMOS - bias[station]; V2 gano en walk-forward 60d (hit 39->43%)",
+ "bias": {
+  "RKSI": 0.08,
+  "LIMC": 0.351,
+  "EDDM": -0.495,
+  "RCSS": -1.313,
+  "ZBAA": 0.838,
+  "EGLC": 0.172,
+  "ZSPD": 0.035,
+  "KLGA": 1.111,
+  "RJTT": 0.269,
+  "LEMD": -0.155,
+  "KORD": 1.453,
+  "LFPB": 0.246
+ }
+}
