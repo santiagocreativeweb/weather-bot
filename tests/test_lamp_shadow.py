@@ -7,7 +7,8 @@ import pandas as pd
 
 from scripts.accumulate_lamp_shadow import (acquire_lock, build_row, capture_window_open,
                                             eligible_cityx, release_lock)
-from scripts.score_lamp_shadow import winner_label
+from scripts import score_lamp_shadow as scorer
+from scripts.score_lamp_shadow import gate_state, winner_label
 from wxbt.lamp_shadow import NOW_VERSION, VERSION, gate, now_gate, now_prediction, prediction
 
 
@@ -107,3 +108,23 @@ def test_process_lock_recovers_dead_owner_but_not_fresh_corruption(tmp_path):
     os.utime(path, (old, old))
     assert acquire_lock(str(path))
     release_lock(str(path))
+
+
+def test_gate_waits_for_days_and_resolved_coverage_before_deciding():
+    assert gate_state(44, 1.0, True, True) == "ACCUMULATING"
+    assert gate_state(45, .79, False, False) == "WAITING_RESOLUTION"
+    assert gate_state(45, .80, False, False) == "REJECT_LAMP_AND_NOW"
+    assert gate_state(45, .80, True, False) == "ADOPT_LAMP_REJECT_NOW"
+    assert gate_state(45, .80, True, True) == "ADOPT_NOW"
+
+
+def test_gate_status_is_atomically_materialized(tmp_path, monkeypatch):
+    path = tmp_path / "verdict.csv"
+    monkeypatch.setattr(scorer, "STATUS", str(path))
+    scorer.write_status(state="ACCUMULATING", resolved_days=3,
+                        lamp_decision="PENDING", now_decision="PENDING")
+    row = pd.read_csv(path).iloc[0]
+    assert row.state == "ACCUMULATING"
+    assert row.resolved_days == 3
+    assert row.lamp_version == VERSION
+    assert not (tmp_path / "verdict.csv.tmp").exists()

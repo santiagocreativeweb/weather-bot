@@ -33,6 +33,7 @@ EXACT_SELECTOR = "data/exact_selector_forward.csv"
 MARKET_CONSENSUS = "data/market_consensus_forward.csv"
 CITYX_CONFIDENCE = "data/cityx_confidence_forward.csv"
 LAMP_SHADOW = "data/lamp_shadow_forward.csv"
+LAMP_VERDICT = "data/lamp_shadow_verdict.csv"
 LOG = "data/accumulator.log"
 CITIES = {"nyc", "chicago", "london", "paris", "tokyo", "seoul"}
 STATIONS = {"KLGA", "KORD", "EGLC", "LFPB", "RJTT", "RKSI"}
@@ -230,6 +231,28 @@ def main(a):
                 issues.append("[LAMPX1] parent_version incorrecta")
             if lx.duplicated(["station", "target", "version"]).any():
                 issues.append("[LAMPX1] station-target duplicados")
+            provenance = {"obs_first", "obs_max", "obs_min", "obs_trend_fph",
+                          "lav_slope_fph", "lav_match_utc", "lav_peak_utc",
+                          "lav_peak_hour_local", "hours_to_lav_peak"}
+            missing_columns = sorted(provenance-set(lx.columns))
+            if missing_columns:
+                issues.append("[LAMPNOW1] columnas provenance faltantes: " +
+                              ", ".join(missing_columns))
+            else:
+                lx["lav_match_utc"] = pd.to_datetime(lx.lav_match_utc, utc=True)
+                lx["lav_peak_utc"] = pd.to_datetime(lx.lav_peak_utc, utc=True)
+                obs_lag = (lx.obs_avail_utc-lx.obs_valid_utc).dt.total_seconds()/60
+                if not np.allclose(obs_lag, 15):
+                    issues.append("[LAMPNOW1] lag ASOS distinto de 15 minutos")
+                bad_obs = ((lx.obs_min > lx.obs_first) | (lx.obs_min > lx.obs_latest) |
+                           (lx.obs_max < lx.obs_first) | (lx.obs_max < lx.obs_latest))
+                if bad_obs.any():
+                    issues.append(f"[LAMPNOW1] {int(bad_obs.sum())} filas con extremos ASOS incoherentes")
+                peak_hours = (lx.lav_peak_utc-lx.obs_valid_utc).dt.total_seconds()/3600
+                if not np.allclose(peak_hours, lx.hours_to_lav_peak, atol=1e-4):
+                    issues.append("[LAMPNOW1] hours_to_lav_peak no coincide con timestamps")
+                if (lx.hours_to_lav_peak < 0).any():
+                    issues.append("[LAMPNOW1] pico LAV anterior a observacion pre-freeze")
             if (lx.lav_avail_utc > lx.freeze_utc).any():
                 issues.append("[LAMPX1] runtime LAV disponible despues del freeze")
             lag = (lx.lav_avail_utc-lx.lav_runtime_utc).dt.total_seconds()/3600
@@ -264,6 +287,17 @@ def main(a):
                 issues.append(f"[LAMPX1] {len(missing)} CITYX elegibles sin LAMP: " +
                               ", ".join(f"{s}/{d}" for s, d in missing[:8]))
             print(f"[LAMPX1] filas={len(lx)} pares={len(actual)}/{len(expected)} elegibles")
+            try:
+                verdict = pd.read_csv(LAMP_VERDICT)
+                allowed = {"NO_CAPTURES", "NO_RESOLUTIONS", "ACCUMULATING",
+                           "WAITING_RESOLUTION", "REJECT_LAMP_AND_NOW",
+                           "ADOPT_LAMP_REJECT_NOW", "ADOPT_NOW"}
+                if len(verdict) != 1 or verdict.iloc[0].state not in allowed:
+                    issues.append("[LAMP gate] estado persistido invalido")
+                if len(verdict) == 1 and verdict.iloc[0].lamp_version != LAMP_VERSION:
+                    issues.append("[LAMP gate] version persistida incorrecta")
+            except FileNotFoundError:
+                issues.append(f"[LAMP gate] {LAMP_VERDICT} no existe")
         except FileNotFoundError:
             issues.append(f"[LAMPX1] {LAMP_SHADOW} no existe")
 

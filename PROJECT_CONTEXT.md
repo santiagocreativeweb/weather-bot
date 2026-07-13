@@ -877,6 +877,12 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   termina sin tocar el CSV; un lock con PID muerto se recupera y un lock ilegible sólo se considera
   abandonado después de una hora. Esto permite que Task Scheduler y una ejecución manual se solapen
   sin duplicar filas ni corromper la muestra forward.
+- Veredicto operativo: `score_lamp_shadow.py` materializa atómicamente
+  `lamp_shadow_verdict.csv` en cada corrida (`NO_CAPTURES`, `NO_RESOLUTIONS`, `ACCUMULATING`,
+  `WAITING_RESOLUTION` o decisión final), con métricas, intervalos, p-values y decisiones LAMP/NOW.
+  El CSV se exporta a SQLite y a la hoja `Veredicto LAMP-NOW`. Se corrigió un borde importante:
+  alcanzar 45 días con cobertura Gamma <80% **no rechaza** el modelo; queda esperando resoluciones
+  hasta satisfacer simultáneamente días y cobertura. Sólo entonces emite ADOPT/REJECT.
 
 ### MOS de estación GFS/NAM/NBM (2026-07-13)
 
