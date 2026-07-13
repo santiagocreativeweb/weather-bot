@@ -828,6 +828,15 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   top-2 no inferior y p<0,05 a 45 días. La fila guarda observation-valid, availability +15min,
   innovation y fórmula completa;
   el auditor prohíbe ASOS posterior al freeze. No modifica playbook ni acciones.
+- Nowcast ampliado: antes de la primera captura forward se añadieron como provenance `obs_first`,
+  `obs_max/min`, tendencia observada, pendiente LAV, hora/p timestamp del pico y horas restantes
+  al pico. Backfill: 810/810 station-days, 0 faltantes. Familia congelada: floor por máximo ya
+  observado, alpha dinámico por tendencia/tiempo al pico y cuatro modelos residuales poco profundos;
+  fit 10–31/05 y validación 01–20/06. **LAMPNOW25 retuvo el primer puesto con 53,9% exacto**;
+  `OBSFLOOR` empató exactamente y todos los demás perdieron (mejor restante 53,3%). El protocolo
+  se detuvo antes del test 21/06–11/07. **Rechazado, sin fórmula ni sombra nueva**; las columnas
+  adicionales quedan sólo para análisis forward futuro y no entran en acciones. Reproducible con
+  `lab_lamp_nowcast_features.py`.
 - LAMP físico multivariable: se extrajeron 810 station-days (9×90), 0 duplicados y 0 runtimes
   posteriores al freeze, con 48 features de la misma corrida LAV: curva térmica, punto de rocío,
   viento/dirección, nubosidad, precipitación, techo y visibilidad. Protocolo congelado: fit

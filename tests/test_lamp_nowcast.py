@@ -29,4 +29,8 @@ def test_nowcast_uses_only_observations_available_before_freeze(monkeypatch):
     assert row["runtime_utc"].startswith("2026-07-14T06:00:00")
     assert row["obs_valid_utc"].startswith("2026-07-14T08:00:00")
     assert row["obs_latest"] == 72
+    assert row["obs_max"] == 72
+    assert row["obs_first"] == 68
+    assert row["lav_peak_hour_local"] == 19
+    assert row["hours_to_lav_peak"] > 0
     assert row["obs_avail_utc"] <= row["freeze_utc"]

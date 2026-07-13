@@ -65,13 +65,18 @@ def test_capture_row_preserves_provenance():
     cityx = pd.Series({"capture_utc": pd.Timestamp("2026-07-13T13:00:00Z"), "mu": 82})
     nowcast = {"obs_valid_utc": "2026-07-14T08:00:00Z",
                "obs_avail_utc": "2026-07-14T08:15:00Z", "n_obs": 4,
-               "obs_latest": 80, "lav_at_obs": 78, "innovation": 2}
+               "obs_latest": 80, "obs_first": 76, "obs_max": 80, "obs_min": 75,
+               "obs_trend_fph": 1, "lav_at_obs": 78, "lav_slope_fph": 1.5,
+               "lav_peak_utc": "2026-07-14T18:00:00Z", "lav_peak_hour_local": 14,
+               "hours_to_lav_peak": 10, "innovation": 2}
     row = build_row("KLGA", dt.date(2026, 7, 14), lav, cityx,
                     dt.datetime(2026, 7, 14, 15, tzinfo=dt.timezone.utc), nowcast)
     assert row["version"] == VERSION
     assert row["mu_lampx"] == 83
     assert row["now_version"] == NOW_VERSION
     assert row["mu_nowx"] == 83.5
+    assert row["obs_max"] == 80
+    assert row["hours_to_lav_peak"] == 10
     assert row["lav_avail_utc"] < row["freeze_utc"]
 
 

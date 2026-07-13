@@ -62,22 +62,37 @@ def select_features(lav, obs, station, start, end):
         if run.empty or len(observed) < 2:
             continue
         latest = observed.iloc[-1]
+        first = observed.iloc[0]
         delta = (run.ftime-latest.valid).abs()
         nearest = run.loc[delta.idxmin()]
         if abs((nearest.ftime-latest.valid).total_seconds()) > 75*60:
             continue
-        elapsed = max((latest.valid-observed.iloc[0].valid).total_seconds()/3600, 1e-6)
+        daytime = run[run.local.dt.hour.isin(LOCAL_HOURS)].copy()
+        if daytime.empty:
+            continue
+        peak = daytime.loc[daytime.tmp.idxmax()]
+        ordered = run.sort_values("ftime").reset_index(drop=True)
+        nearest_pos = int((ordered.ftime-latest.valid).abs().to_numpy().argmin())
+        left, right = max(0, nearest_pos-1), min(len(ordered)-1, nearest_pos+1)
+        span = (ordered.iloc[right].ftime-ordered.iloc[left].ftime).total_seconds()/3600
+        lav_slope = ((ordered.iloc[right].tmp-ordered.iloc[left].tmp)/span
+                     if span > 0 else 0.0)
+        elapsed = max((latest.valid-first.valid).total_seconds()/3600, 1e-6)
         rows.append({"station": station, "target": target.isoformat(), "unit": "F",
             "runtime_utc": runtime.isoformat(),
             "lav_avail_utc": (runtime+pd.Timedelta(hours=LAV_LAG_H)).isoformat(),
             "freeze_utc": freeze.isoformat(), "obs_valid_utc": latest.valid.isoformat(),
             "obs_avail_utc": (latest.valid+pd.Timedelta(minutes=OBS_LAG_MIN)).isoformat(),
             "n_obs": len(observed), "obs_latest": float(latest.tmpf),
+            "obs_first": float(first.tmpf), "obs_max": float(observed.tmpf.max()),
             "obs_min": float(observed.tmpf.min()),
-            "obs_trend_fph": float((latest.tmpf-observed.iloc[0].tmpf)/elapsed),
+            "obs_trend_fph": float((latest.tmpf-first.tmpf)/elapsed),
             "lav_at_obs": float(nearest.tmp), "lav_match_utc": nearest.ftime.isoformat(),
+            "lav_slope_fph": float(lav_slope), "lav_peak_utc": peak.ftime.isoformat(),
+            "lav_peak_hour_local": int(peak.local.hour),
+            "hours_to_lav_peak": float((peak.ftime-latest.valid).total_seconds()/3600),
             "innovation": float(latest.tmpf-nearest.tmp),
-            "lav_tmax": float(run[run.local.dt.hour.isin(LOCAL_HOURS)].tmp.max())})
+            "lav_tmax": float(daytime.tmp.max())})
     return rows
 
 
