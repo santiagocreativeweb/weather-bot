@@ -12,6 +12,7 @@ python scripts/accumulate_predictions.py --date $today
 # Repetir intradia es deseable: el scorer tomara la ultima captura anterior a cada freeze.
 python scripts/accumulate_models_forward.py --date $today
 python scripts/accumulate_exact_selector.py
+python scripts/accumulate_cityx_confidence.py
 python scripts/capture_market_consensus.py
 # Capturadores de fuentes calibradas (agregados 2026-07-10): NBM (KLGA/KORD), MOSMIX TTT y TX
 # nativo. Exit 1 con [SKIP] cuando el ciclo ya fue capturado = benigno (guard de idempotencia).

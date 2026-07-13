@@ -788,6 +788,15 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   1,138 -> 0,947 y top-2 agregado quedó igual. Resultado: rechazo definitivo para exact-first;
   Open-Meteo Professional no se justifica por este MOS. Reproducible con
   `python scripts/lab_physical_mos.py --oracle-truth`.
+- **CITYCONF1 exact-first (2026-07-13):** familia de abstención predefinida sobre CITYX2 usando
+  únicamente dispersión/acuerdo de los ocho modelos, con cobertura DEV mínima 40%. H6a (voto
+  >=50%) no alcanzó cobertura; H6b añadió umbrales sólo desde la distribución de features DEV,
+  antes de mirar hits del holdout. Ganó `spread <= 1,1 buckets`: DEV 55,4% exacto con 51,5% de
+  cobertura. En el holdout histórico ya abierto, CITYX2 all 40,9% vs seleccionados **45,8%**
+  (+4,9pp; cobertura 43,0%; top-2 71,2%; bootstrap por día p=0,007, CI90 +1,6..+8,2pp).
+  No se adopta desde ese holdout: `CITYCONF1-20260713` acumula forward desde target 14/07.
+  Gate 45 días: cobertura >=35%, exacto seleccionado >=45%, delta vs CITYX-all >0 y p<0,05.
+  Las primeras 76 capturas point-in-time contienen 23 selecciones; no cambia V2/CITYX ni acciones.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 

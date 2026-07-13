@@ -32,6 +32,7 @@ SOURCES = [
     ("models_forward.csv",      "models_forward", "Modelos 8 (forward)"),
     ("model_shadows_forward.csv", "model_shadows", "Sombra MED8"),
     ("exact_selector_forward.csv", "exact_selector", "Sombra CITYX"),
+    ("cityx_confidence_forward.csv", "cityx_confidence", "Sombra CITYCONF1"),
     ("market_consensus_forward.csv", "market_consensus", "Sombra MKTWX1"),
     ("market_consensus_scores.csv", "market_consensus_scores", "Score MKTWX1"),
     ("city_scout.csv",          "city_scout",  "Ciudades (scout)"),

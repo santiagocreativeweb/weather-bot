@@ -36,6 +36,9 @@
 - **MOS físico reprobado también con verdad corregida:** mismo split/features/algoritmos, sólo
   KLGA/KORD pasan a METAR horario. Exacto 53,6% -> **37,5%** (−16,1pp), MAE 1,138 -> 0,947,
   top-2 igual. Sirve para temperatura continua, no para cruzar correctamente buckets exactos.
+- **CITYCONF1 (sombra, no acción):** `spread <= 1,1 buckets` entre los ocho modelos selecciona
+  43,0% del holdout y sube exacto CITYX2 40,9% -> **45,8%** (+4,9pp, p=0,007), top-2 71,2%.
+  Forward desde 14/07, gate 45 días con cobertura >=35%, exacto >=45%, delta>0 y p<0,05.
 
 ## 4. Estado del EDGE (leer antes de creer cualquier número de backtest)
 - **Bug #5 (invalidó el backtest de 18 meses)**: la API Previous-Runs de Open-Meteo ancla al VALID

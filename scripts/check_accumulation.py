@@ -18,6 +18,8 @@ from wxbt.exact_selector import (RECIPES as CITYX_RECIPES, SHADOW0 as CITYX_SHAD
                                  VERSION as CITYX_VERSION)
 from wxbt.market_consensus import (CUTOFF_HOURS_BEFORE_FREEZE, MAX_PRICE_AGE_H,
                                    SHADOW0, STATIONS as MKT_STATIONS)
+from wxbt.cityx_confidence import (MAX_SPREAD_BUCKETS, PARENT_VERSION as CONF_PARENT,
+    SHADOW0 as CONF_SHADOW0, VERSION as CONF_VERSION)
 
 BOOKS = "data/books_forward.csv"
 ENSEMBLE = "data/ensemble_forward.csv"
@@ -25,6 +27,7 @@ PRED = "data/predictions_forward.csv"
 MODELS_FORWARD = "data/models_forward.csv"
 EXACT_SELECTOR = "data/exact_selector_forward.csv"
 MARKET_CONSENSUS = "data/market_consensus_forward.csv"
+CITYX_CONFIDENCE = "data/cityx_confidence_forward.csv"
 LOG = "data/accumulator.log"
 CITIES = {"nyc", "chicago", "london", "paris", "tokyo", "seoul"}
 STATIONS = {"KLGA", "KORD", "EGLC", "LFPB", "RJTT", "RKSI"}
@@ -175,6 +178,39 @@ def main(a):
             issues.append(f"[CITYX2] {EXACT_SELECTOR} no existe")
 
     # --- MKTWX1: consenso meteorología + CLOB, totalmente anterior al cutoff ---
+    # CITYCONF1: deterministic spread gate over the coherent CITYX2 snapshot.
+    conf0 = dt.date.fromisoformat(CONF_SHADOW0)
+    if through >= conf0:
+        try:
+            cf = pd.read_csv(CITYX_CONFIDENCE, parse_dates=["capture_utc"])
+            cf["target_d"] = pd.to_datetime(cf.target).dt.date
+            cf = cf[(cf.version == CONF_VERSION) & (cf.target_d >= conf0)]
+            if (cf.parent_version != CONF_PARENT).any():
+                issues.append("[CITYCONF1] parent_version incorrecta")
+            if cf.duplicated(["station", "target", "capture_utc", "version"]).any():
+                issues.append("[CITYCONF1] snapshots duplicados")
+            expected_selected = (cf.spread_buckets <= MAX_SPREAD_BUCKETS).astype(int)
+            if (cf.selected.astype(int) != expected_selected).any():
+                issues.append("[CITYCONF1] selected no coincide con el threshold congelado")
+            captures = cf.capture_utc.dt.tz_convert("UTC").dt.tz_localize(None)
+            late = [idx for idx, r in cf.iterrows()
+                    if captures.loc[idx] > freeze_utc(r.station, r.target_d)]
+            if late:
+                issues.append(f"[CITYCONF1] {len(late)} capturas posteriores al freeze")
+            ex = pd.read_csv(EXACT_SELECTOR, parse_dates=["capture_utc"])
+            ex["target_d"] = pd.to_datetime(ex.target).dt.date
+            ex = ex[(ex.version == CONF_PARENT) & (ex.target_d >= conf0) &
+                    (ex.target_d <= through)]
+            expected = set(zip(ex.station, ex.target_d, ex.capture_utc.dt.tz_convert("UTC")))
+            actual = set(zip(cf.station, cf.target_d, cf.capture_utc.dt.tz_convert("UTC")))
+            missing = expected-actual
+            if missing:
+                issues.append(f"[CITYCONF1] {len(missing)} snapshots CITYX elegibles sin gate")
+            print(f"[CITYCONF1] filas={len(cf)} selected={int(cf.selected.sum())} "
+                  f"coverage={cf.selected.mean():.1%}")
+        except FileNotFoundError:
+            issues.append(f"[CITYCONF1] {CITYX_CONFIDENCE} no existe")
+
     shadow0 = dt.date.fromisoformat(SHADOW0)
     if through >= shadow0:
         try:

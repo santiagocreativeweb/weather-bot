@@ -131,6 +131,7 @@ Estos dos corren en paralelo, acumulando desde 2026-07-08, y **gatean FASE 5**:
 | `scripts/accumulate_books.py` | half-spread EFECTIVO real ≤ break-even (~6¢) | mediana hs_eff_40 ≤ ~2¢ en buckets líquidos, ponderado a KLGA (concentra turnover) |
 | `scripts/accumulate_ensemble.py` | s2 modelado ~ varianza real entre miembros | s2_real de `ensemble_forward.csv` ~ s2 de `forecasts.csv` por (modelo, lead); sin sesgo sistemático |
 | `scripts/accumulate_predictions.py` | SKILL forward del modelo calibrado | track record OOS: `check_predictions.py` muestra CALIBRADO > CRUDO (CRPS menor, prob-al-ganador mayor) contra el ganador REAL |
+| `scripts/accumulate_cityx_confidence.py` | abstención exact-first CITYCONF1 (`spread <=1,1 buckets`) | 45 días; cobertura >=35%, exacto seleccionado >=45%, mejora vs CITYX-all y bootstrap por día p<0,05 |
 
 **Track record de predicciones (skill OOS, complementa el backtest):** `accumulate_predictions.py` guarda
 la predicción CALIBRADA del motor (μ,σ vía EMOS/anomalías) + la cruda, por (estación, target D+1..D+3),

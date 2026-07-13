@@ -15,11 +15,18 @@ from check_predictions import fetch_obs_iem, resolved_buckets, winner_by_temp  #
 from dashboard import freeze_utc  # noqa: E402
 from wxbt.forward_scoring import frozen_forecast  # noqa: E402
 from wxbt.exact_selector import SHADOW0 as CITYX_SHADOW0, VERSION as CITYX_VERSION  # noqa: E402
+from wxbt.cityx_confidence import (GATE_DAYS as CONF_GATE_DAYS,  # noqa: E402
+    MIN_FORWARD_COVERAGE, MIN_FORWARD_EXACT, VERSION as CONF_VERSION)
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 MODELS = {"gfs13", "ecmwf", "aifs", "icon", "arpege", "ukmo", "jma", "cma"}
 MIN_BIAS_N = 15
 BIAS_DAYS = 60
+OUTPUT_COLUMNS = [
+    "station", "target", "capture_utc", "mu_med8", "mu_v2", "mu_cityx",
+    "hit_med8", "hit_v2", "hit_cityx", "conf_selected", "spread_buckets",
+    "ae_med8", "ae_v2", "ae_cityx",
+]
 
 
 def historical_med8_errors():
@@ -103,9 +110,39 @@ def exact_selector_frozen():
     return x[["station", "target", "mu"]].rename(columns={"mu": "mu_cityx"})
 
 
+def confidence_frozen():
+    path = os.path.join(D, "cityx_confidence_forward.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame(columns=["station", "target", "conf_selected", "spread_buckets"])
+    x = pd.read_csv(path, parse_dates=["capture_utc"])
+    x["target"] = pd.to_datetime(x.target).dt.date
+    x = x[x.version == CONF_VERSION].sort_values("capture_utc").drop_duplicates(
+        ["station", "target"], keep="last")
+    return x[["station", "target", "selected", "spread_buckets"]].rename(
+        columns={"selected": "conf_selected"})
+
+
+def confidence_bootstrap(selected, all_city, reps=20000):
+    days = sorted(all_city.target.unique())
+    sel = selected.groupby("target").hit_cityx.agg(["sum", "count"])
+    whole = all_city.groupby("target").hit_cityx.agg(["sum", "count"])
+    rng = np.random.default_rng(20260713)
+    deltas = []
+    for _ in range(reps):
+        sample = rng.choice(days, len(days), replace=True)
+        sh = sum(sel.loc[d, "sum"] if d in sel.index else 0 for d in sample)
+        sn = sum(sel.loc[d, "count"] if d in sel.index else 0 for d in sample)
+        ah = sum(whole.loc[d, "sum"] for d in sample)
+        an = sum(whole.loc[d, "count"] for d in sample)
+        deltas.append(sh/max(sn, 1)-ah/max(an, 1))
+    values = np.asarray(deltas)
+    return float(np.mean(values <= 0)), np.quantile(values, [.05, .95])
+
+
 def main():
     med = frozen_med8_rows()
     cityx = exact_selector_frozen()
+    confidence = confidence_frozen()
     if med.empty and cityx.empty:
         print("SOMBRAS: sin capturas anteriores al freeze todavia."); return
     if not med.empty:
@@ -120,6 +157,7 @@ def main():
     else:
         paired["capture_utc"] = pd.NaT; paired["mu_med8"] = np.nan
     paired = paired.merge(cityx, on=["station", "target"], how="left")
+    paired = paired.merge(confidence, on=["station", "target"], how="left")
     info = resolved_buckets(list(paired[["station", "target"]].itertuples(index=False, name=None)))
     rows = []
     for r in paired.itertuples(index=False):
@@ -138,12 +176,15 @@ def main():
                          mu_v2=round(r.mu_v2, 3),
                          mu_cityx=(round(r.mu_cityx, 3) if pd.notna(r.mu_cityx) else np.nan),
                          hit_med8=hit_m, hit_v2=hit_v, hit_cityx=hit_c,
+                         conf_selected=(int(r.conf_selected) if pd.notna(r.conf_selected) else np.nan),
+                         spread_buckets=(round(r.spread_buckets, 4)
+                                         if pd.notna(r.spread_buckets) else np.nan),
                          ae_med8=(abs(r.mu_med8 - obs) if obs is not None and pd.notna(r.mu_med8)
                                   else np.nan),
                          ae_v2=(abs(r.mu_v2 - obs) if obs is not None else np.nan),
                          ae_cityx=(abs(r.mu_cityx - obs) if obs is not None and pd.notna(r.mu_cityx)
                                    else np.nan)))
-    out = pd.DataFrame(rows)
+    out = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
     path = os.path.join(D, "model_shadows_forward.csv")
     out.to_csv(path, index=False)
     if out.empty:
@@ -172,6 +213,24 @@ def main():
             print(f"Gate {CITYX_VERSION}: p(delta<=0)={p_city:.4f} -> {verdict_city}.")
         else:
             print(f"Gate {CITYX_VERSION}: {city_days}/45 días; no decidir antes.")
+        conf = city[city.conf_selected == 1]
+        coverage = len(conf)/len(city)
+        if not conf.empty:
+            conf_delta = conf.hit_cityx.mean()-city.hit_cityx.mean()
+            print(f"SOMBRA {CONF_VERSION}: {len(conf)}/{len(city)} mercados "
+                  f"({coverage:.1%}); exacto CITYX all {city.hit_cityx.mean():.1%} -> "
+                  f"seleccionados {conf.hit_cityx.mean():.1%} ({conf_delta:+.1%}).")
+            if city_days >= CONF_GATE_DAYS:
+                p_conf, ci_conf = confidence_bootstrap(conf, city)
+                adopt = (coverage >= MIN_FORWARD_COVERAGE and
+                         conf.hit_cityx.mean() >= MIN_FORWARD_EXACT and
+                         conf_delta > 0 and p_conf < .05)
+                print(f"Gate {CONF_VERSION}: cobertura>={MIN_FORWARD_COVERAGE:.0%}, "
+                      f"exacto>={MIN_FORWARD_EXACT:.0%}, p={p_conf:.4f}, "
+                      f"CI90 [{ci_conf[0]:+.1%},{ci_conf[1]:+.1%}] -> "
+                      f"{'ADOPTAR' if adopt else 'NO adoptar'}.")
+            else:
+                print(f"Gate {CONF_VERSION}: {city_days}/{CONF_GATE_DAYS} dias; no decidir antes.")
     if not med_out.empty and days >= 45:
         daily = med_out.assign(delta_row=med_out.hit_med8 - med_out.hit_v2).groupby("target")["delta_row"].mean().to_numpy()
         rng = np.random.default_rng(20260712)

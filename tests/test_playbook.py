@@ -17,3 +17,16 @@ def test_cityx_shadow_uses_current_version_and_pre_freeze_rows(tmp_path, monkeyp
     got = playbook.load_cityx_shadow(str(path))
     assert got[("KORD", dt.date(2026, 7, 14))]["mu"] == 95
     assert got[("KORD", dt.date(2026, 7, 14))]["recipe"] == "B"
+
+
+def test_cityx_confidence_uses_latest_current_version(tmp_path):
+    path = tmp_path / "confidence.csv"
+    path.write_text(
+        "capture_utc,station,target,version,selected,spread_buckets\n"
+        "2026-07-13T01:00:00+00:00,KORD,2026-07-14,OLD,1,0.5\n"
+        "2026-07-13T02:00:00+00:00,KORD,2026-07-14,CITYCONF1-20260713,1,0.9\n"
+        "2026-07-13T03:00:00+00:00,KORD,2026-07-14,CITYCONF1-20260713,0,1.2\n",
+        encoding="utf-8")
+    got = playbook.load_cityx_confidence(str(path))
+    assert got[("KORD", dt.date(2026, 7, 14))]["selected"] == 0
+    assert got[("KORD", dt.date(2026, 7, 14))]["spread"] == 1.2

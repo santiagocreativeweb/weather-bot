@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import dashboard as D   # noqa: E402  (importar NO arranca servidor; solo define funciones/const)
 from wxbt.exact_selector import VERSION as CITYX_VERSION  # noqa: E402
+from wxbt.cityx_confidence import VERSION as CONF_VERSION  # noqa: E402
 
 # TIERS por track record real (leaderboard vivo + backtest 45d, regla floor). Revisar al re-medir.
 STRONG = {"KORD", "LEMD", "LIMC", "EGLC", "LFPB"}   # exacto alto / MAE bajo -> operables
@@ -81,6 +82,32 @@ def load_cityx_shadow(path=None):
     return latest
 
 
+def load_cityx_confidence(path=None):
+    """Latest frozen CITYCONF1 classification; display-only in the playbook."""
+    import csv as _csv
+    path = path or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
+                                "cityx_confidence_forward.csv")
+    latest = {}
+    if not os.path.exists(path):
+        return latest
+    with open(path, encoding="utf-8") as f:
+        for r in _csv.DictReader(f):
+            if r.get("version") != CONF_VERSION:
+                continue
+            try:
+                target = dt.date.fromisoformat(r["target"])
+                capture = dt.datetime.fromisoformat(r["capture_utc"].replace("Z", "+00:00"))
+                capture = capture.astimezone(dt.timezone.utc).replace(tzinfo=None)
+                value = dict(selected=int(r["selected"]), spread=float(r["spread_buckets"]),
+                             capture=capture)
+            except (KeyError, TypeError, ValueError):
+                continue
+            key = (r["station"], target)
+            if key not in latest or capture > latest[key]["capture"]:
+                latest[key] = value
+    return latest
+
+
 def main(a):
     today = dt.date.fromisoformat(a.date) if a.date else dt.date.today()
     fc = D.fetch_forecast_minmax(today, 2)
@@ -88,6 +115,7 @@ def main(a):
     live = D.fetch_obs_live(today)
     snap = D.load_preds(today)
     cityx = load_cityx_shadow()
+    cityconf = load_cityx_confidence()
     now_utc = dt.datetime.now(dt.timezone.utc)
 
     rows = []
@@ -194,6 +222,10 @@ def main(a):
                 agreement = "COINCIDE" if cx_pick == t1 else "DIVERGE"
                 action += (f" | SOMBRA {CITYX_VERSION}: {cx_pick} (mu {cx['mu']:.1f}{unit}, "
                            f"{agreement}, {cx['recipe']})")
+                cc = cityconf.get((code, d))
+                if cc:
+                    level = "ALTA" if cc["selected"] else "BAJA"
+                    action += f" | {CONF_VERSION}: {level} (spread {cc['spread']:.2f} buckets)"
 
             rows.append((ti, code, d, state, mu, unit, t1, t2, action + gate))
 
@@ -213,6 +245,7 @@ def main(a):
     print("  * MAKER siempre (limit al mid, +2c/share), size chico.")
     print("Fuertes operables: " + ", ".join(sorted(STRONG)) + " | Debiles a evitar: " + ", ".join(sorted(WEAK)))
     print(f"Sombra visible: {CITYX_VERSION} (40.9% exacto en holdout init-anclado; NO cambia acciones hasta gate forward).")
+    print(f"Confianza visible: {CONF_VERSION} (ALTA sólo si spread <=1.1 buckets; NO cambia acciones hasta gate forward).")
 
 
 if __name__ == "__main__":
