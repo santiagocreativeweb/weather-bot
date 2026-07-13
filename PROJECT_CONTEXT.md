@@ -855,6 +855,12 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (37 pares), exacto 40,5% → **43,2%** (+2,7pp), top-2 73,0% → 70,3%, p=0,3893,
   CI90 −5,3..+10,5pp. La señal es pequeña, pierde cobertura top-2 y no es significativa;
   **rechazado sin nueva sombra**. Reproducible con `lab_lamp_market.py`.
+- Selector dinámico LAMPX/CITYX: políticas rolling por estación sobre exactitud o MAE de 14/30/60
+  días, siempre con lag de labels de dos días y fallback LAMPX. `ACC30_M00` ganó DEV: 56,6% →
+  58,0% exacto, pero persiguió un régimen que se invirtió. En test eligió CITYX 55,6% del tiempo
+  y degradó **45,5% → 41,8% exacto** (−3,7pp, p=0,9490), top-2 74,6% → 69,3% y MAE
+  1,414 → 1,568. **Rechazado sin nueva sombra**: la performance rolling no identifica de forma
+  estable cuál modelo ganará. Reproducible con `lab_lamp_dynamic_selector.py`.
 - Observabilidad operativa: `playbook.py` muestra los buckets/mu de LAMPX y LAMPNOW después de que
   la acción ya fue calculada (display-only, sin acceso al edge/sizing). El loader descarta fuentes
   posteriores al freeze. `export_data.py` materializa captura y scores en SQLite y en las hojas
