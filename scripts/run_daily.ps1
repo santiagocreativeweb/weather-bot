@@ -12,6 +12,7 @@ python scripts/accumulate_predictions.py --date $today
 # Repetir intradia es deseable: el scorer tomara la ultima captura anterior a cada freeze.
 python scripts/accumulate_models_forward.py --date $today
 python scripts/accumulate_exact_selector.py
+python scripts/capture_market_consensus.py
 # Capturadores de fuentes calibradas (agregados 2026-07-10): NBM (KLGA/KORD), MOSMIX TTT y TX
 # nativo. Exit 1 con [SKIP] cuando el ciclo ya fue capturado = benigno (guard de idempotencia).
 # NBM/MOSMIX publican 4 ciclos/dia: correr este wrapper mas de 1 vez/dia captura ciclos extra.
@@ -23,6 +24,7 @@ python scripts/capture_jma.py        --date $today
 python scripts/capture_qweather.py   --date $today
 python scripts/validate_sources.py
 python scripts/score_model_shadows.py
+python scripts/score_market_consensus.py
 # Leaderboard + estadisticas (track record vivo) y consolidacion a SQLite + Excel (#7/#8).
 python scripts/leaderboard.py
 python scripts/stats_page.py

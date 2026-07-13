@@ -759,6 +759,11 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   radiación, precipitación, viento). Algoritmo elegido únicamente en validación: ExtraTrees D2.
   Test final 28/06-11/07: CITYX1 53,6% vs MOS 48,2% exacto (−5,4pp, p=0,9559); top-2 igual
   80,4%; MAE mejora 1,141 -> 1,057. Resultado: señal para error continuo, **no para bucket exacto**.
+- Clasificador directo del offset de bucket, expanding walk-forward (367 mercados): 43,9% CITYX1
+  vs 43,3% directo; rechazado. Optimizar explícitamente 0/1 no venció al selector simple.
+- Consenso histórico CLOB+CITYX1 a freeze−3h: 42,6% -> 46,8% (+4,3pp) en test, pero p=0,1088;
+  política por estación +2,1pp, p=0,235. Señal positiva insuficiente. `MKTWX1-20260713` queda en
+  sombra forward desde 14/07 con mezcla fija 50/50 y gate de 45 días, sin tocar producción.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 

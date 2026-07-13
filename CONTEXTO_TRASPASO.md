@@ -125,6 +125,12 @@
   antes de bajar features: train hasta 06/06, validación 07/06-27/06, test 28/06-11/07. ET_D2 fue
   congelado en validación. Test: CITYX1 **53,6%** vs MOS **48,2%** exacto (−5,4pp, p=0,9559),
   top-2 80,4% ambos; MAE 1,141 -> 1,057. **RECHAZADO para exacto**. No justifica pagar Professional.
+- **Clasificación directa del bucket:** logística pooled, walk-forward 10/06-11/07, 367 mercados:
+  CITYX1 43,9% vs directo 43,3%, top-2 68,1% vs 67,0%, p=0,5839. Rechazada.
+- **Consenso CLOB+CITYX1 pre-freeze:** selección DEV 10/05-10/06; test 11/06-01/07, 94 mercados.
+  Mezcla 50/50 a freeze−3h: 42,6% -> 46,8% exacto (+4,3pp) pero p=0,1088; selector por estación
+  +2,1pp, p=0,235. No se adopta. Queda pre-registrado `MKTWX1-20260713` en sombra desde targets
+  14/07, gate forward a 45 días; captura solo precios y CITYX publicados antes del cutoff.
 
 ## 11. Invariantes que NO se rompen sin avisar (de CLAUDE.md)
 1. `evaluate_market()` en `wxbt/engine.py` es función PURA (sin I/O ni estado oculto).
