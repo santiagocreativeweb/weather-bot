@@ -912,6 +912,46 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
 - Resultado: **rechazado para exacto y para top-2 combinado**. No se abre sombra. Reproducible con
   `lab_confusion_kernel.py`.
 
+### Leaderboard/fugas + fuentes SMN Argentina (2026-07-13 noche)
+
+- **FUGA DE SCORING (arreglada):** el universo de stats/leaderboard era `predictions_forward.csv`;
+  si el audit tenía el pick congelado pero el acumulador no escribió la fila (Asia/NZ cuando la
+  corrida llega después del pico ~04:00 UTC; primer día de una ciudad nueva), el día desaparecía
+  en silencio (RJTT 07-13 con `froze` completo era invisible → "Tokio no cuenta"). Fix:
+  `audit_only_targets()` en `wxbt/forward_scoring.py` — universo = audit ∪ predictions_forward,
+  cableado en leaderboard.py y stats_page.py. Entradas de audit con `hist` vacío (alta
+  post-freeze, sin evidencia point-in-time) NO cuentan, correcto por honestidad. Además el
+  leaderboard muestra las 29 estaciones aunque n=0 (clase `wait`, antes invisibles). Recuperados
+  +6 días scoreables (n 46→52; RJTT 3/4, RKSI 0/4).
+- **FUGA DE GROUND TRUTH °F (arreglada):** la corrección del truth °F (máximo horario ASOS,
+  `wxbt/observations.py`) centralizó la LECTURA pero `obs.csv` seguía con daily.py viejo
+  (~+0.5-1°F inflado) para las 9 K-stations → EMOS y bias60 de KLGA/KORD/KMIA... entrenaban
+  contra verdad inflada. Y el coalesce de backfill_check (que nunca pisa labels resueltos)
+  congelaba los max_real viejos para siempre. Parches quirúrgicos reproducibles:
+  `scripts/fix_obs_f.py` (re-baja horario, conserva llaves/orden/°C byte-exactas, backup
+  .bak-fixF) + `scripts/fix_backfill_f.py` (realinea max_real+crps; hits van contra Gamma, no se
+  tocan) + refresh de station_bias con calib_lab. PATRÓN: cambiar la metodología de lectura NO
+  re-genera los CSVs persistidos.
+- **GATE IEM-vs-Gamma corrido para las 17 nuevas (el pendiente del scout): ZGSZ FALLA — 23% de
+  acuerdo (n=100), deltas ±1-3°C ambos sentidos.** Verificado a mano: METAR max 32°C, WU pagó
+  34°C; la estación del mercado SÍ es Bao'an/ZGSZ — WU usa una fuente china no-METAR. **NO
+  OPERAR Shenzhen** (familia HK) hasta tener la fuente real (¿QWeather/CMA?). El resto: LTAC/
+  SAEZ/EFHK/WMKK/WSSS/CYYZ/NZWN 100%, SBGR 97%, MMMX 98%, °F 100% (contra máximo horario).
+- **Ciudades débiles (diagnóstico):** ZSPD/EDDM/RKSI/ZBAA pierden por sesgo frío del régimen
+  reciente que el bias60 (por diseño, sweep pre-registrado) sigue lento: ZSPD err14d −0.67 con
+  bias aplicado ~0. Los picks caen 1 bucket bajo el ganador sistemáticamente en la ola de calor.
+  NO se toca la ventana (las sombras W/MED8/E3 ya están pre-registradas para eso). RCSS: pérdida
+  del 07-11 fue un bust meteorológico (mu 31.4 vs obs 28), no sistemático.
+- **Fuentes SMN Argentina (links de Santiago + PDF METAR/SPECI):** (a) WRF-DET 4km en
+  `s3://smn-ar-wrf` (AWS Open Data, CC-BY 2.5 AR): `Tmax` CALIBRADA (RAFK) por día UTC, archivo
+  2022-01→hoy (huecos reales, 2→4 ciclos en may-2023), **avail real = LastModified del objeto S3**
+  (latencia NO estacionaria 8h→2.5h: usar LastModified SIEMPRE); la 00Z está ~03:30 UTC, entra
+  cómoda al freeze 07:30 UTC de SAEZ. Backtest honesto: `scripts/lab_smn_wrf.py`. (b) Pronóstico
+  OFICIAL: `ws1.smn.gob.ar/v1/forecast/location/4841` (JWT TTL 1h scrapeado de ws2.smn.gob.ar,
+  que no tiene el challenge CF del www), sin archivo → forward only: `scripts/capture_smn.py`
+  (encadenado en run_daily.ps1, data/smn_forward.csv). (c) Obs abiertas regtemp (TMAX diaria
+  1 decimal, 365d) como verificación cruzada. METAR SAEZ: AWOS, horario, °C enteros (PDF SMN).
+
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
 - `evaluate_market()` es una función pura (snapshot→orden) y es la MISMA en backtest/paper/live.

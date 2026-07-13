@@ -58,3 +58,10 @@ data/.qweather_key
 .cache/
 temp/
 tmp/
+
+# WRF SMN cache (NetCDF ~8MB c/u) y backups de parches quirurgicos
+data/wrf_cache/
+*.bak-fixF
+*.bak-0712
+*.bak-egll
+*.bak-onboard*

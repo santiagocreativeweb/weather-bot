@@ -13,6 +13,7 @@
 #   * Pick oficial = floor(mu_cal) -> su bucket (WU FLOOREA la obs SIEMPRE).
 #   * top-2/3 = ranking de buckets por bucket_prob(mu-0.5, sigma, lo, hi).
 #   * Resolucion MERCADO (Gamma outcomePrices) primaria; FISICA (obs IEM floreada) secundaria.
+import collections
 import json
 import math
 import os
@@ -25,7 +26,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from dashboard import STATION_META, CSS, ddmmyyyy, to_art, STATIONS               # noqa: E402
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp     # noqa: E402
 from wxbt.market import bucket_prob                                               # noqa: E402
-from wxbt.forward_scoring import frozen_forecast                                  # noqa: E402
+from wxbt.forward_scoring import frozen_forecast, audit_only_targets              # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -55,9 +56,17 @@ def live_records(today):
             audit = json.load(fh)
     except (OSError, ValueError):
         audit = {}
-    resb = resolved_buckets(list(due[["station", "target"]].itertuples(index=False, name=None)))
+    # UNIVERSO = acumulador UNION audit congelado: el acumulador puede perderse un dia entero
+    # (Asia/NZ post-pico, primer dia de una ciudad nueva) aunque el freeze exista en el audit.
+    cand = [(r.station, r.target, r.mu_cal, r.sigma_cal) for r in due.itertuples()]
+    known = {(st, tg) for st, tg, _, _ in cand}
+    sig_fb = p.groupby("station").sigma_cal.median().to_dict()   # sigma fallback filas solo-audit
+    for st, tg in audit_only_targets(audit, known, today, STATIONS):
+        cand.append((st, tg, float("nan"), sig_fb.get(st, 1.5)))
+    resb = resolved_buckets([(st, tg) for st, tg, _, _ in cand])
+    Cand = collections.namedtuple("Cand", "station target mu_cal sigma_cal")
     recs = []
-    for r in due.itertuples():
+    for r in (Cand(*c) for c in cand):
         info = resb.get((r.station, r.target))
         if not info or not info["buckets"]:
             continue
@@ -102,7 +111,9 @@ def main():
         lab = bf.groupby("station").hit_cal.mean().to_dict()
     except Exception:
         lab = {}
-    stations = sorted(set(df.station.unique() if len(df) else []) | set(lab))
+    # TODAS las estaciones activas aparecen aunque n=0 (ciudades nuevas esperando su primer
+    # mercado resuelto) — antes eran invisibles y parecia que "no contaban".
+    stations = sorted(set(df.station.unique() if len(df) else []) | set(lab) | set(STATIONS))
 
     rows, gamelog = [], {}
     for st in stations:
@@ -126,7 +137,9 @@ def main():
                              -r["t3"], r["st"]))
 
     def cls_of(r):
-        if r["n"] and r["ex"] / r["n"] >= 0.5:
+        if not r["n"]:
+            return "wait"            # sin mercados resueltos aun: neutro, no "malo"
+        if r["ex"] / r["n"] >= 0.5:
             return "top"
         return "ok" if r["ex"] >= 1 else "bad"
 
@@ -212,6 +225,7 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
 .viz-root .stn{font-weight:700;}
 .viz-root .stn span{display:block;font-size:10.5px;color:var(--mut);font-weight:400;margin-left:12px;}
 .viz-root tr.top td.big{color:var(--fin);} .viz-root tr.bad td.big{color:#d03b3b;}
+.viz-root tr.wait td{color:var(--mut);} .viz-root tr.wait td.big{color:var(--mut);font-weight:400;}
 .viz-root .updbar{font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px;}
 .viz-root .updbar b{color:var(--live);}
 .viz-root tr.glrow.hidden{display:none;}

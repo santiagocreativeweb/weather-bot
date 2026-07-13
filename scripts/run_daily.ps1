@@ -25,6 +25,9 @@ python scripts/accumulate_mosmix.py  --date $today
 python scripts/capture_cwa.py        --date $today
 python scripts/capture_jma.py        --date $today
 python scripts/capture_qweather.py   --date $today
+# SMN argentino (2026-07-13): pronostico oficial para SAEZ (forward-only, API interna con
+# token scrapeado de ws2). El WRF del SMN no se captura: tiene archivo S3 point-in-time.
+python scripts/capture_smn.py        --date $today
 python scripts/validate_sources.py
 python scripts/score_model_shadows.py
 python scripts/score_lamp_shadow.py

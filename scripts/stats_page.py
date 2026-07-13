@@ -6,6 +6,7 @@
 # Regla (coherente con leaderboard/check_predictions/dashboard): pick = floor(mu_cal); top-2/3 por
 # bucket_prob(mu-0.5, sigma, lo, hi); ganador = Gamma (o fisica IEM floreada si el dia paso sin
 # ganador de mercado). WU FLOOREA la obs SIEMPRE. Verdicto por mercado: EXACTO / TOP-2 / TOP-3 / PERDIDA.
+import collections
 import concurrent.futures as cf
 import json, math, os, sys
 import datetime as dt
@@ -16,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from dashboard import STATION_META, CSS, ddmmyyyy, fecha_es, STATIONS               # noqa: E402
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp        # noqa: E402
 from wxbt.market import bucket_prob                                                  # noqa: E402
-from wxbt.forward_scoring import frozen_forecast                                     # noqa: E402
+from wxbt.forward_scoring import frozen_forecast, audit_only_targets                 # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -38,6 +39,19 @@ def records(today):
     p["target"] = p["target"].dt.date
     due = p[p["target"] <= today].sort_values("lead_h").drop_duplicates(
         ["station", "target"], keep="first")
+    try:
+        with open(os.path.join(D, "forecast_audit.json"), encoding="utf-8") as fh:
+            audit = json.load(fh)
+    except (OSError, ValueError):
+        audit = {}
+    # UNIVERSO = acumulador UNION audit congelado (mismo criterio que leaderboard.py): sin esto,
+    # un dia que el acumulador se perdio (Asia/NZ post-pico, alta nueva) desaparece del KPI.
+    cand = [(r.station, r.target, r.mu_cal, r.sigma_cal) for r in due.itertuples()]
+    known = {(st, tg) for st, tg, _, _ in cand}
+    sig_fb = p.groupby("station").sigma_cal.median().to_dict()
+    for st, tg in audit_only_targets(audit, known, today, STATIONS):
+        cand.append((st, tg, float("nan"), sig_fb.get(st, 1.5)))
+    pairs = [(st, tg) for st, tg, _, _ in cand]
     # IEM por red, fila por fila, hacia que la tarea diaria tardara minutos. La historia local es
     # la fuente validada; solo completar en paralelo las fechas forward que aun no llegaron a obs.csv.
     obs_cache = {}
@@ -47,20 +61,15 @@ def records(today):
         obs_cache = {(r.station, r.date): float(r.tmax) for r in oh.itertuples()}
     except (OSError, ValueError, AttributeError):
         pass
-    missing = [k for k in due[["station", "target"]].itertuples(index=False, name=None)
-               if k not in obs_cache]
+    missing = [k for k in pairs if k not in obs_cache]
     if missing:
         with cf.ThreadPoolExecutor(max_workers=8) as pool:
             vals = pool.map(lambda k: fetch_obs_iem(*k), missing)
             obs_cache.update({k: v for k, v in zip(missing, vals) if v is not None})
-    try:
-        with open(os.path.join(D, "forecast_audit.json"), encoding="utf-8") as fh:
-            audit = json.load(fh)
-    except (OSError, ValueError):
-        audit = {}
-    resb = resolved_buckets(list(due[["station", "target"]].itertuples(index=False, name=None)))
+    resb = resolved_buckets(pairs)
+    Cand = collections.namedtuple("Cand", "station target mu_cal sigma_cal")
     recs = []
-    for r in due.itertuples():
+    for r in (Cand(*c) for c in cand):
         info = resb.get((r.station, r.target))
         if not info or not info["buckets"]:
             continue
