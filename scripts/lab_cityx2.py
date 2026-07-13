@@ -42,6 +42,23 @@ def main():
     print("\nPor cohorte independiente:")
     print(by.to_string(formatters={"base": "{:.1%}".format, "cityx2": "{:.1%}".format,
                                    "top2": "{:.1%}".format}))
+    print("\nEstabilidad por semana del holdout:")
+    paired["week"] = paired.d.map(lambda d: 1+(d-TEST0).days//7)
+    weekly = paired.groupby("week").agg(n=("hit", "size"), base=("hit_base", "mean"),
+        cityx2=("hit", "mean"), top2=("top2", "mean"))
+    weekly["delta"] = weekly.cityx2-weekly.base
+    print(weekly.to_string(formatters={"base": "{:.1%}".format, "cityx2": "{:.1%}".format,
+        "top2": "{:.1%}".format, "delta": "{:+.1%}".format}))
+
+    loo = []
+    for station in sorted(paired.station.unique()):
+        x = paired[paired.station != station]
+        loo.append((station, x.hit.mean()-x.hit_base.mean()))
+    print("\nLeave-one-city-out delta: min " +
+          f"{min(v for _, v in loo):+.1%}, max {max(v for _, v in loo):+.1%}")
+    selector_only = int(((paired.hit == 1) & (paired.hit_base == 0)).sum())
+    baseline_only = int(((paired.hit == 0) & (paired.hit_base == 1)).sum())
+    print(f"Discordancias: CITYX2-solo={selector_only}, baseline-solo={baseline_only}")
 
 
 if __name__ == "__main__":

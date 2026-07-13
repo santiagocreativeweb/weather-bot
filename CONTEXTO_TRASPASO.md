@@ -140,6 +140,9 @@
   n=604, 29 ciudades, 32,0% -> **40,9% exacto** (+8,9pp, p<1/30.000), top-2 64,2% -> 66,6%.
   `CITYX2-20260713` acumula las 29 en sombra; para las 17 nuevas los offsets se entrenan con
   Gamma+IEM, no con ceros. V2 producción no cambia hasta gate forward.
+  Robustez: deltas semanales +10,4pp/+11,3pp/+5,0pp y leave-one-city-out entre +7,7pp y +9,6pp.
+  El playbook la muestra como `SOMBRA CITYX2-20260713` (bucket, mu, coincidencia y receta), sin
+  permitir que cambie la acción V2.
 
 ## 11. Invariantes que NO se rompen sin avisar (de CLAUDE.md)
 1. `evaluate_market()` en `wxbt/engine.py` es función PURA (sin I/O ni estado oculto).

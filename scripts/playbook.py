@@ -11,6 +11,7 @@ import datetime as dt
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import dashboard as D   # noqa: E402  (importar NO arranca servidor; solo define funciones/const)
+from wxbt.exact_selector import VERSION as CITYX_VERSION  # noqa: E402
 
 # TIERS por track record real (leaderboard vivo + backtest 45d, regla floor). Revisar al re-medir.
 STRONG = {"KORD", "LEMD", "LIMC", "EGLC", "LFPB"}   # exacto alto / MAE bajo -> operables
@@ -53,12 +54,40 @@ def second_opinion(code, target):
     return (name, v) if v is not None else None
 
 
+def load_cityx_shadow(path=None):
+    """Latest frozen CITYX2 snapshot per station/target; never changes actions."""
+    import csv as _csv
+    path = path or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
+                                "exact_selector_forward.csv")
+    latest = {}
+    if not os.path.exists(path):
+        return latest
+    with open(path, encoding="utf-8") as f:
+        for r in _csv.DictReader(f):
+            if r.get("version") != CITYX_VERSION:
+                continue
+            try:
+                target = dt.date.fromisoformat(r["target"])
+                capture = dt.datetime.fromisoformat(r["capture_utc"].replace("Z", "+00:00"))
+                capture = capture.astimezone(dt.timezone.utc).replace(tzinfo=None)
+                if capture > D.freeze_utc(r["station"], target):
+                    continue
+                value = dict(mu=float(r["mu"]), recipe=r["recipe"], capture=capture)
+            except (KeyError, TypeError, ValueError):
+                continue
+            key = (r["station"], target)
+            if key not in latest or capture > latest[key]["capture"]:
+                latest[key] = value
+    return latest
+
+
 def main(a):
     today = dt.date.fromisoformat(a.date) if a.date else dt.date.today()
     fc = D.fetch_forecast_minmax(today, 2)
     mk = D.fetch_market_full(today, 2)
     live = D.fetch_obs_live(today)
     snap = D.load_preds(today)
+    cityx = load_cityx_shadow()
     now_utc = dt.datetime.now(dt.timezone.utc)
 
     rows = []
@@ -155,6 +184,17 @@ def main(a):
             if ti != "DEBIL" and "SALTAR" not in action:
                 action += f" | {win_tag}"
 
+            # CITYX2 passed an init-anchored holdout but remains a forward shadow.
+            # Show its exact bucket for human verification; do not alter trading action.
+            cx = cityx.get((code, d))
+            if cx:
+                cx_temp = math.floor(cx["mu"])
+                cx_pick = next((lab for lab, lo, hi, _ in priced
+                                if (lo is None or cx_temp >= lo) and (hi is None or cx_temp <= hi)), "sin bucket")
+                agreement = "COINCIDE" if cx_pick == t1 else "DIVERGE"
+                action += (f" | SOMBRA {CITYX_VERSION}: {cx_pick} (mu {cx['mu']:.1f}{unit}, "
+                           f"{agreement}, {cx['recipe']})")
+
             rows.append((ti, code, d, state, mu, unit, t1, t2, action + gate))
 
     order = {"FUERTE": 0, "MEDIA": 1, "DEBIL": 2}
@@ -172,6 +212,7 @@ def main(a):
     print("  * CONCENTRAR top-1 (y top-2 como PAR, solo temprano+maker +2.9c); el 3er bucket es lastre (-7c).")
     print("  * MAKER siempre (limit al mid, +2c/share), size chico.")
     print("Fuertes operables: " + ", ".join(sorted(STRONG)) + " | Debiles a evitar: " + ", ".join(sorted(WEAK)))
+    print(f"Sombra visible: {CITYX_VERSION} (40.9% exacto en holdout init-anclado; NO cambia acciones hasta gate forward).")
 
 
 if __name__ == "__main__":

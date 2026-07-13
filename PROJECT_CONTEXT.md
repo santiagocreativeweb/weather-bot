@@ -769,6 +769,10 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   p=0,0001), top-2 63,8% -> 67,8%. Agregado independiente de las dos cohortes: 604 mercados,
   29 ciudades, baseline 32,0% -> **CITYX2 40,9%** (+8,9pp, bootstrap p≈0), top-2 66,6%.
   Se promueve a sombra `CITYX2-20260713`, no a V2 productivo; offsets nuevos usan Gamma+IEM.
+  La mejora es estable por semana (+10,4pp, +11,3pp y +5,0pp) y al excluir una ciudad por vez
+  (delta mínimo +7,7pp, máximo +9,6pp). Hubo 129 aciertos exclusivos de CITYX2 contra 75 del
+  baseline. `scripts/playbook.py` muestra la predicción CITYX2 y si coincide con V2, pero la marca
+  explícitamente como SOMBRA y no modifica ninguna acción hasta completar el gate forward.
 
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
