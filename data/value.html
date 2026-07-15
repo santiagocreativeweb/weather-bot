@@ -1,0 +1,368 @@
+<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>WXBT · Value bets</title><style>
+/* ============================================================================
+   WXBT · design system v3 (rehecho de 0, 2026-07-15)
+   Terminal de trading premium, dark. Verde = bot, cyan = mercado, ambar = vivo.
+   Variables y nombres de clase IDENTICOS a v2 (el JS/markup dependen de ellos).
+   ============================================================================ */
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;min-height:100vh;background:#05080c;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+.viz-root{
+  --page:#05080c;--s1:#0d141c;--s2:#131d27;--s3:#1a2632;
+  --ink:#e8f0f7;--ink2:#a6bccd;--mut:#617688;--faint:#3a4b5c;
+  --grid:#182430;--base:#31465a;--bd:#213042;
+  --mkt:#42c9ff;--mktw:rgba(66,201,255,.10);
+  --fc:#25e6a4;--fcw:rgba(37,230,164,.10);--fcs:rgba(37,230,164,.45);
+  --live:#ffc24a;--fin:#33d17e;--finw:rgba(51,209,126,.12);
+  --warn:#ffb02e;--soon:#ffb02e;--red:#ff5d70;--redw:rgba(255,93,112,.10);
+  --pick:#25e6a4;--t2:#ffd23e;--t3:#ff9142;
+  --r:12px;--r-sm:8px;--r-xs:5px;--r-lg:16px;
+  --sh-1:0 1px 2px rgba(0,0,0,.35);
+  --sh-2:0 2px 4px rgba(0,0,0,.30),0 10px 26px -12px rgba(0,0,0,.6);
+  --sh-pop:0 12px 40px -8px rgba(0,0,0,.7);
+  --mono:"JetBrains Mono","Cascadia Mono","SF Mono","Consolas",ui-monospace,monospace;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-family:var(--sans);color:var(--ink);
+  background:
+    radial-gradient(1200px 500px at 15% -10%,rgba(37,230,164,.05),transparent 60%),
+    radial-gradient(1100px 460px at 100% 0%,rgba(66,201,255,.05),transparent 55%),
+    var(--page);
+  background-attachment:fixed;
+  padding:0 24px 56px;max-width:1560px;margin:0 auto;font-size:14px;line-height:1.5;}
+.viz-root a{color:inherit;text-decoration:none;}
+.viz-root ::selection{background:var(--fcs);color:#04120c;}
+.viz-root ::-webkit-scrollbar{width:10px;height:10px;}
+.viz-root ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:6px;border:2px solid var(--page);}
+.viz-root ::-webkit-scrollbar-thumb:hover{background:var(--base);}
+
+/* ---------- topbar ---------- */
+.viz-root .topbar{position:sticky;top:0;z-index:30;padding:0 0 10px;margin-bottom:6px;
+  background:linear-gradient(180deg,#070d14 62%,rgba(7,13,20,.85) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);}
+.viz-root .row1{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:6px;}
+.viz-root h1{font-size:15px;margin:0;letter-spacing:.16em;text-transform:uppercase;
+  font-family:var(--mono);font-weight:700;
+  background:linear-gradient(90deg,var(--fc),#7bf0cf);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;}
+.viz-root h1::before{content:"◆";-webkit-text-fill-color:var(--fc);margin-right:8px;font-size:11px;
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.viz-root .clock{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--live);
+  padding:3px 12px;border:1px solid rgba(255,194,74,.28);border-radius:999px;
+  background:rgba(255,194,74,.06);}
+.viz-root .clock small{color:var(--mut);font-weight:500;font-size:9.5px;margin-left:7px;
+  font-family:var(--sans);letter-spacing:.04em;}
+.viz-root .subt{color:var(--mut);font-size:11.5px;line-height:1.55;}
+.viz-root .subt code,.viz-root code{font-family:var(--mono);font-size:.92em;color:var(--ink2);
+  background:var(--s2);padding:1px 6px;border-radius:5px;border:1px solid var(--bd);}
+.viz-root .runs{font-size:10.5px;color:var(--mut);display:flex;gap:8px;flex-wrap:wrap;
+  margin-top:8px;font-family:var(--mono);align-items:center;}
+.viz-root .runs span{padding:2px 8px;border-radius:6px;background:var(--s1);border:1px solid var(--grid);}
+.viz-root .runs .next{color:#04120c;background:var(--fc);border-color:var(--fc);font-weight:700;}
+
+/* ---------- filtros ---------- */
+.viz-root .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.viz-root .filters select,.viz-root .filters input[type=date],.viz-root .filters input[type=search],
+.viz-root .filters input[type=text]{
+  background:var(--s2);color:var(--ink);border:1px solid var(--bd);border-radius:var(--r-xs);
+  padding:6px 10px;font-size:12px;font-family:inherit;transition:border-color .15s,box-shadow .15s;}
+.viz-root .filters select:focus,.viz-root .filters input:focus{outline:none;border-color:var(--fc);
+  box-shadow:0 0 0 3px var(--fcw);}
+.viz-root .chip{font-size:11px;padding:5px 12px;border-radius:999px;border:1px solid var(--bd);
+  background:var(--s2);color:var(--ink2);cursor:pointer;user-select:none;transition:all .15s;font-weight:600;}
+.viz-root .chip:hover{border-color:var(--base);color:var(--ink);}
+.viz-root .chip.on{background:var(--fc);color:#04120c;border-color:var(--fc);
+  box-shadow:0 0 16px -2px var(--fcs);}
+.viz-root .count{font-size:11px;color:var(--mut);margin-left:auto;font-family:var(--mono);}
+.viz-root .reset{font-size:11px;color:var(--mkt);cursor:pointer;font-weight:600;}
+.viz-root .reset:hover{text-decoration:underline;}
+
+/* ---------- section headers ---------- */
+.viz-root h3.dia{font-size:11.5px;color:var(--ink);margin:26px 0 12px;text-transform:uppercase;
+  letter-spacing:.16em;font-family:var(--mono);font-weight:700;display:flex;align-items:center;gap:12px;}
+.viz-root h3.dia::before{content:"";width:4px;height:15px;border-radius:2px;
+  background:linear-gradient(var(--fc),var(--mkt));box-shadow:0 0 10px -1px var(--fcs);}
+.viz-root h3.dia::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,var(--bd),transparent);}
+.viz-root .cont-lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.14em;
+  margin:16px 0 8px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.viz-root .cont-lbl::after{content:"";flex:1;height:1px;background:var(--grid);}
+
+/* ---------- cards ---------- */
+.viz-root .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(352px,1fr));gap:14px;}
+.viz-root .card{position:relative;background:linear-gradient(180deg,var(--s1),#0b1119);
+  border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px 11px;
+  box-shadow:var(--sh-1);transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;}
+.viz-root .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--base);}
+.viz-root .card::after{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);}
+.viz-root .card[data-estado="encurso"]::before{background:var(--fc);box-shadow:2px 0 14px -2px var(--fcs);}
+.viz-root .card[data-estado="soon"]::before{background:var(--warn);box-shadow:2px 0 14px -2px rgba(255,176,46,.6);}
+.viz-root .card[data-estado="resol"]::before,.viz-root .card[data-estado="pendrev"]::before{background:var(--mkt);box-shadow:2px 0 14px -2px rgba(66,201,255,.5);}
+.viz-root .card.fin::before{background:var(--fin);}
+.viz-root .card:hover{transform:translateY(-2px);border-color:var(--base);box-shadow:var(--sh-2);}
+.viz-root .card[data-pasado="1"]{opacity:.62;}
+.viz-root .card[data-pasado="1"]:hover{opacity:1;}
+.viz-root .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;gap:8px;}
+.viz-root .card-head .st a{font-size:15px;font-weight:700;font-family:var(--mono);letter-spacing:.01em;}
+.viz-root .card-head .st a:hover{color:var(--mkt);}
+.viz-root .card-head .city{font-size:10.5px;color:var(--mut);display:block;margin-top:3px;font-weight:500;}
+.viz-root .card-head .city.local{white-space:nowrap;color:var(--ink2);margin-top:2px;}
+.viz-root .card-head .city.local b{color:var(--live);font-family:var(--mono);}
+.viz-root .badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.viz-root .badge{font-size:9px;padding:3px 8px;border-radius:999px;background:var(--s2);
+  color:var(--mut);white-space:nowrap;border:1px solid var(--bd);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.06em;font-weight:600;line-height:1.4;}
+.viz-root .badge.encurso{color:var(--fc);border-color:var(--fcs);background:var(--fcw);}
+.viz-root .badge.fin{color:#04120c;background:var(--fin);border-color:var(--fin);font-weight:700;}
+.viz-root .badge.soon{color:var(--soon);border-color:rgba(255,176,46,.45);background:rgba(255,176,46,.09);}
+.viz-root .badge.resol{color:var(--mkt);border-color:rgba(66,201,255,.4);background:var(--mktw);font-weight:700;}
+.viz-root .badge.pendrev{color:var(--warn);border-color:rgba(255,176,46,.5);background:rgba(255,176,46,.09);font-weight:700;}
+.viz-root .badge.frozen{color:#04120c;background:var(--live);border-color:var(--live);font-weight:700;}
+.viz-root .badge.abierto{color:var(--mkt);border-color:rgba(66,201,255,.4);background:var(--mktw);}
+.viz-root .badge.wu,.viz-root .badge.tlb{cursor:pointer;}
+.viz-root .badge.wu:hover{color:var(--mkt);border-color:var(--mkt);}
+.viz-root .badge.tlb{color:var(--ink2);}
+.viz-root .badge.tlb:hover{color:var(--fc);border-color:var(--fcs);background:var(--fcw);}
+
+/* ---------- trio de stats ---------- */
+.viz-root .trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 0 10px;}
+.viz-root .stat{background:var(--s2);border:1px solid var(--grid);border-radius:var(--r-sm);padding:8px 10px 7px;}
+.viz-root .stat .lbl{font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;font-weight:600;}
+.viz-root .stat .val{font-size:19px;font-weight:700;font-family:var(--mono);line-height:1.1;letter-spacing:-.01em;}
+.viz-root .stat .sub{font-size:9.5px;color:var(--ink2);font-family:var(--mono);margin-top:1px;}
+.viz-root .stat.bot{border-color:var(--fcs);background:linear-gradient(180deg,var(--fcw),transparent);}
+.viz-root .stat.bot .val{color:var(--fc);}
+.viz-root .stat.live .val{color:var(--live);}
+.viz-root .stat.finres .val{color:var(--fin);}
+.viz-root .models{font-size:10.5px;color:var(--mut);margin:0 0 8px;font-family:var(--mono);
+  padding:6px 9px;background:var(--s1);border:1px solid var(--grid);border-radius:var(--r-xs);}
+.viz-root .models b{color:var(--ink2);font-weight:700;}
+
+/* ---------- estados / warnings ---------- */
+.chg{animation:chg 2.6s ease-out;}
+@keyframes chg{0%{background:var(--fcw);}100%{background:transparent;}}
+.viz-root .lostwarn{font-size:10.5px;color:var(--ink2);background:var(--redw);border-radius:var(--r-xs);
+  border:1px solid rgba(255,93,112,.22);padding:6px 9px;margin:0 0 8px;}
+.viz-root .wstat{font-size:11px;font-weight:600;padding:6px 10px;border-radius:var(--r-xs);margin:0 0 9px;
+  font-family:var(--mono);border:1px solid transparent;display:flex;align-items:center;gap:6px;}
+.viz-root .wstat.ok{color:var(--fin);background:var(--finw);border-color:rgba(51,209,126,.28);}
+.viz-root .wstat.late{color:var(--warn);background:rgba(255,176,46,.09);border-color:rgba(255,176,46,.28);}
+.viz-root .wstat.closed{color:var(--red);background:var(--redw);border-color:rgba(255,93,112,.28);}
+.viz-root .wstat.pend{color:var(--warn);background:rgba(255,176,46,.11);border-color:rgba(255,176,46,.32);}
+.viz-root .wstat .wtime{color:var(--ink);font-weight:700;}
+
+/* ---------- acciones / botones ---------- */
+.viz-root .actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.viz-root .qbtn{font-size:11.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--bd);
+  background:var(--s2);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:600;
+  display:inline-flex;align-items:center;gap:5px;transition:all .14s;}
+.viz-root .qbtn:hover{border-color:var(--fc);color:var(--fc);background:var(--fcw);transform:translateY(-1px);}
+.viz-root .qbtn.dl{border-color:rgba(51,209,126,.5);color:var(--fin);}
+.viz-root .qbtn:disabled{opacity:.4;cursor:not-allowed;}
+.viz-root .qbtn.busy{opacity:.6;pointer-events:none;}
+.viz-root .qbtn.busy::after{content:"";width:10px;height:10px;border:2px solid currentColor;
+  border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.viz-root .qmsg{font-size:11px;color:var(--mut);margin-left:4px;}
+.viz-root .qmsg.ok{color:var(--fin);} .viz-root .qmsg.err{color:var(--red);}
+
+/* ---------- tabla de buckets ---------- */
+.viz-root table.bkts{border-collapse:collapse;width:100%;font-size:11.5px;margin-top:2px;}
+.viz-root table.bkts th{font-size:8px;color:var(--mut);text-align:left;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;padding:3px 5px;border-bottom:1px solid var(--bd);}
+.viz-root table.bkts td{padding:3.5px 5px;font-family:var(--mono);font-size:11px;
+  border-bottom:1px solid rgba(24,36,48,.6);}
+.viz-root table.bkts tr:last-child td{border-bottom:0;}
+.viz-root table.bkts tr:hover td{background:var(--s2);}
+.viz-root table.bkts .num{text-align:right;font-variant-numeric:tabular-nums;}
+.viz-root table.bkts td .miss{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--mut);}
+.viz-root .track{background:var(--grid);border-radius:3px;height:8px;min-width:56px;display:block;overflow:hidden;}
+.viz-root .fill{background:var(--mkt);height:100%;border-radius:3px;min-width:2px;display:block;
+  box-shadow:0 0 8px -1px rgba(66,201,255,.5);}
+.viz-root .fill.g1{background:var(--fin);box-shadow:0 0 8px -1px rgba(51,209,126,.5);}
+.viz-root .fill.y2{background:var(--t2);box-shadow:0 0 8px -1px rgba(255,210,62,.45);}
+.viz-root .fill.o3{background:var(--t3);box-shadow:0 0 8px -1px rgba(255,145,66,.45);}
+.viz-root .fill.lost{background:var(--base);opacity:.4;box-shadow:none;}
+.viz-root .dot{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--fc);}
+.viz-root .dot.g1{background:var(--pick);} .viz-root .dot.y2{background:var(--t2);} .viz-root .dot.o3{background:var(--t3);}
+.viz-root .edgehi{font-weight:700;color:var(--fc);}
+.viz-root tr.lostrow td{color:var(--mut);text-decoration:line-through;text-decoration-thickness:1px;}
+.viz-root tr.lostrow td:first-child,.viz-root tr.lostrow td:nth-child(3){text-decoration:none;}
+.viz-root .chipno{font-size:8.5px;font-weight:700;color:var(--warn);border:1px solid rgba(255,176,46,.4);
+  border-radius:4px;padding:1px 5px;font-family:var(--mono);}
+.viz-root .okc{color:var(--fin);font-weight:800;} .viz-root .badc{color:var(--red);font-weight:800;}
+.viz-root .verdict{display:flex;gap:10px;align-items:center;font-size:12px;margin:6px 0 2px;font-family:var(--mono);}
+.viz-root .verdict .ok{color:var(--fin);font-weight:700;} .viz-root .verdict .bad{color:var(--red);font-weight:700;}
+
+/* ---------- accordion ---------- */
+.viz-root details.acc{margin-top:10px;border-top:1px solid var(--grid);padding-top:8px;}
+.viz-root details.acc summary{cursor:pointer;font-size:10.5px;color:var(--mut);list-style:none;font-weight:600;}
+.viz-root details.acc summary::before{content:"▸ ";transition:transform .2s;}
+.viz-root details.acc[open] summary::before{content:"▾ ";}
+.viz-root details.acc .inner{font-size:11px;color:var(--ink2);padding:8px 2px 2px;line-height:1.65;animation:accIn .2s ease;}
+@keyframes accIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.viz-root .empty{font-size:11px;color:var(--mut);font-style:italic;padding:8px 0;}
+
+/* ---------- paneles ---------- */
+.viz-root .timing{background:linear-gradient(180deg,var(--s1),#0b1119);border:1px solid var(--bd);
+  border-radius:var(--r-lg);padding:16px 18px;margin-top:24px;font-size:12px;color:var(--ink2);box-shadow:var(--sh-1);}
+.viz-root .timing h4{margin:0 0 10px;font-size:13px;color:var(--ink);font-weight:700;letter-spacing:.01em;
+  display:flex;align-items:center;gap:8px;}
+.viz-root .timing table{border-collapse:collapse;font-size:11px;}
+.viz-root .timing td,.viz-root .timing th{padding:3px 14px 3px 0;font-variant-numeric:tabular-nums;color:var(--ink2);text-align:left;}
+.viz-root .timing th{color:var(--mut);font-size:9px;text-transform:uppercase;letter-spacing:.06em;}
+.viz-root .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 10px;}
+.viz-root .scard{background:var(--s2);border:1px solid var(--grid);border-radius:var(--r-sm);padding:11px 13px;
+  transition:border-color .15s,transform .15s;}
+.viz-root .scard:hover{border-color:var(--base);transform:translateY(-1px);}
+.viz-root .scard .lbl{font-size:8.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+.viz-root .scard .big{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1.15;color:var(--fc);letter-spacing:-.02em;}
+.viz-root .scard .sub{font-size:10px;color:var(--ink2);font-family:var(--mono);}
+.viz-root .scard.y .big{color:var(--t2);} .viz-root .scard.o .big{color:var(--t3);} .viz-root .scard.bad .big{color:var(--red);}
+.viz-root .cchips{display:flex;gap:8px;flex-wrap:wrap;}
+.viz-root .cchip{font-size:11px;color:var(--ink2);background:var(--s2);border:1px solid var(--grid);
+  border-radius:999px;padding:4px 11px;font-family:var(--mono);}
+.viz-root .cchip b{color:var(--fc);}
+
+/* ---------- registro de auditoria ---------- */
+.viz-root .alog{display:flex;flex-direction:column;gap:1px;max-height:340px;overflow-y:auto;}
+.viz-root .arow{display:flex;gap:12px;align-items:baseline;font-size:11.5px;padding:4px 2px;
+  border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;}
+.viz-root .arow .at{color:var(--mut);min-width:82px;font-size:10.5px;font-family:var(--mono);}
+.viz-root .arow .ast{font-weight:700;min-width:46px;font-family:var(--mono);}
+.viz-root .arow .ad{color:var(--mut);min-width:78px;}
+.viz-root .arow .aval{color:var(--ink2);font-family:var(--mono);}
+.viz-root .arow .aval b{color:var(--ink);}
+.viz-root .arow .up{color:var(--red);font-weight:700;} .viz-root .arow .down{color:var(--mkt);font-weight:700;}
+.viz-root .arow .frzt{color:var(--live);font-size:10px;border:1px solid rgba(255,194,74,.3);border-radius:999px;padding:0 7px;}
+
+/* ---------- tooltip ---------- */
+#viz-tooltip{position:fixed;pointer-events:none;background:#eef5fb;color:#0a1017;font-size:11.5px;
+  padding:6px 10px;border-radius:7px;opacity:0;transition:opacity .12s;z-index:1000;max-width:340px;
+  white-space:normal;font-family:var(--sans);line-height:1.45;box-shadow:0 8px 30px -6px rgba(0,0,0,.6);}
+.viz-root .hidden{display:none !important;}
+
+/* ---------- timeline modal (fuera de .viz-root) ---------- */
+#tl-modal{position:fixed;inset:0;background:rgba(3,6,9,.82);z-index:2000;display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+#tl-modal .tl-box{background:linear-gradient(180deg,#0e151d,#0a1017);border:1px solid #2b3f52;
+  border-radius:16px;width:min(580px,93vw);max-height:86vh;overflow-y:auto;padding:18px 20px;
+  color:#e8f0f7;font-family:"Inter","Segoe UI",sans-serif;box-shadow:0 20px 60px -10px rgba(0,0,0,.8);}
+#tl-modal .tl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;
+  font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#25e6a4;letter-spacing:.05em;font-weight:700;}
+#tl-modal .tl-x{cursor:pointer;color:#617688;font-weight:700;padding:2px 10px;border-radius:6px;font-size:16px;}
+#tl-modal .tl-x:hover{color:#ff5d70;background:rgba(255,93,112,.1);}
+#tl-modal .tl-ctl{display:flex;gap:14px;align-items:center;margin:8px 0 12px;}
+#tl-modal input[type=range]{flex:1;accent-color:#25e6a4;}
+#tl-modal .tl-time{font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#ffc24a;
+  min-width:150px;text-align:right;white-space:nowrap;}
+#tl-modal .tl-bot{font-size:12px;margin:0 0 10px;color:#a6bccd;font-family:"JetBrains Mono","Cascadia Mono",monospace;
+  padding:8px 11px;background:#131d27;border-radius:8px;border:1px solid #213042;}
+#tl-modal .tl-bot b{color:#25e6a4;} #tl-modal .tl-bot .tl-y{color:#ffd23e;} #tl-modal .tl-bot .tl-o{color:#ff9142;}
+#tl-modal table{border-collapse:collapse;width:100%;font-size:11.5px;}
+#tl-modal th{font-size:8px;color:#617688;text-align:left;text-transform:uppercase;letter-spacing:.08em;
+  padding:3px 5px;border-bottom:1px solid #182430;}
+#tl-modal td{padding:3.5px 5px;font-family:"JetBrains Mono","Cascadia Mono",monospace;border-bottom:1px solid rgba(24,36,48,.6);}
+#tl-modal .num{text-align:right;}
+#tl-modal .track{background:#182430;height:8px;min-width:120px;display:block;border-radius:3px;overflow:hidden;}
+#tl-modal .fill{background:#42c9ff;height:100%;min-width:2px;display:block;border-radius:3px;}
+#tl-modal .tl-note{font-size:10px;color:#617688;margin-top:10px;}
+#tl-modal .tl-dot{display:inline-block;width:8px;height:8px;border-radius:2px;}
+#tl-modal .tl-dot.g{background:#25e6a4;} #tl-modal .tl-dot.y{background:#ffd23e;} #tl-modal .tl-dot.o{background:#ff9142;}
+#tl-modal tr.tl-r1 td:nth-child(2){color:#25e6a4;font-weight:700;}
+#tl-modal tr.tl-r2 td:nth-child(2){color:#ffd23e;} #tl-modal tr.tl-r3 td:nth-child(2){color:#ff9142;}
+
+/* ===== NAVBAR compartido (v3 2026-07-15) ===== */
+.viz-root .wxnav{display:flex;gap:4px;align-items:center;flex-wrap:wrap;
+  margin:0 -24px 4px;padding:8px 24px 0;}
+.viz-root .wxnav a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  font-size:12.5px;font-weight:600;color:var(--ink2);padding:7px 14px;
+  border:1px solid transparent;border-radius:999px;white-space:nowrap;transition:all .14s;}
+.viz-root .wxnav a .ico{font-size:13px;filter:grayscale(.4) opacity(.85);}
+.viz-root .wxnav a:hover{color:var(--ink);background:var(--s2);border-color:var(--bd);}
+.viz-root .wxnav a.on{color:#04120c;background:linear-gradient(180deg,var(--fc),#1fbf8a);
+  border-color:var(--fc);font-weight:700;box-shadow:0 0 18px -4px var(--fcs);}
+.viz-root .wxnav a.on .ico{filter:none;}
+.viz-root .wxnav .navspacer{flex:1 1 auto;}
+.viz-root .wxnav .navbrand{display:inline-flex;align-items:center;color:var(--fc);font-weight:800;
+  font-family:var(--mono);font-size:12px;letter-spacing:.18em;padding:7px 10px 7px 0;}
+@media (max-width:680px){
+  .viz-root .wxnav{margin:0 -14px 4px;padding:8px 14px 0;}
+  .viz-root .wxnav a{padding:7px 11px;font-size:11.5px;}
+  .viz-root .wxnav a .lbl{display:none;}   /* en pantalla chica: solo iconos */
+  .viz-root .wxnav .navbrand{display:none;}
+}
+
+.viz-root .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-top:14px;}
+.viz-root .vb{position:relative;background:linear-gradient(180deg,var(--s1),#0b1119);border:1px solid var(--bd);
+  border-radius:var(--r);padding:14px 15px;box-shadow:var(--sh-1);transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;}
+.viz-root .vb::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tcol,var(--base));}
+.viz-root .vb:hover{transform:translateY(-2px);border-color:var(--base);box-shadow:var(--sh-2);}
+.viz-root .vb-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.viz-root .vb-city{font-size:15px;font-weight:700;font-family:var(--mono);}
+.viz-root .vb-city a{color:var(--ink);} .viz-root .vb-city a:hover{color:var(--mkt);}
+.viz-root .vb-sub{font-size:10.5px;color:var(--mut);margin-top:2px;}
+.viz-root .vb-edge{text-align:right;white-space:nowrap;}
+.viz-root .vb-edge .n{font-size:26px;font-weight:800;font-family:var(--mono);color:var(--fc);line-height:1;letter-spacing:-.02em;}
+.viz-root .vb-edge .u{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;}
+.viz-root .vb-play{font-size:12.5px;color:var(--ink);background:var(--s2);border:1px solid var(--grid);
+  border-radius:var(--r-sm);padding:8px 11px;margin-bottom:9px;line-height:1.4;}
+.viz-root .vb-play b{color:var(--fc);}
+.viz-root .vb-cmp{display:flex;gap:8px;align-items:center;font-size:11px;font-family:var(--mono);color:var(--ink2);margin-bottom:8px;}
+.viz-root .vb-bars{flex:1;display:flex;flex-direction:column;gap:3px;}
+.viz-root .vb-bar{height:9px;border-radius:3px;background:var(--grid);overflow:hidden;position:relative;}
+.viz-root .vb-bar span{display:block;height:100%;border-radius:3px;}
+.viz-root .vb-bar .bot{background:var(--fc);box-shadow:0 0 8px -1px var(--fcs);}
+.viz-root .vb-bar .mkt{background:var(--mkt);box-shadow:0 0 8px -1px rgba(66,201,255,.5);}
+.viz-root .vb-cmp .lg{min-width:118px;}
+.viz-root .vb-cmp .lg i{font-style:normal;} .viz-root .vb-cmp .lg .cbot{color:var(--fc);} .viz-root .vb-cmp .lg .cmkt{color:var(--mkt);}
+.viz-root .vb-long{font-size:11px;color:var(--live);margin-top:4px;}
+.viz-root .vb-foot{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:11px;}
+.viz-root .vb-foot a{color:var(--mkt);font-weight:600;}
+.viz-root .vb-tier{font-size:9.5px;font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px;border:1px solid var(--bd);}
+.viz-root .vfilters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;}
+.viz-root .none{color:var(--mut);font-style:italic;padding:20px 0;}
+</style></head><body><div class="viz-root">
+<div class="topbar"><nav class="wxnav"><span class="navbrand">WXBT</span><a class="" href="live_dashboard.html" data-tip="pronostico vs mercado en vivo, ventana 48h" title="pronostico vs mercado en vivo, ventana 48h"><span class="ico">🖥</span><span class="lbl">Terminal</span></a><a class="" href="cities.html" data-tip="dashboard por ciudad: mercado + modelos que mejor aciertan + PWS" title="dashboard por ciudad: mercado + modelos que mejor aciertan + PWS"><span class="ico">🏙</span><span class="lbl">Ciudades</span></a><a class="on" href="value.html" data-tip="donde el bot ve mas ventaja contra lo que paga el mercado" title="donde el bot ve mas ventaja contra lo que paga el mercado"><span class="ico">💰</span><span class="lbl">Value bets</span></a><a class="" href="leaderboard.html" data-tip="ranking de estaciones por track record vivo (exactos/top-2)" title="ranking de estaciones por track record vivo (exactos/top-2)"><span class="ico">🏆</span><span class="lbl">Leaderboard</span></a><a class="" href="stats.html" data-tip="estadisticas generales + rendimiento dia por dia (gano/perdio)" title="estadisticas generales + rendimiento dia por dia (gano/perdio)"><span class="ico">📊</span><span class="lbl">Estadisticas</span></a><span class="navspacer"></span></nav><div class="row1"><h1>💰 Value bets</h1>
+<span class="subt">donde el bot ve más ventaja vs lo que paga el mercado</span>
+<span class="clock" style="margin-left:auto">15/07/2026 14:50<small>AR</small></span></div>
+<div class="vfilters">
+<button class="chip on" data-f="all">Todas</button>
+<button class="chip" data-f="FUERTE">🟢 Fuertes</button>
+<button class="chip" data-f="MEDIA">🟡 Medias</button>
+<button class="chip" data-f="DEBIL">🔴 Débiles</button>
+<input type="search" id="vsearch" placeholder="buscar ciudad…"
+  style="background:var(--s2);color:var(--ink);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;font-size:12px;margin-left:auto">
+<span class="count" id="vcount"></span></div></div>
+<div class="sgrid" style="max-width:640px"><div class="scard"><div class="lbl">value bets ahora</div><div class="big">21</div><div class="sub">de 42 mercados vivos</div></div><div class="scard"><div class="lbl">🟢 fuertes</div><div class="big" style="color:var(--fin)">2</div><div class="sub">operables</div></div><div class="scard y"><div class="lbl">🟡 medias</div><div class="big">17</div><div class="sub">en observacion</div></div><div class="scard bad"><div class="lbl">🔴 debiles</div><div class="big">2</div><div class="sub">no operar</div></div></div>
+<p class="subt" style="max-width:900px;margin:10px 0 0">
+<b>Δ¢ = probabilidad del bot − precio del mercado</b>, edge BRUTO (sin fees/spread/shrink) — es un
+<b>screener, NO una señal</b>. Reglas del playbook: entrar <b>temprano</b> (apenas está la corrida,
+≥24h al cierre), <b>maker</b> (limit al mid), size chico, concentrar top-1 o el par top-2. Solo
+🟢 <b>fuertes</b> son operables; 🔴 débiles no (sin fuente local). Buckets ya imposibles por la
+obs viva y mercados con el pico pasado quedan afuera.</p>
+<div class="vgrid" id="vgrid"><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="toronto"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-toronto-on-july-15-2026" target="_blank">Toronto · CYYZ</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 32.2°C</div></div><div class="vb-edge"><div class="n">+49¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 32°C + 31°C · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">26%</i> / <i class="cmkt">0.01</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:26%"></span></div><div class="vb-bar"><span class="mkt" style="width:2%"></span></div></div></div><div class="vb-long">🎯 32°C @0.01 (bot 26%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-toronto-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="beijing"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-beijing-on-july-16-2026" target="_blank">Beijing · ZBAA</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 32.5°C</div></div><div class="vb-edge"><div class="n">+36¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>top-1 31°C or below</b> · maker/limit</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">41%</i> / <i class="cmkt">0.04</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:41%"></span></div><div class="vb-bar"><span class="mkt" style="width:4%"></span></div></div></div><div class="vb-long">🎯 31°C or below @0.04 (bot 41%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-beijing-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="kuala lumpur"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-kuala-lumpur-on-july-16-2026" target="_blank">Kuala Lumpur · WMKK</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 32.3°C</div></div><div class="vb-edge"><div class="n">+35¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 32°C + 31°C · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">30%</i> / <i class="cmkt">0.17</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:30%"></span></div><div class="vb-bar"><span class="mkt" style="width:17%"></span></div></div></div><div class="vb-long">🎯 31°C @0.03 (bot 25%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-kuala-lumpur-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="houston"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-houston-on-july-15-2026" target="_blank">Houston · KHOU</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 85.4°F</div></div><div class="vb-edge"><div class="n">+12¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>top-1 84-85°F</b> · maker/limit</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">36%</i> / <i class="cmkt">0.23</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:36%"></span></div><div class="vb-bar"><span class="mkt" style="width:24%"></span></div></div></div><div class="vb-long">🎯 86-87°F @0.06 (bot 28%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-houston-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="los angeles"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-los-angeles-on-july-16-2026" target="_blank">Los Angeles · KLAX</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 86.3°F</div></div><div class="vb-edge"><div class="n">+34¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 86-87°F + 84-85°F · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">23%</i> / <i class="cmkt">0.01</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:23%"></span></div><div class="vb-bar"><span class="mkt" style="width:2%"></span></div></div></div><div class="vb-long">🎯 86-87°F @0.01 (bot 23%) · 88-89°F @0.01 (bot 17%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-los-angeles-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="dallas"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-dallas-on-july-15-2026" target="_blank">Dallas · KDAL</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 87.7°F</div></div><div class="vb-edge"><div class="n">+31¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 86-87°F + 88-89°F · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">27%</i> / <i class="cmkt">0.02</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:27%"></span></div><div class="vb-bar"><span class="mkt" style="width:2%"></span></div></div></div><div class="vb-long">🎯 84-85°F @0.01 (bot 18%) · 86-87°F @0.02 (bot 27%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-dallas-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="buenos aires"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-buenos-aires-on-july-16-2026" target="_blank">Buenos Aires · SAEZ</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 20.7°C</div></div><div class="vb-edge"><div class="n">+30¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 20°C + 21°C · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">25%</i> / <i class="cmkt">0.07</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:25%"></span></div><div class="vb-bar"><span class="mkt" style="width:6%"></span></div></div></div><div class="vb-long">🎯 19°C @0.01 (bot 19%) · 20°C @0.07 (bot 25%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-buenos-aires-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="ankara"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-ankara-on-july-16-2026" target="_blank">Ankara · LTAC</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 29.6°C</div></div><div class="vb-edge"><div class="n">+24¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>top-1 29°C</b> · maker/limit</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">39%</i> / <i class="cmkt">0.15</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:39%"></span></div><div class="vb-bar"><span class="mkt" style="width:16%"></span></div></div></div><div class="vb-long">🎯 28°C @0.03 (bot 22%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-ankara-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="miami"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-miami-on-july-15-2026" target="_blank">Miami · KMIA</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 92.9°F</div></div><div class="vb-edge"><div class="n">+23¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 92-93°F + 90-91°F · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">50%</i> / <i class="cmkt">0.51</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:50%"></span></div><div class="vb-bar"><span class="mkt" style="width:51%"></span></div></div></div><div class="vb-long">🎯 90-91°F @0.01 (bot 24%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-miami-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="san francisco"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-san-francisco-on-july-16-2026" target="_blank">San Francisco · KSFO</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 71.2°F</div></div><div class="vb-edge"><div class="n">+23¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 70-71°F + 72-73°F · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">30%</i> / <i class="cmkt">0.24</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:30%"></span></div><div class="vb-bar"><span class="mkt" style="width:24%"></span></div></div></div><div class="vb-long">🎯 72-73°F @0.07 (bot 24%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-san-francisco-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="san francisco"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-san-francisco-on-july-15-2026" target="_blank">San Francisco · KSFO</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 76.4°F</div></div><div class="vb-edge"><div class="n">+16¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 76-77°F + 74-75°F · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">34%</i> / <i class="cmkt">0.12</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:34%"></span></div><div class="vb-bar"><span class="mkt" style="width:12%"></span></div></div></div><div class="vb-long">🎯 78-79°F @0.02 (bot 18%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-san-francisco-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--red)" data-tier="DEBIL" data-city="shanghai"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-shanghai-on-july-16-2026" target="_blank">Shanghai · ZSPD</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 36.5°C</div></div><div class="vb-edge"><div class="n">+21¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 35°C</b> @0.02 (bot 22%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">30%</i> / <i class="cmkt">0.12</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:30%"></span></div><div class="vb-bar"><span class="mkt" style="width:12%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--red)">🔴 DEBIL · NO operar (sin fuente local)</span><a href="https://polymarket.com/event/highest-temperature-in-shanghai-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--red)" data-tier="DEBIL" data-city="taipei"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-taipei-on-july-16-2026" target="_blank">Taipei · RCSS</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 36.0°C</div></div><div class="vb-edge"><div class="n">+16¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 38°C or higher</b> @0.06 (bot 22%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">22%</i> / <i class="cmkt">0.06</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:22%"></span></div><div class="vb-bar"><span class="mkt" style="width:6%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--red)">🔴 DEBIL · NO operar (sin fuente local)</span><a href="https://polymarket.com/event/highest-temperature-in-taipei-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--fin)" data-tier="FUERTE" data-city="milan"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-milan-on-july-16-2026" target="_blank">Milan · LIMC</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 33.5°C</div></div><div class="vb-edge"><div class="n">+14¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>par top-2</b> 33°C + 34°C · maker</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">34%</i> / <i class="cmkt">0.35</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:34%"></span></div><div class="vb-bar"><span class="mkt" style="width:36%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--fin)">🟢 FUERTE · operable</span><a href="https://polymarket.com/event/highest-temperature-in-milan-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="miami"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-miami-on-july-16-2026" target="_blank">Miami · KMIA</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 93.9°F</div></div><div class="vb-edge"><div class="n">+14¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>top-1 92-93°F</b> · maker/limit</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">43%</i> / <i class="cmkt">0.29</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:43%"></span></div><div class="vb-bar"><span class="mkt" style="width:30%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-miami-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="singapur"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-singapore-on-july-16-2026" target="_blank">Singapur · WSSS</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 31.8°C</div></div><div class="vb-edge"><div class="n">+13¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">Comprar <b>top-1 31°C</b> · maker/limit</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">37%</i> / <i class="cmkt">0.24</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:37%"></span></div><div class="vb-bar"><span class="mkt" style="width:24%"></span></div></div></div><div class="vb-long">🎯 30°C @0.04 (bot 18%)</div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-singapore-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="atlanta"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-atlanta-on-july-15-2026" target="_blank">Atlanta · KATL</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 85.5°F</div></div><div class="vb-edge"><div class="n">+15¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 82-83°F</b> @0.03 (bot 18%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">25%</i> / <i class="cmkt">0.14</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:25%"></span></div><div class="vb-bar"><span class="mkt" style="width:14%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-atlanta-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="los angeles"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-los-angeles-on-july-15-2026" target="_blank">Los Angeles · KLAX</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 82.2°F</div></div><div class="vb-edge"><div class="n">+15¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 84-85°F</b> @0.01 (bot 17%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">22%</i> / <i class="cmkt">0.14</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:22%"></span></div><div class="vb-bar"><span class="mkt" style="width:14%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-los-angeles-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--fin)" data-tier="FUERTE" data-city="chicago"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-chicago-on-july-15-2026" target="_blank">Chicago · KORD</a></div><div class="vb-sub">15/07 · 🔒 congelado · μ 96.3°F</div></div><div class="vb-edge"><div class="n">+14¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 98-99°F</b> @0.04 (bot 17%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">35%</i> / <i class="cmkt">0.34</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:35%"></span></div><div class="vb-bar"><span class="mkt" style="width:34%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--fin)">🟢 FUERTE · operable</span><a href="https://polymarket.com/event/highest-temperature-in-chicago-on-july-15-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="wellington"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-wellington-on-july-16-2026" target="_blank">Wellington · NZWN</a></div><div class="vb-sub">16/07 · 🔒 congelado · μ 16.6°C</div></div><div class="vb-edge"><div class="n">+18¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 17°C</b> @0.08 (bot 26%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">39%</i> / <i class="cmkt">0.58</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:39%"></span></div><div class="vb-bar"><span class="mkt" style="width:58%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-wellington-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div><div class="vb" style="--tcol:var(--t2)" data-tier="MEDIA" data-city="munich"><div class="vb-top"><div><div class="vb-city"><a href="https://polymarket.com/event/highest-temperature-in-munich-on-july-16-2026" target="_blank">Munich · EDDM</a></div><div class="vb-sub">16/07 · ◷ snapshot · μ 30.3°C</div></div><div class="vb-edge"><div class="n">+12¢</div><div class="u">edge bruto</div></div></div><div class="vb-play">🎯 <b>Longshot 31°C</b> @0.06 (bot 17%) · size chico</div><div class="vb-cmp"><span class="lg">bot / mkt <i class="cbot">22%</i> / <i class="cmkt">0.25</i></span><div class="vb-bars"><div class="vb-bar"><span class="bot" style="width:22%"></span></div><div class="vb-bar"><span class="mkt" style="width:25%"></span></div></div></div><div class="vb-foot"><span class="vb-tier" style="color:var(--t2)">🟡 MEDIA · en observacion</span><a href="https://polymarket.com/event/highest-temperature-in-munich-on-july-16-2026" target="_blank">Polymarket ↗</a></div></div></div>
+<p class="subt" style="margin-top:18px">Regenerar: <code>python scripts/value_page.py</code> ·
+en el dashboard, botón <b>🏙 Regenerar páginas</b>.</p></div><script>
+(function(){
+  var grid=document.getElementById('vgrid'), cnt=document.getElementById('vcount');
+  var srch=document.getElementById('vsearch'), tier='all';
+  function apply(){
+    var q=(srch.value||'').trim().toLowerCase(), n=0;
+    grid.querySelectorAll('.vb').forEach(function(c){
+      var okt=(tier==='all'||c.dataset.tier===tier);
+      var okq=(!q||c.dataset.city.indexOf(q)>=0);
+      var show=okt&&okq; c.style.display=show?'':'none'; if(show)n++;
+    });
+    cnt.textContent=n+' mostradas';
+  }
+  document.querySelectorAll('.chip[data-f]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.chip[data-f]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); tier=b.dataset.f; apply();
+    });
+  });
+  srch.addEventListener('input',apply); apply();
+})();
+</script></body></html>

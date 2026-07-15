@@ -952,6 +952,34 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (encadenado en run_daily.ps1, data/smn_forward.csv). (c) Obs abiertas regtemp (TMAX diaria
   1 decimal, 365d) como verificación cruzada. METAR SAEZ: AWOS, horario, °C enteros (PDF SMN).
 
+### Rediseño UI + reorg de tabs (2026-07-15 tarde, pedidos de Santiago)
+
+- **CSS rehecho de 0** (`scripts/wxbt_nav.py:NAV_CSS` + `dashboard.py:CSS/VB_CSS/ALERT_CSS`,
+  inyectado con `scratchpad/new_css.py`): design system v3, dark premium (fondo con gradientes
+  sutiles, cards elevadas con barra de estado, nav en pills, stat-tiles, tablas y badges
+  pulidos, tooltips y timeline modal redondeados). **Se mantuvieron TODOS los nombres de
+  clase/variable/id** — el JS (`f-count`, `tl-modal`, `card`, `hidden`, `chg`, `on`…) y los
+  inline styles (`var(--fc)` etc.) dependen de ellos; solo cambiaron los estilos. wxbt.css lo
+  sirve el dashboard (CSS+ALERT+VB+NAV); las otras páginas lo embeben inline.
+- **Tabs Modelos e Historial ELIMINADAS** (models_page.py/history_page.py + models.html/
+  history.html borrados). Motivo: la perf por modelo ya vive en las city pages (el modelo que
+  más importa es el que mejor acierta esa ciudad) y Estadísticas cubre el historial. La
+  generación de `model_city_rank.csv` (badge del dashboard + telegram) migró a
+  `wxbt_insights.write_model_rank()`, la dispara `city_pages.main()`. run_daily y el botón
+  "pages" del dashboard ya no los llaman.
+- **Value bets = tab propio** (`scripts/value_page.py` → `data/value.html`): cards ordenadas por
+  edge, KPIs por tier, filtros (fuerte/media/débil) + buscador. En el nav.
+- **cities.html con buscador + filtros** por continente (JS client-side) y cards ricas
+  (tier + track + mejor modelo por ciudad).
+- **Leaderboard: botón "🔄 Actualizar ahora"** → POST /action?do=leaderboard (requiere el
+  dashboard servido con --serve; en file:// avisa).
+- **Bot de Telegram robusto/observable**: funcionaba pero era "invisible". Ahora: stdout
+  line-buffered, log con timestamp por comando (quién/qué/tamaño de respuesta), `setMyCommands`
+  (menú en la UI), ping de arranque a los chats, heartbeat 10 min, manejo claro de **409
+  Conflict** (dos pollers/webhook). Lanzador `scripts/run_telegram.ps1`. El token va SOLO en
+  `data/.telegram_token` (gitignoreado) — nunca hardcodeado. Bot: `@AR2weatherbot`.
+  Nav final: Terminal · Ciudades · Value bets · Leaderboard · Estadísticas.
+
 ### Plataforma de vistas + Telegram + PWS (2026-07-15, pedidos de Santiago)
 
 Capa de LECTURA nueva, `scripts/wxbt_insights.py` (no toca el motor ni las acciones):

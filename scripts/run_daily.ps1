@@ -36,11 +36,10 @@ python scripts/score_market_consensus.py
 python scripts/leaderboard.py
 python scripts/stats_page.py
 python scripts/export_data.py        --date $today
-# [2026-07-15] Paginas nuevas: historial desde 08/07, modelos por ciudad (+ CSV para el badge
-# del dashboard), vistas por ciudad, y refresh incremental del bias de PWS (dias recientes de
-# las referencias ya elegidas). Telegram: resumen diario (no-op silencioso si no hay token).
-python scripts/models_page.py        --refresh
-python scripts/history_page.py       --refresh
+# [2026-07-15] Value bets (tab propio) + vistas por ciudad (city_pages refresca de paso
+# model_city_rank.csv para el badge del dashboard) + refresh incremental del bias de PWS.
+# Telegram: resumen diario (no-op silencioso si no hay token).
+python scripts/value_page.py         --refresh
 python scripts/city_pages.py
 python scripts/pws_setup.py          --update
 python scripts/telegram_bot.py       --push

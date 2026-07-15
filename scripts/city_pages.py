@@ -30,6 +30,21 @@ NIV_ICON = {"EXACTO": "✅", "TOP-2": "✅", "TOP-3": "🔶", "PERDIDA": "❌"}
 NIV_CLS = {"EXACTO": "g-ex", "TOP-2": "g-t2", "TOP-3": "g-t3", "PERDIDA": "g-bad"}
 
 EXTRA_CSS = """
+/* indice de ciudades: grid con buscador/filtros */
+.viz-root .cigrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px;margin-top:16px;}
+.viz-root .ci-card{display:block;position:relative;background:linear-gradient(180deg,var(--s1),#0b1119);
+  border:1px solid var(--bd);border-radius:var(--r);padding:13px 14px;box-shadow:var(--sh-1);
+  transition:transform .15s,border-color .15s,box-shadow .15s;overflow:hidden;color:inherit;}
+.viz-root .ci-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tcol,var(--base));}
+.viz-root .ci-card:hover{transform:translateY(-2px);border-color:var(--base);box-shadow:var(--sh-2);}
+.viz-root .ci-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.viz-root .ci-name{font-size:15px;font-weight:700;}
+.viz-root .ci-sub{font-size:10px;color:var(--mut);font-family:var(--mono);margin-top:2px;}
+.viz-root .ci-tier{font-size:15px;}
+.viz-root .ci-track{font-size:12px;color:var(--ink2);font-family:var(--mono);margin-top:9px;}
+.viz-root .ci-model{font-size:10.5px;color:var(--ink2);margin-top:5px;}
+.viz-root .ci-model b{color:var(--fc);}
+.viz-root .none{color:var(--mut);font-style:italic;padding:16px 0;}
 .viz-root .cols{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;}
 .viz-root .col{flex:1 1 420px;min-width:340px;}
 .viz-root .panelbox{background:var(--s1);border:1px solid var(--bd);border-radius:8px;
@@ -237,8 +252,7 @@ def build_city(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws_ref,
                 f'<table class="ct"><thead><tr><th>modelo</th><th>fuente</th><th>exactos</th>'
                 f'<th>%</th><th>MAE</th></tr></thead><tbody>{"".join(perf_rows)}</tbody></table>'
                 f'<p class="subt" style="margin:6px 0 0">vivo = capturas reales pre-freeze · '
-                f'retro = Previous-Runs 90d (bug #5, referencia). '
-                f'<a href="models.html">tabla completa ↗</a></p></div>') if perf_rows else ""
+                f'retro = Previous-Runs 90d (bug #5, referencia).</p></div>') if perf_rows else ""
 
     # -------- historial gamelog --------
     mine_h = sorted([r for r in hist_rows if r["station"] == code],
@@ -321,22 +335,88 @@ El pick mostrado es el CONGELADO del audit cuando existe (lo que se opera y se m
 def build_index(today, stability_rows):
     upd = D.to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m/%Y %H:%M")
     by_st = {r["station"]: r for r in stability_rows}
-    items = []
+    best = _read_rank()
+    try:
+        from playbook import STRONG, WEAK
+    except Exception:
+        STRONG, WEAK = set(), set()
+    tinfo = {"FUERTE": ("🟢", "var(--fin)"), "MEDIA": ("🟡", "var(--t2)"), "DEBIL": ("🔴", "var(--red)")}
+    conts = sorted({D.STATION_META[c][0] for c in STATIONS})
+    cards = []
     for code in sorted(STATIONS, key=lambda c: D.STATION_META[c][2]):
         cont, pais, ciudad = D.STATION_META[code][:3]
         r = by_st.get(code)
-        track = (f'{r["exact"]}/{r["n"]} exactos · {r["top2"]}/{r["n"]} top-2' if r else "sin track aun")
-        items.append(f'<a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" '
-                     f'href="city_{code}.html"><b>{esc(ciudad)}</b> · {code} — {track}</a>')
+        tier = "FUERTE" if code in STRONG else ("DEBIL" if code in WEAK else "MEDIA")
+        tico, tcol = tinfo[tier]
+        if r and r["n"]:
+            track = (f'<b style="color:var(--fc)">{r["exact"]}/{r["n"]}</b> exactos · '
+                     f'{r["top2"]}/{r["n"]} top-2')
+        else:
+            track = '<span style="color:var(--mut)">sin track aún</span>'
+        bm = best.get(code)
+        bmodel = (f'<div class="ci-model">🏅 mejor modelo: <b>{esc(bm[0])}</b> '
+                  f'{bm[1]:.0%} <span style="color:var(--mut)">(n={bm[2]}, {bm[3]})</span></div>'
+                  if bm else '')
+        cards.append(
+            f'<a class="ci-card" href="city_{code}.html" style="--tcol:{tcol}" '
+            f'data-cont="{cont}" data-tier="{tier}" data-q="{esc(ciudad).lower()} {code.lower()} {esc(pais).lower()}">'
+            f'<div class="ci-top"><div><div class="ci-name">{esc(ciudad)}</div>'
+            f'<div class="ci-sub">{code} · {esc(pais)} · {cont}</div></div>'
+            f'<span class="ci-tier" style="color:{tcol}">{tico}</span></div>'
+            f'<div class="ci-track">{track}</div>{bmodel}</a>')
     body = f"""<div class="viz-root">
-<div class="topbar">{nav_html("cities")}<div class="row1"><h1>🏙 Ciudades — WXBT</h1>
-<span class="subt">dashboard individual por ciudad: mercado, modelos, PWS, historial</span></div>
-<div style="font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px">🕒 {upd} (AR)</div></div>
-<div style="display:flex;flex-wrap:wrap;margin-top:14px">{"".join(items)}</div></div>"""
+<div class="topbar">{nav_html("cities")}<div class="row1"><h1>🏙 Ciudades</h1>
+<span class="subt">dashboard individual por ciudad: mercado, modelos que mejor aciertan, PWS y track</span>
+<span class="clock" style="margin-left:auto">{upd}<small>AR</small></span></div>
+<div class="vfilters">
+<button class="chip on" data-f="all">Todas ({len(STATIONS)})</button>
+{"".join(f'<button class="chip" data-f="{c}">{c}</button>' for c in conts)}
+<input type="search" id="csearch" placeholder="buscar ciudad, país o ICAO…"
+  style="background:var(--s2);color:var(--ink);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;font-size:12px;margin-left:auto;min-width:220px">
+<span class="count" id="ccount"></span></div></div>
+<p class="subt" style="margin:10px 0 0">🟢 fuerte (operable) · 🟡 media · 🔴 débil (no operar). El
+<b>mejor modelo</b> por ciudad = el que más veces acertó el bucket ganador ahí (vivo pre-freeze o retro).</p>
+<div class="cigrid" id="cigrid">{"".join(cards)}</div>
+<p class="none" id="cnone" style="display:none">Sin ciudades para ese filtro.</p></div>"""
+    cjs = """<script>
+(function(){
+  var grid=document.getElementById('cigrid'),cnt=document.getElementById('ccount');
+  var srch=document.getElementById('csearch'),none=document.getElementById('cnone'),cont='all';
+  function apply(){
+    var q=(srch.value||'').trim().toLowerCase(),n=0;
+    grid.querySelectorAll('.ci-card').forEach(function(c){
+      var okc=(cont==='all'||c.dataset.cont===cont);
+      var okq=(!q||c.dataset.q.indexOf(q)>=0);
+      var show=okc&&okq;c.style.display=show?'':'none';if(show)n++;
+    });
+    cnt.textContent=n+' ciudades';none.style.display=n?'none':'';
+  }
+  document.querySelectorAll('.chip[data-f]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.chip[data-f]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');cont=b.dataset.f;apply();
+    });
+  });
+  srch.addEventListener('input',apply);apply();
+})();
+</script>"""
     return (f"<!doctype html><html lang='es'><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
             f"<title>WXBT · Ciudades</title><style>{D.CSS}{NAV_CSS}{EXTRA_CSS}</style></head>"
-            f"<body>{body}</body></html>")
+            f"<body>{body}{cjs}</body></html>")
+
+
+def _read_rank():
+    """{station: (model, rate, n, src)} del rank #1 por ciudad (model_city_rank.csv, n>=5)."""
+    import csv as _csv
+    out = {}
+    p = os.path.join(DATA, "model_city_rank.csv")
+    if not os.path.exists(p):
+        return out
+    for r in _csv.DictReader(open(p, encoding="utf-8")):
+        if r.get("rank") == "1" and int(r["n"]) >= 5:
+            out[r["station"]] = (r["model"], float(r["rate"]), int(r["n"]), r["src"])
+    return out
 
 
 def main(a):
@@ -348,6 +428,12 @@ def main(a):
     audit = I._load_audit()
     hist_rows = I.bot_history(refresh=a.refresh, today=today)
     perf = I.model_perf(days=90, today=today)
+    # el ranking de modelos por ciudad (badge del dashboard + telegram) se refresca aca desde que
+    # se saco la tab Modelos (2026-07-15): reusa el `perf` ya calculado, no re-computa.
+    try:
+        I.write_model_rank(perf=perf)
+    except Exception as e:
+        print(f"[WARN] model_city_rank.csv: {e}", file=sys.stderr)
     live_obs = D.fetch_obs_live(today) if not a.no_live else {}
     obs_map = {}
     obs_path = os.path.join(DATA, "obs.csv")

@@ -193,8 +193,11 @@ def main():
     body = f'''<div class="viz-root">
 <div class="topbar">{nav_html("leaderboard")}<div class="row1"><h1>🏆 Track record VIVO del bot — WXBT</h1>
 <span class="subt">ranking por RESULTADOS REALES contra el bucket ganador oficial de Polymarket
-· targets resueltos {rango}</span></div>
-<div class="updbar">🕒 Tabla actualizada: <b>{updated}</b> (hora Argentina) · se regenera cada corrida</div></div>
+· targets resueltos {rango}</span>
+<button class="qbtn" id="lb-refresh" style="margin-left:auto"
+  data-tip="re-consulta los ganadores en Gamma y recalcula el ranking al momento (requiere el dashboard servido con --serve)">🔄 Actualizar ahora</button></div>
+<div class="updbar">🕒 Tabla actualizada: <b>{updated}</b> (hora Argentina) · se regenera cada corrida ·
+<span id="lb-msg"></span></div></div>
 <p class="subt" style="margin:8px 0 14px"><b>Clic en cualquier fila</b> para ver el GAMELOG de esa
 ciudad: cada mercado con lo que ganó (WU), el pick del bot y el resultado —
 <span class="gv g-ex">✅ EXACTO</span> · <span class="gv g-t2">✅ TOP-2</span> ·
@@ -252,6 +255,15 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
       var open=det.classList.toggle('hidden')===false;
       row.classList.toggle('open',open);
     });
+  });
+  // Refresh manual: POST /action?do=leaderboard (lo sirve el dashboard con --serve), luego recarga.
+  var btn=document.getElementById('lb-refresh'), msg=document.getElementById('lb-msg');
+  if(btn) btn.addEventListener('click',function(){
+    if(location.protocol==='file:'){ msg.textContent='abrí el dashboard servido (http) para usar el refresh en vivo'; return; }
+    btn.classList.add('busy'); btn.disabled=true; msg.textContent='recalculando ranking…';
+    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){return r.json();})
+      .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},600); })
+      .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent='error: '+e; });
   });
 })();
 </script>'''

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # scripts/wxbt_insights.py — capa de LECTURA compartida para las vistas nuevas (2026-07-15, pedido
 # Santiago): historial de pronosticos desde 08/07, performance por MODELO por CIUDAD, leaderboard
-# de estabilidad y VALUE BETS. La consumen history_page.py / models_page.py / city_pages.py /
+# de estabilidad y VALUE BETS. La consumen value_page.py / city_pages.py / leaderboard / stats /
 # telegram_bot.py y el dashboard (badge de mejor modelo).
 #
 # HONESTIDAD (no negociable):
@@ -286,6 +286,24 @@ def model_perf(winners=None, days=90, today=None, refresh=False):
                          rate=hits / n if n else float("nan"),
                          mae=(sae / nae) if nae else float("nan"), n_mae=nae))
     return rows
+
+
+def write_model_rank(perf=None, path=None, **kw):
+    """Escribe data/model_city_rank.csv = ranking de modelos por ciudad (lo lee el badge del
+    dashboard y telegram_bot). Antes lo hacia models_page.py; al sacar esa tab (2026-07-15) la
+    generacion vive aca y la dispara city_pages/run_daily. Devuelve la ruta."""
+    import csv as _csv
+    perf = perf if perf is not None else model_perf(**kw)
+    bm = best_models(perf)
+    path = path or os.path.join(DATA, "model_city_rank.csv")
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = _csv.writer(f)
+        w.writerow(["station", "src", "rank", "model", "n", "hits", "rate", "mae"])
+        for st, info in sorted(bm.items()):
+            for i, (model, rate, n, mae) in enumerate(info["rank"], 1):
+                w.writerow([st, info["src"], i, model, n, round(rate * n),
+                            f"{rate:.4f}", (f"{mae:.3f}" if mae == mae else "")])
+    return path
 
 
 def best_models(perf=None, min_n_vivo=5, min_n_retro=20, **kw):

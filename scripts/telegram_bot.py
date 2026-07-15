@@ -451,15 +451,66 @@ def handle(text, today=None):
 
 # ------------------------------- loop / push -------------------------------
 
+def _log(msg):
+    """Log a consola con timestamp AR, SIEMPRE flusheado (si no, --poll parece muerto)."""
+    import dashboard as D
+    ts = D.to_art(dt.datetime.now(dt.timezone.utc)).strftime("%H:%M:%S")
+    print(f"[{ts}] {msg}", flush=True)
+
+
+COMMANDS = [
+    ("picks", "picks de HOY en todas las ciudades"),
+    ("pick", "prediccion + rango Polymarket de una ciudad"),
+    ("value", "value bets ahora (edge vs mercado)"),
+    ("top", "ciudades mas estables"),
+    ("modelos", "que modelo acierta en una ciudad"),
+    ("vivo", "obs en vivo + mercado de una ciudad"),
+    ("historial", "ultimos resultados del bot en una ciudad"),
+    ("pws", "PWS de referencia de una ciudad"),
+    ("help", "lista de comandos"),
+]
+
+
+def setup_commands(token):
+    """Registra el menu de comandos (la UI de Telegram muestra el / con la lista)."""
+    try:
+        api(token, "setMyCommands",
+            commands=[{"command": c, "description": d} for c, d in COMMANDS])
+    except Exception as e:
+        _log(f"[WARN] setMyCommands: {e}")
+
+
 def poll(token):
+    try:
+        sys.stdout.reconfigure(line_buffering=True)   # py3.7+: nada de buffering en --poll
+    except Exception:
+        pass
     st = load_state()
-    print(f"WXBT telegram bot corriendo (long-poll). Chats registrados: {len(st['chats'])}. Ctrl+C para parar.")
+    setup_commands(token)
+    me = api(token, "getMe").get("result", {})
+    _log(f"WXBT bot @{me.get('username','?')} ONLINE (long-poll). Chats registrados: {len(st['chats'])}. Ctrl+C para parar.")
+    # ping de arranque a los chats ya registrados (asi sabes que quedo vivo)
+    for cid in st["chats"]:
+        try:
+            send(token, int(cid), "🟢 <b>WXBT bot online</b> — mandá /help para ver los comandos.")
+        except Exception:
+            pass
+    last_beat = time.time()
     while True:
         try:
             j = api(token, "getUpdates", offset=st.get("offset", 0) + 1, timeout=POLL_TIMEOUT)
         except requests.RequestException as e:
-            print(f"[WARN] getUpdates: {e}", file=sys.stderr)
+            _log(f"[WARN] getUpdates: {e} — reintento en 5s")
             time.sleep(5)
+            continue
+        if not j.get("ok"):
+            ec = j.get("error_code")
+            if ec == 409:
+                _log("[ERROR] 409 Conflict: hay OTRO getUpdates corriendo o un webhook activo. "
+                     "Cerrá el otro proceso (o borra el webhook). Reintento en 10s.")
+            else:
+                _log(f"[WARN] getUpdates respondio not-ok: {j}")
+            time.sleep(10)
             continue
         for u in j.get("result", []):
             st["offset"] = max(st.get("offset", 0), u["update_id"])
@@ -468,20 +519,29 @@ def poll(token):
                 continue
             chat = msg["chat"]
             cid = str(chat["id"])
+            who = chat.get("username") or chat.get("first_name") or "?"
             if cid not in st["chats"]:
-                st["chats"][cid] = {"name": chat.get("username") or chat.get("first_name") or "?",
-                                    "since": dt.date.today().isoformat()}
-                print(f"[+] chat nuevo: {st['chats'][cid]['name']} ({cid})")
+                st["chats"][cid] = {"name": who, "since": dt.date.today().isoformat()}
+                _log(f"[+] chat nuevo: {who} ({cid})")
+            txt = msg["text"]
             try:
-                resp = handle(msg["text"])
+                resp = handle(txt)
+                _log(f"← {who}: {txt!r}  →  {'(sin respuesta)' if not resp else str(len(resp))+' chars'}")
             except Exception as e:
-                resp = f"Error procesando el comando: {h(e)}"
                 import traceback
                 traceback.print_exc()
+                resp = f"⚠️ Error procesando «{h(txt)}»: {h(e)}"
+                _log(f"[ERROR] handle({txt!r}): {e}")
             if resp:
-                send(token, chat["id"], resp)
+                try:
+                    send(token, chat["id"], resp)
+                except Exception as e:
+                    _log(f"[WARN] send a {cid}: {e}")
             save_state(st)
         save_state(st)
+        if time.time() - last_beat > 600:            # heartbeat cada ~10 min: sigue vivo
+            _log(f"… escuchando ({len(st['chats'])} chat/s)")
+            last_beat = time.time()
 
 
 def push(token, today=None):
@@ -522,6 +582,11 @@ if __name__ == "__main__":
     if a.push:
         push(tok, today=day)
     elif a.poll:
-        poll(tok)
+        try:
+            poll(tok)
+        except KeyboardInterrupt:
+            print("\nbot detenido (Ctrl+C).")
     else:
-        print("Usar --poll (loop), --push (resumen diario) o --dry-run '/comando'.")
+        print("Bot WXBT. Para dejarlo escuchando comandos:  python scripts/telegram_bot.py --poll\n"
+              "  (dejalo corriendo en una terminal o como tarea de Windows — run_telegram.ps1)\n"
+              "Otros: --push (resumen diario) · --dry-run '/comando' (prueba local sin enviar).")

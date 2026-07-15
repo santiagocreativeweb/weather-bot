@@ -71,3 +71,6 @@ data/.telegram_token
 data/telegram_chats.json
 data/.wu_key
 *.bak-dedup0715
+
+# NBM raw dumps (runtime)
+data/nbm_raw/

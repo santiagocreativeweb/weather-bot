@@ -1,227 +1,295 @@
 <!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>WXBT · Track record vivo</title><style>
-/* ============ WXBT TERMINAL v2 (2026-07-11, rehecho de 0 a pedido de Santiago) ============
-   Estetica terminal financiera: fondo profundo, paneles con borde fino, verde fosforo para el
-   bot, cyan para el mercado, ambar para warnings, numeros SIEMPRE en monospace. Dark-only. */
-html,body{margin:0;padding:0;background:#06090d;min-height:100vh;}
-.viz-root{--s1:#0c1218;--s2:#111a23;--page:#06090d;--ink:#d7e5f0;--ink2:#9fb6c9;--mut:#587085;
-  --grid:#1a2836;--base:#2b3f52;--bd:#1d2d3c;--mkt:#38c6ff;--fc:#00e5a0;
-  --fcw:rgba(0,229,160,.08);--live:#ffc247;--fin:#2fd575;--finw:rgba(47,213,117,.10);
-  --warn:#ffb020;--soon:#ffb020;--red:#ff5468;
-  --mono:"Cascadia Mono","Consolas",ui-monospace,monospace;
-  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--page);color:var(--ink);
-  padding:0 22px 40px;max-width:1500px;margin:0 auto;}
-.viz-root a{color:inherit;}
-.viz-root .topbar{position:sticky;top:0;z-index:20;padding:10px 0 8px;
-  background:linear-gradient(180deg,#08101a 0%,var(--page) 100%);
-  border-bottom:1px solid var(--bd);box-shadow:0 1px 0 rgba(0,229,160,.12);}
-.viz-root .row1{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
-.viz-root h1{font-size:15px;margin:0;letter-spacing:.14em;text-transform:uppercase;
-  font-family:var(--mono);color:var(--fc);}
-.viz-root h1::before{content:"▮ ";animation:blink 1.4s steps(1) infinite;}
-@keyframes blink{50%{opacity:.15;}}
-.viz-root .clock{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--live);
-  text-shadow:0 0 12px rgba(255,194,71,.35);}
-.viz-root .clock small{color:var(--mut);font-weight:400;font-size:10px;margin-left:6px;font-family:"Segoe UI",sans-serif;}
-.viz-root .subt{color:var(--mut);font-size:11px;}
-.viz-root .runs{font-size:10.5px;color:var(--mut);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;
-  font-family:var(--mono);}
-.viz-root .runs .next{color:var(--fc);font-weight:600;}
-.viz-root .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}
-.viz-root .filters select,.viz-root .filters input[type=date]{background:var(--s2);color:var(--ink);
-  border:1px solid var(--bd);border-radius:4px;padding:4px 8px;font-size:12px;font-family:inherit;}
-.viz-root .chip{font-size:11px;padding:3px 10px;border-radius:3px;border:1px solid var(--bd);
-  background:var(--s2);color:var(--ink2);cursor:pointer;user-select:none;transition:all .15s;}
-.viz-root .chip.on{background:var(--fc);color:#03110c;border-color:var(--fc);font-weight:700;}
+/* ============================================================================
+   WXBT · design system v3 (rehecho de 0, 2026-07-15)
+   Terminal de trading premium, dark. Verde = bot, cyan = mercado, ambar = vivo.
+   Variables y nombres de clase IDENTICOS a v2 (el JS/markup dependen de ellos).
+   ============================================================================ */
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;min-height:100vh;background:#05080c;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+.viz-root{
+  --page:#05080c;--s1:#0d141c;--s2:#131d27;--s3:#1a2632;
+  --ink:#e8f0f7;--ink2:#a6bccd;--mut:#617688;--faint:#3a4b5c;
+  --grid:#182430;--base:#31465a;--bd:#213042;
+  --mkt:#42c9ff;--mktw:rgba(66,201,255,.10);
+  --fc:#25e6a4;--fcw:rgba(37,230,164,.10);--fcs:rgba(37,230,164,.45);
+  --live:#ffc24a;--fin:#33d17e;--finw:rgba(51,209,126,.12);
+  --warn:#ffb02e;--soon:#ffb02e;--red:#ff5d70;--redw:rgba(255,93,112,.10);
+  --pick:#25e6a4;--t2:#ffd23e;--t3:#ff9142;
+  --r:12px;--r-sm:8px;--r-xs:5px;--r-lg:16px;
+  --sh-1:0 1px 2px rgba(0,0,0,.35);
+  --sh-2:0 2px 4px rgba(0,0,0,.30),0 10px 26px -12px rgba(0,0,0,.6);
+  --sh-pop:0 12px 40px -8px rgba(0,0,0,.7);
+  --mono:"JetBrains Mono","Cascadia Mono","SF Mono","Consolas",ui-monospace,monospace;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-family:var(--sans);color:var(--ink);
+  background:
+    radial-gradient(1200px 500px at 15% -10%,rgba(37,230,164,.05),transparent 60%),
+    radial-gradient(1100px 460px at 100% 0%,rgba(66,201,255,.05),transparent 55%),
+    var(--page);
+  background-attachment:fixed;
+  padding:0 24px 56px;max-width:1560px;margin:0 auto;font-size:14px;line-height:1.5;}
+.viz-root a{color:inherit;text-decoration:none;}
+.viz-root ::selection{background:var(--fcs);color:#04120c;}
+.viz-root ::-webkit-scrollbar{width:10px;height:10px;}
+.viz-root ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:6px;border:2px solid var(--page);}
+.viz-root ::-webkit-scrollbar-thumb:hover{background:var(--base);}
+
+/* ---------- topbar ---------- */
+.viz-root .topbar{position:sticky;top:0;z-index:30;padding:0 0 10px;margin-bottom:6px;
+  background:linear-gradient(180deg,#070d14 62%,rgba(7,13,20,.85) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);}
+.viz-root .row1{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:6px;}
+.viz-root h1{font-size:15px;margin:0;letter-spacing:.16em;text-transform:uppercase;
+  font-family:var(--mono);font-weight:700;
+  background:linear-gradient(90deg,var(--fc),#7bf0cf);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;}
+.viz-root h1::before{content:"◆";-webkit-text-fill-color:var(--fc);margin-right:8px;font-size:11px;
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.viz-root .clock{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--live);
+  padding:3px 12px;border:1px solid rgba(255,194,74,.28);border-radius:999px;
+  background:rgba(255,194,74,.06);}
+.viz-root .clock small{color:var(--mut);font-weight:500;font-size:9.5px;margin-left:7px;
+  font-family:var(--sans);letter-spacing:.04em;}
+.viz-root .subt{color:var(--mut);font-size:11.5px;line-height:1.55;}
+.viz-root .subt code,.viz-root code{font-family:var(--mono);font-size:.92em;color:var(--ink2);
+  background:var(--s2);padding:1px 6px;border-radius:5px;border:1px solid var(--bd);}
+.viz-root .runs{font-size:10.5px;color:var(--mut);display:flex;gap:8px;flex-wrap:wrap;
+  margin-top:8px;font-family:var(--mono);align-items:center;}
+.viz-root .runs span{padding:2px 8px;border-radius:6px;background:var(--s1);border:1px solid var(--grid);}
+.viz-root .runs .next{color:#04120c;background:var(--fc);border-color:var(--fc);font-weight:700;}
+
+/* ---------- filtros ---------- */
+.viz-root .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.viz-root .filters select,.viz-root .filters input[type=date],.viz-root .filters input[type=search],
+.viz-root .filters input[type=text]{
+  background:var(--s2);color:var(--ink);border:1px solid var(--bd);border-radius:var(--r-xs);
+  padding:6px 10px;font-size:12px;font-family:inherit;transition:border-color .15s,box-shadow .15s;}
+.viz-root .filters select:focus,.viz-root .filters input:focus{outline:none;border-color:var(--fc);
+  box-shadow:0 0 0 3px var(--fcw);}
+.viz-root .chip{font-size:11px;padding:5px 12px;border-radius:999px;border:1px solid var(--bd);
+  background:var(--s2);color:var(--ink2);cursor:pointer;user-select:none;transition:all .15s;font-weight:600;}
+.viz-root .chip:hover{border-color:var(--base);color:var(--ink);}
+.viz-root .chip.on{background:var(--fc);color:#04120c;border-color:var(--fc);
+  box-shadow:0 0 16px -2px var(--fcs);}
 .viz-root .count{font-size:11px;color:var(--mut);margin-left:auto;font-family:var(--mono);}
-.viz-root .reset{font-size:11px;color:var(--mkt);cursor:pointer;text-decoration:underline;}
-.viz-root h3.dia{font-size:12px;color:var(--fc);margin:20px 0 10px;text-transform:uppercase;
-  letter-spacing:.14em;font-family:var(--mono);}
-.viz-root h3.dia::before{content:"┌─ ";color:var(--base);}
-.viz-root .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(345px,1fr));gap:10px;}
-.viz-root .card{background:var(--s1);border:1px solid var(--bd);border-radius:6px;
-  padding:11px 13px 9px;transition:opacity .2s;position:relative;}
-.viz-root .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:var(--base);border-radius:6px 0 0 6px;}
-.viz-root .card[data-estado="encurso"]::before{background:var(--fc);box-shadow:0 0 8px rgba(0,229,160,.5);}
-.viz-root .card[data-estado="soon"]::before{background:var(--warn);box-shadow:0 0 8px rgba(255,176,32,.5);}
-.viz-root .card[data-estado="resol"]::before,.viz-root .card[data-estado="pendrev"]::before{background:var(--mkt);}
+.viz-root .reset{font-size:11px;color:var(--mkt);cursor:pointer;font-weight:600;}
+.viz-root .reset:hover{text-decoration:underline;}
+
+/* ---------- section headers ---------- */
+.viz-root h3.dia{font-size:11.5px;color:var(--ink);margin:26px 0 12px;text-transform:uppercase;
+  letter-spacing:.16em;font-family:var(--mono);font-weight:700;display:flex;align-items:center;gap:12px;}
+.viz-root h3.dia::before{content:"";width:4px;height:15px;border-radius:2px;
+  background:linear-gradient(var(--fc),var(--mkt));box-shadow:0 0 10px -1px var(--fcs);}
+.viz-root h3.dia::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,var(--bd),transparent);}
+.viz-root .cont-lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.14em;
+  margin:16px 0 8px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.viz-root .cont-lbl::after{content:"";flex:1;height:1px;background:var(--grid);}
+
+/* ---------- cards ---------- */
+.viz-root .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(352px,1fr));gap:14px;}
+.viz-root .card{position:relative;background:linear-gradient(180deg,var(--s1),#0b1119);
+  border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px 11px;
+  box-shadow:var(--sh-1);transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;}
+.viz-root .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--base);}
+.viz-root .card::after{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);}
+.viz-root .card[data-estado="encurso"]::before{background:var(--fc);box-shadow:2px 0 14px -2px var(--fcs);}
+.viz-root .card[data-estado="soon"]::before{background:var(--warn);box-shadow:2px 0 14px -2px rgba(255,176,46,.6);}
+.viz-root .card[data-estado="resol"]::before,.viz-root .card[data-estado="pendrev"]::before{background:var(--mkt);box-shadow:2px 0 14px -2px rgba(66,201,255,.5);}
 .viz-root .card.fin::before{background:var(--fin);}
-.viz-root .card:hover{border-color:var(--base);}
-.viz-root .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;}
-.viz-root .card-head .st a{font-size:14px;font-weight:700;text-decoration:none;font-family:var(--mono);
-  letter-spacing:.02em;border-bottom:1px dashed var(--base);}
-.viz-root .card-head .st a:hover{color:var(--mkt);border-color:var(--mkt);}
-.viz-root .card-head .city{font-size:10px;color:var(--mut);display:block;margin-top:2px;}
-.viz-root .card-head .city.local{white-space:nowrap;color:var(--ink2);margin-top:1px;}
+.viz-root .card:hover{transform:translateY(-2px);border-color:var(--base);box-shadow:var(--sh-2);}
+.viz-root .card[data-pasado="1"]{opacity:.62;}
+.viz-root .card[data-pasado="1"]:hover{opacity:1;}
+.viz-root .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;gap:8px;}
+.viz-root .card-head .st a{font-size:15px;font-weight:700;font-family:var(--mono);letter-spacing:.01em;}
+.viz-root .card-head .st a:hover{color:var(--mkt);}
+.viz-root .card-head .city{font-size:10.5px;color:var(--mut);display:block;margin-top:3px;font-weight:500;}
+.viz-root .card-head .city.local{white-space:nowrap;color:var(--ink2);margin-top:2px;}
 .viz-root .card-head .city.local b{color:var(--live);font-family:var(--mono);}
-.viz-root .badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
-.viz-root .badge{font-size:9px;padding:2px 7px;border-radius:3px;background:var(--s2);
+.viz-root .badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.viz-root .badge{font-size:9px;padding:3px 8px;border-radius:999px;background:var(--s2);
   color:var(--mut);white-space:nowrap;border:1px solid var(--bd);font-family:var(--mono);
-  text-transform:uppercase;letter-spacing:.05em;}
-.viz-root .badge.encurso{color:var(--fc);border-color:rgba(0,229,160,.4);background:var(--fcw);}
-.viz-root .badge.fin{color:#03110c;background:var(--fin);border-color:var(--fin);font-weight:700;}
-.viz-root .badge.soon{color:var(--soon);border-color:rgba(255,176,32,.45);background:rgba(255,176,32,.08);}
-.viz-root .badge.resol{color:var(--mkt);border-color:rgba(56,198,255,.4);font-weight:700;}
-.viz-root .badge.pendrev{color:var(--warn);border-color:rgba(255,176,32,.5);font-weight:700;}
-.viz-root .badge.frozen{color:#0a0f14;background:var(--mut);border-color:var(--mut);font-weight:700;}
-.viz-root .badge.abierto{color:var(--mkt);border-color:rgba(56,198,255,.4);}
-.viz-root .badge.wu{cursor:pointer;text-decoration:none;display:inline-block;}
+  text-transform:uppercase;letter-spacing:.06em;font-weight:600;line-height:1.4;}
+.viz-root .badge.encurso{color:var(--fc);border-color:var(--fcs);background:var(--fcw);}
+.viz-root .badge.fin{color:#04120c;background:var(--fin);border-color:var(--fin);font-weight:700;}
+.viz-root .badge.soon{color:var(--soon);border-color:rgba(255,176,46,.45);background:rgba(255,176,46,.09);}
+.viz-root .badge.resol{color:var(--mkt);border-color:rgba(66,201,255,.4);background:var(--mktw);font-weight:700;}
+.viz-root .badge.pendrev{color:var(--warn);border-color:rgba(255,176,46,.5);background:rgba(255,176,46,.09);font-weight:700;}
+.viz-root .badge.frozen{color:#04120c;background:var(--live);border-color:var(--live);font-weight:700;}
+.viz-root .badge.abierto{color:var(--mkt);border-color:rgba(66,201,255,.4);background:var(--mktw);}
+.viz-root .badge.wu,.viz-root .badge.tlb{cursor:pointer;}
 .viz-root .badge.wu:hover{color:var(--mkt);border-color:var(--mkt);}
-.viz-root .badge.tlb{cursor:pointer;color:var(--ink2);}
-.viz-root .badge.tlb:hover{color:var(--fc);border-color:rgba(0,229,160,.5);}
-.viz-root .trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:0 0 8px;}
-.viz-root .stat{background:var(--s2);border:1px solid var(--grid);border-radius:4px;padding:6px 9px 5px;}
-.viz-root .stat .lbl{font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.09em;margin-bottom:2px;}
-.viz-root .stat .val{font-size:18px;font-weight:700;font-family:var(--mono);line-height:1.12;}
-.viz-root .stat .sub{font-size:9.5px;color:var(--ink2);font-family:var(--mono);}
-.viz-root .stat.bot .val{color:var(--fc);text-shadow:0 0 14px rgba(0,229,160,.3);}
-.viz-root .stat.live .val{color:var(--live);text-shadow:0 0 14px rgba(255,194,71,.3);}
+.viz-root .badge.tlb{color:var(--ink2);}
+.viz-root .badge.tlb:hover{color:var(--fc);border-color:var(--fcs);background:var(--fcw);}
+
+/* ---------- trio de stats ---------- */
+.viz-root .trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 0 10px;}
+.viz-root .stat{background:var(--s2);border:1px solid var(--grid);border-radius:var(--r-sm);padding:8px 10px 7px;}
+.viz-root .stat .lbl{font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;font-weight:600;}
+.viz-root .stat .val{font-size:19px;font-weight:700;font-family:var(--mono);line-height:1.1;letter-spacing:-.01em;}
+.viz-root .stat .sub{font-size:9.5px;color:var(--ink2);font-family:var(--mono);margin-top:1px;}
+.viz-root .stat.bot{border-color:var(--fcs);background:linear-gradient(180deg,var(--fcw),transparent);}
+.viz-root .stat.bot .val{color:var(--fc);}
+.viz-root .stat.live .val{color:var(--live);}
 .viz-root .stat.finres .val{color:var(--fin);}
-.viz-root .models{font-size:10px;color:var(--mut);margin:0 0 6px;font-family:var(--mono);}
-.chg{animation:chg 2.5s ease-out;}
-@keyframes chg{0%{background:rgba(0,229,160,.30);}100%{background:transparent;}}
-.viz-root .lostwarn{font-size:10.5px;color:var(--mut);background:var(--s2);border-radius:4px;
-  border:1px solid var(--grid);padding:4px 8px;margin:0 0 6px;}
-.viz-root .wstat{font-size:11px;font-weight:600;padding:4px 8px;border-radius:4px;margin:0 0 8px;
-  font-family:var(--mono);border:1px solid transparent;}
-.viz-root .wstat.ok{color:var(--fin);background:var(--finw);border-color:rgba(47,213,117,.25);}
-.viz-root .wstat.late{color:var(--warn);background:rgba(255,176,32,.08);border-color:rgba(255,176,32,.25);}
-.viz-root .wstat.closed{color:var(--red);background:rgba(255,84,104,.08);border-color:rgba(255,84,104,.25);}
-.viz-root .wstat.pend{color:var(--warn);background:rgba(255,176,32,.10);border-color:rgba(255,176,32,.3);}
-.viz-root table.bkts td .miss{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--mut);}
-.viz-root .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;}
-.viz-root .qbtn{font-size:11px;padding:4px 10px;border-radius:3px;border:1px solid var(--bd);
-  background:var(--s2);color:var(--ink);cursor:pointer;font-family:inherit;text-decoration:none;
-  display:inline-block;transition:all .12s;}
-.viz-root .qbtn:hover{border-color:var(--fc);color:var(--fc);box-shadow:0 0 8px rgba(0,229,160,.2);}
-.viz-root .qbtn.dl{border-color:rgba(47,213,117,.5);color:var(--fin);}
+.viz-root .models{font-size:10.5px;color:var(--mut);margin:0 0 8px;font-family:var(--mono);
+  padding:6px 9px;background:var(--s1);border:1px solid var(--grid);border-radius:var(--r-xs);}
+.viz-root .models b{color:var(--ink2);font-weight:700;}
+
+/* ---------- estados / warnings ---------- */
+.chg{animation:chg 2.6s ease-out;}
+@keyframes chg{0%{background:var(--fcw);}100%{background:transparent;}}
+.viz-root .lostwarn{font-size:10.5px;color:var(--ink2);background:var(--redw);border-radius:var(--r-xs);
+  border:1px solid rgba(255,93,112,.22);padding:6px 9px;margin:0 0 8px;}
+.viz-root .wstat{font-size:11px;font-weight:600;padding:6px 10px;border-radius:var(--r-xs);margin:0 0 9px;
+  font-family:var(--mono);border:1px solid transparent;display:flex;align-items:center;gap:6px;}
+.viz-root .wstat.ok{color:var(--fin);background:var(--finw);border-color:rgba(51,209,126,.28);}
+.viz-root .wstat.late{color:var(--warn);background:rgba(255,176,46,.09);border-color:rgba(255,176,46,.28);}
+.viz-root .wstat.closed{color:var(--red);background:var(--redw);border-color:rgba(255,93,112,.28);}
+.viz-root .wstat.pend{color:var(--warn);background:rgba(255,176,46,.11);border-color:rgba(255,176,46,.32);}
+.viz-root .wstat .wtime{color:var(--ink);font-weight:700;}
+
+/* ---------- acciones / botones ---------- */
+.viz-root .actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.viz-root .qbtn{font-size:11.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--bd);
+  background:var(--s2);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:600;
+  display:inline-flex;align-items:center;gap:5px;transition:all .14s;}
+.viz-root .qbtn:hover{border-color:var(--fc);color:var(--fc);background:var(--fcw);transform:translateY(-1px);}
+.viz-root .qbtn.dl{border-color:rgba(51,209,126,.5);color:var(--fin);}
 .viz-root .qbtn:disabled{opacity:.4;cursor:not-allowed;}
 .viz-root .qbtn.busy{opacity:.6;pointer-events:none;}
+.viz-root .qbtn.busy::after{content:"";width:10px;height:10px;border:2px solid currentColor;
+  border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
 .viz-root .qmsg{font-size:11px;color:var(--mut);margin-left:4px;}
 .viz-root .qmsg.ok{color:var(--fin);} .viz-root .qmsg.err{color:var(--red);}
-.viz-root .models b{color:var(--ink2);font-weight:600;}
-.viz-root table.bkts{border-collapse:collapse;width:100%;font-size:11.5px;}
-.viz-root table.bkts th{font-size:8px;color:var(--mut);text-align:left;font-weight:600;
-  text-transform:uppercase;letter-spacing:.08em;padding:2px 4px;border-bottom:1px solid var(--grid);}
-.viz-root table.bkts td{padding:2.5px 4px;font-family:var(--mono);font-size:11px;
-  border-bottom:1px solid rgba(26,40,54,.55);}
+
+/* ---------- tabla de buckets ---------- */
+.viz-root table.bkts{border-collapse:collapse;width:100%;font-size:11.5px;margin-top:2px;}
+.viz-root table.bkts th{font-size:8px;color:var(--mut);text-align:left;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;padding:3px 5px;border-bottom:1px solid var(--bd);}
+.viz-root table.bkts td{padding:3.5px 5px;font-family:var(--mono);font-size:11px;
+  border-bottom:1px solid rgba(24,36,48,.6);}
+.viz-root table.bkts tr:last-child td{border-bottom:0;}
 .viz-root table.bkts tr:hover td{background:var(--s2);}
-.viz-root table.bkts .num{text-align:right;}
-.viz-root .track{background:var(--grid);border-radius:0 2px 2px 0;height:8px;min-width:56px;display:block;}
-.viz-root .fill{background:var(--mkt);height:100%;border-radius:0 2px 2px 0;min-width:2px;display:block;
-  box-shadow:0 0 6px rgba(56,198,255,.35);}
-.viz-root .dot{display:inline-block;width:7px;height:7px;border-radius:1px;background:var(--fc);}
-.viz-root .edgehi{font-weight:700;color:var(--fc);}
-.viz-root .chipno{font-size:8.5px;font-weight:700;color:var(--warn);border:1px solid rgba(255,176,32,.4);
-  border-radius:3px;padding:0 4px;font-family:var(--mono);}
-.viz-root .verdict{display:flex;gap:10px;align-items:center;font-size:12px;margin:4px 0 2px;
-  font-family:var(--mono);}
-.viz-root .verdict .ok{color:var(--fin);font-weight:700;}
-.viz-root .verdict .bad{color:var(--red);font-weight:700;}
-.viz-root details.acc{margin-top:8px;border-top:1px solid var(--grid);padding-top:6px;}
-.viz-root details.acc summary{cursor:pointer;font-size:10.5px;color:var(--mut);list-style:none;}
-.viz-root details.acc summary::before{content:"▸ ";transition:transform .2s;}
-.viz-root details.acc[open] summary::before{content:"▾ ";}
-.viz-root details.acc .inner{font-size:11px;color:var(--ink2);padding:6px 2px 2px;line-height:1.6;
-  animation:accIn .18s ease;}
-@keyframes accIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
-.viz-root .empty{font-size:11px;color:var(--mut);font-style:italic;}
-.viz-root .timing{background:var(--s1);border:1px solid var(--bd);border-radius:12px;
-  padding:13px 16px;margin-top:22px;font-size:12px;color:var(--ink2);}
-.viz-root .timing h4{margin:0 0 6px;font-size:12.5px;color:var(--ink);}
-.viz-root .timing table{border-collapse:collapse;font-size:11px;}
-.viz-root .timing td,.viz-root .timing th{padding:2px 12px 2px 0;font-variant-numeric:tabular-nums;
-  color:var(--ink2);text-align:left;}
-.viz-root .timing th{color:var(--mut);font-size:9px;text-transform:uppercase;}
-.viz-root .cont-lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;
-  margin:10px 0 6px;font-weight:700;}
-.viz-root .cont-lbl::after{content:"";display:inline-block;width:60px;height:1px;background:var(--grid);
-  margin-left:10px;vertical-align:middle;}
-.viz-root .alog{display:flex;flex-direction:column;gap:2px;max-height:340px;overflow-y:auto;}
-.viz-root .arow{display:flex;gap:10px;align-items:baseline;font-size:11.5px;padding:3px 0;
-  border-bottom:1px solid var(--s2);font-variant-numeric:tabular-nums;}
-.viz-root .arow .at{color:var(--mut);min-width:78px;font-size:10.5px;}
-.viz-root .arow .ast{font-weight:700;min-width:44px;}
-.viz-root .arow .ad{color:var(--mut);min-width:74px;}
-.viz-root .arow .aval{color:var(--ink2);}
-.viz-root .arow .aval b{color:var(--ink);}
-.viz-root .arow .up{color:#d03b3b;font-weight:700;}
-.viz-root .arow .down{color:var(--mkt);font-weight:700;}
-.viz-root .arow .frzt{color:var(--mut);font-size:10px;border:1px solid var(--bd);border-radius:3px;padding:0 5px;}
-.viz-root .fill.y2{background:#ffd23e;box-shadow:0 0 6px rgba(255,210,62,.4);}
-.viz-root .fill.o3{background:#ff8c42;box-shadow:0 0 6px rgba(255,140,66,.4);}
+.viz-root table.bkts .num{text-align:right;font-variant-numeric:tabular-nums;}
+.viz-root table.bkts td .miss{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--mut);}
+.viz-root .track{background:var(--grid);border-radius:3px;height:8px;min-width:56px;display:block;overflow:hidden;}
+.viz-root .fill{background:var(--mkt);height:100%;border-radius:3px;min-width:2px;display:block;
+  box-shadow:0 0 8px -1px rgba(66,201,255,.5);}
+.viz-root .fill.g1{background:var(--fin);box-shadow:0 0 8px -1px rgba(51,209,126,.5);}
+.viz-root .fill.y2{background:var(--t2);box-shadow:0 0 8px -1px rgba(255,210,62,.45);}
+.viz-root .fill.o3{background:var(--t3);box-shadow:0 0 8px -1px rgba(255,145,66,.45);}
 .viz-root .fill.lost{background:var(--base);opacity:.4;box-shadow:none;}
+.viz-root .dot{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--fc);}
+.viz-root .dot.g1{background:var(--pick);} .viz-root .dot.y2{background:var(--t2);} .viz-root .dot.o3{background:var(--t3);}
+.viz-root .edgehi{font-weight:700;color:var(--fc);}
 .viz-root tr.lostrow td{color:var(--mut);text-decoration:line-through;text-decoration-thickness:1px;}
 .viz-root tr.lostrow td:first-child,.viz-root tr.lostrow td:nth-child(3){text-decoration:none;}
-.viz-root .dot.y2{background:#ffd23e;}
-/* colores pedidos 2026-07-12: pick/EXACTO verde, top-2 amarillo, top-3 naranja */
-.viz-root .dot.g1{background:var(--fin);}
-.viz-root .dot.o3{background:#ff8c42;}
-.viz-root .fill.g1{background:var(--fin);box-shadow:0 0 6px rgba(47,213,117,.4);}
-.viz-root .okc{color:var(--fin);font-weight:800;}
-.viz-root .badc{color:var(--red);font-weight:800;}
-.viz-root .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:4px 0 8px;}
-.viz-root .scard{background:var(--s2);border:1px solid var(--grid);border-radius:4px;padding:9px 11px;}
-.viz-root .scard .lbl{font-size:8.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.09em;}
-.viz-root .scard .big{font-size:23px;font-weight:700;font-family:var(--mono);line-height:1.2;color:var(--fc);}
+.viz-root .chipno{font-size:8.5px;font-weight:700;color:var(--warn);border:1px solid rgba(255,176,46,.4);
+  border-radius:4px;padding:1px 5px;font-family:var(--mono);}
+.viz-root .okc{color:var(--fin);font-weight:800;} .viz-root .badc{color:var(--red);font-weight:800;}
+.viz-root .verdict{display:flex;gap:10px;align-items:center;font-size:12px;margin:6px 0 2px;font-family:var(--mono);}
+.viz-root .verdict .ok{color:var(--fin);font-weight:700;} .viz-root .verdict .bad{color:var(--red);font-weight:700;}
+
+/* ---------- accordion ---------- */
+.viz-root details.acc{margin-top:10px;border-top:1px solid var(--grid);padding-top:8px;}
+.viz-root details.acc summary{cursor:pointer;font-size:10.5px;color:var(--mut);list-style:none;font-weight:600;}
+.viz-root details.acc summary::before{content:"▸ ";transition:transform .2s;}
+.viz-root details.acc[open] summary::before{content:"▾ ";}
+.viz-root details.acc .inner{font-size:11px;color:var(--ink2);padding:8px 2px 2px;line-height:1.65;animation:accIn .2s ease;}
+@keyframes accIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.viz-root .empty{font-size:11px;color:var(--mut);font-style:italic;padding:8px 0;}
+
+/* ---------- paneles ---------- */
+.viz-root .timing{background:linear-gradient(180deg,var(--s1),#0b1119);border:1px solid var(--bd);
+  border-radius:var(--r-lg);padding:16px 18px;margin-top:24px;font-size:12px;color:var(--ink2);box-shadow:var(--sh-1);}
+.viz-root .timing h4{margin:0 0 10px;font-size:13px;color:var(--ink);font-weight:700;letter-spacing:.01em;
+  display:flex;align-items:center;gap:8px;}
+.viz-root .timing table{border-collapse:collapse;font-size:11px;}
+.viz-root .timing td,.viz-root .timing th{padding:3px 14px 3px 0;font-variant-numeric:tabular-nums;color:var(--ink2);text-align:left;}
+.viz-root .timing th{color:var(--mut);font-size:9px;text-transform:uppercase;letter-spacing:.06em;}
+.viz-root .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 10px;}
+.viz-root .scard{background:var(--s2);border:1px solid var(--grid);border-radius:var(--r-sm);padding:11px 13px;
+  transition:border-color .15s,transform .15s;}
+.viz-root .scard:hover{border-color:var(--base);transform:translateY(-1px);}
+.viz-root .scard .lbl{font-size:8.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+.viz-root .scard .big{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1.15;color:var(--fc);letter-spacing:-.02em;}
 .viz-root .scard .sub{font-size:10px;color:var(--ink2);font-family:var(--mono);}
-.viz-root .scard.y .big{color:#ffd23e;} .viz-root .scard.o .big{color:#ff8c42;}
-.viz-root .scard.bad .big{color:var(--red);}
+.viz-root .scard.y .big{color:var(--t2);} .viz-root .scard.o .big{color:var(--t3);} .viz-root .scard.bad .big{color:var(--red);}
 .viz-root .cchips{display:flex;gap:8px;flex-wrap:wrap;}
 .viz-root .cchip{font-size:11px;color:var(--ink2);background:var(--s2);border:1px solid var(--grid);
-  border-radius:3px;padding:3px 9px;font-family:var(--mono);}
-#viz-tooltip{position:fixed;pointer-events:none;background:#e8f2fa;color:#0a1017;font-size:11px;
-  padding:4px 8px;border-radius:4px;opacity:0;transition:opacity .1s;z-index:100;max-width:340px;
-  white-space:normal;font-family:"Segoe UI",system-ui,sans-serif;}
-.viz-root .hidden{display:none !important;}
-/* ---------- TIMELINE 24h (modal fuera de .viz-root, a salvo del morph) ---------- */
-#tl-modal{position:fixed;inset:0;background:rgba(3,6,9,.78);z-index:200;display:flex;
-  align-items:center;justify-content:center;backdrop-filter:blur(2px);}
-#tl-modal .tl-box{background:#0c1218;border:1px solid #2b3f52;border-radius:8px;width:min(560px,92vw);
-  max-height:86vh;overflow-y:auto;padding:14px 18px;color:#d7e5f0;
-  font-family:"Segoe UI",system-ui,sans-serif;box-shadow:0 0 40px rgba(0,229,160,.12);}
-#tl-modal .tl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
-  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;color:#00e5a0;letter-spacing:.06em;}
-#tl-modal .tl-x{cursor:pointer;color:#587085;font-weight:700;padding:2px 8px;}
-#tl-modal .tl-x:hover{color:#ff5468;}
-#tl-modal .tl-ctl{display:flex;gap:12px;align-items:center;margin:6px 0 10px;}
-#tl-modal input[type=range]{flex:1;accent-color:#00e5a0;}
-#tl-modal .tl-time{font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;color:#ffc247;
-  min-width:150px;text-align:right;white-space:nowrap;}
-#tl-modal .tl-bot{font-size:12px;margin:0 0 8px;color:#9fb6c9;font-family:"Cascadia Mono",monospace;}
-#tl-modal .tl-bot b{color:#00e5a0;}
-#tl-modal table{border-collapse:collapse;width:100%;font-size:11.5px;}
-#tl-modal th{font-size:8px;color:#587085;text-align:left;text-transform:uppercase;letter-spacing:.08em;
-  padding:2px 4px;border-bottom:1px solid #1a2836;}
-#tl-modal td{padding:2.5px 4px;font-family:"Cascadia Mono","Consolas",monospace;
-  border-bottom:1px solid rgba(26,40,54,.55);}
-#tl-modal .num{text-align:right;}
-#tl-modal .track{background:#1a2836;height:8px;min-width:120px;display:block;border-radius:0 2px 2px 0;}
-#tl-modal .fill{background:#38c6ff;height:100%;min-width:2px;display:block;border-radius:0 2px 2px 0;}
-#tl-modal .tl-note{font-size:10px;color:#587085;margin-top:8px;}
-#tl-modal .tl-bot .tl-y{color:#ffd23e;} #tl-modal .tl-bot .tl-o{color:#ff8c42;}
-#tl-modal .tl-dot{display:inline-block;width:7px;height:7px;border-radius:1px;}
-#tl-modal .tl-dot.g{background:#00e5a0;} #tl-modal .tl-dot.y{background:#ffd23e;} #tl-modal .tl-dot.o{background:#ff8c42;}
-#tl-modal tr.tl-r1 td:nth-child(2){color:#00e5a0;font-weight:700;}
-#tl-modal tr.tl-r2 td:nth-child(2){color:#ffd23e;} #tl-modal tr.tl-r3 td:nth-child(2){color:#ff8c42;}
+  border-radius:999px;padding:4px 11px;font-family:var(--mono);}
+.viz-root .cchip b{color:var(--fc);}
 
-/* ===== NAVBAR compartido (2026-07-15) ===== */
-.viz-root .wxnav{display:flex;gap:2px;align-items:stretch;flex-wrap:wrap;
-  margin:0 -22px 8px;padding:0 22px;border-bottom:1px solid var(--bd);}
-.viz-root .wxnav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;
-  font-family:var(--mono);font-size:12px;color:var(--ink2);padding:8px 13px;
-  border:1px solid transparent;border-bottom:2px solid transparent;
-  border-radius:6px 6px 0 0;white-space:nowrap;transition:all .13s;letter-spacing:.02em;}
-.viz-root .wxnav a .ico{font-size:13px;filter:saturate(.6);}
-.viz-root .wxnav a:hover{color:var(--ink);background:var(--s2);}
-.viz-root .wxnav a.on{color:var(--fc);background:var(--fcw);border-color:var(--bd);
-  border-bottom-color:var(--fc);font-weight:700;}
+/* ---------- registro de auditoria ---------- */
+.viz-root .alog{display:flex;flex-direction:column;gap:1px;max-height:340px;overflow-y:auto;}
+.viz-root .arow{display:flex;gap:12px;align-items:baseline;font-size:11.5px;padding:4px 2px;
+  border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;}
+.viz-root .arow .at{color:var(--mut);min-width:82px;font-size:10.5px;font-family:var(--mono);}
+.viz-root .arow .ast{font-weight:700;min-width:46px;font-family:var(--mono);}
+.viz-root .arow .ad{color:var(--mut);min-width:78px;}
+.viz-root .arow .aval{color:var(--ink2);font-family:var(--mono);}
+.viz-root .arow .aval b{color:var(--ink);}
+.viz-root .arow .up{color:var(--red);font-weight:700;} .viz-root .arow .down{color:var(--mkt);font-weight:700;}
+.viz-root .arow .frzt{color:var(--live);font-size:10px;border:1px solid rgba(255,194,74,.3);border-radius:999px;padding:0 7px;}
+
+/* ---------- tooltip ---------- */
+#viz-tooltip{position:fixed;pointer-events:none;background:#eef5fb;color:#0a1017;font-size:11.5px;
+  padding:6px 10px;border-radius:7px;opacity:0;transition:opacity .12s;z-index:1000;max-width:340px;
+  white-space:normal;font-family:var(--sans);line-height:1.45;box-shadow:0 8px 30px -6px rgba(0,0,0,.6);}
+.viz-root .hidden{display:none !important;}
+
+/* ---------- timeline modal (fuera de .viz-root) ---------- */
+#tl-modal{position:fixed;inset:0;background:rgba(3,6,9,.82);z-index:2000;display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+#tl-modal .tl-box{background:linear-gradient(180deg,#0e151d,#0a1017);border:1px solid #2b3f52;
+  border-radius:16px;width:min(580px,93vw);max-height:86vh;overflow-y:auto;padding:18px 20px;
+  color:#e8f0f7;font-family:"Inter","Segoe UI",sans-serif;box-shadow:0 20px 60px -10px rgba(0,0,0,.8);}
+#tl-modal .tl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;
+  font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#25e6a4;letter-spacing:.05em;font-weight:700;}
+#tl-modal .tl-x{cursor:pointer;color:#617688;font-weight:700;padding:2px 10px;border-radius:6px;font-size:16px;}
+#tl-modal .tl-x:hover{color:#ff5d70;background:rgba(255,93,112,.1);}
+#tl-modal .tl-ctl{display:flex;gap:14px;align-items:center;margin:8px 0 12px;}
+#tl-modal input[type=range]{flex:1;accent-color:#25e6a4;}
+#tl-modal .tl-time{font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#ffc24a;
+  min-width:150px;text-align:right;white-space:nowrap;}
+#tl-modal .tl-bot{font-size:12px;margin:0 0 10px;color:#a6bccd;font-family:"JetBrains Mono","Cascadia Mono",monospace;
+  padding:8px 11px;background:#131d27;border-radius:8px;border:1px solid #213042;}
+#tl-modal .tl-bot b{color:#25e6a4;} #tl-modal .tl-bot .tl-y{color:#ffd23e;} #tl-modal .tl-bot .tl-o{color:#ff9142;}
+#tl-modal table{border-collapse:collapse;width:100%;font-size:11.5px;}
+#tl-modal th{font-size:8px;color:#617688;text-align:left;text-transform:uppercase;letter-spacing:.08em;
+  padding:3px 5px;border-bottom:1px solid #182430;}
+#tl-modal td{padding:3.5px 5px;font-family:"JetBrains Mono","Cascadia Mono",monospace;border-bottom:1px solid rgba(24,36,48,.6);}
+#tl-modal .num{text-align:right;}
+#tl-modal .track{background:#182430;height:8px;min-width:120px;display:block;border-radius:3px;overflow:hidden;}
+#tl-modal .fill{background:#42c9ff;height:100%;min-width:2px;display:block;border-radius:3px;}
+#tl-modal .tl-note{font-size:10px;color:#617688;margin-top:10px;}
+#tl-modal .tl-dot{display:inline-block;width:8px;height:8px;border-radius:2px;}
+#tl-modal .tl-dot.g{background:#25e6a4;} #tl-modal .tl-dot.y{background:#ffd23e;} #tl-modal .tl-dot.o{background:#ff9142;}
+#tl-modal tr.tl-r1 td:nth-child(2){color:#25e6a4;font-weight:700;}
+#tl-modal tr.tl-r2 td:nth-child(2){color:#ffd23e;} #tl-modal tr.tl-r3 td:nth-child(2){color:#ff9142;}
+
+/* ===== NAVBAR compartido (v3 2026-07-15) ===== */
+.viz-root .wxnav{display:flex;gap:4px;align-items:center;flex-wrap:wrap;
+  margin:0 -24px 4px;padding:8px 24px 0;}
+.viz-root .wxnav a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  font-size:12.5px;font-weight:600;color:var(--ink2);padding:7px 14px;
+  border:1px solid transparent;border-radius:999px;white-space:nowrap;transition:all .14s;}
+.viz-root .wxnav a .ico{font-size:13px;filter:grayscale(.4) opacity(.85);}
+.viz-root .wxnav a:hover{color:var(--ink);background:var(--s2);border-color:var(--bd);}
+.viz-root .wxnav a.on{color:#04120c;background:linear-gradient(180deg,var(--fc),#1fbf8a);
+  border-color:var(--fc);font-weight:700;box-shadow:0 0 18px -4px var(--fcs);}
 .viz-root .wxnav a.on .ico{filter:none;}
 .viz-root .wxnav .navspacer{flex:1 1 auto;}
-.viz-root .wxnav .navbrand{display:inline-flex;align-items:center;color:var(--mut);
-  font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:8px 6px;text-transform:uppercase;}
-@media (max-width:640px){
-  .viz-root .wxnav a{padding:7px 9px;font-size:11px;}
+.viz-root .wxnav .navbrand{display:inline-flex;align-items:center;color:var(--fc);font-weight:800;
+  font-family:var(--mono);font-size:12px;letter-spacing:.18em;padding:7px 10px 7px 0;}
+@media (max-width:680px){
+  .viz-root .wxnav{margin:0 -14px 4px;padding:8px 14px 0;}
+  .viz-root .wxnav a{padding:7px 11px;font-size:11.5px;}
   .viz-root .wxnav a .lbl{display:none;}   /* en pantalla chica: solo iconos */
   .viz-root .wxnav .navbrand{display:none;}
 }
@@ -260,10 +328,13 @@ html,body{margin:0;padding:0;background:#06090d;min-height:100vh;}
 .viz-root .gv.g-t3{color:#ff8c42;} .viz-root .gv.g-bad{color:#d03b3b;}
 .viz-root a{color:var(--mkt);}
 </style></head><body><div class="viz-root">
-<div class="topbar"><nav class="wxnav"><span class="navbrand">WXBT</span><a class="" href="live_dashboard.html" data-tip="pronostico vs mercado en vivo + value bets + ventana 48h" title="pronostico vs mercado en vivo + value bets + ventana 48h"><span class="ico">🖥</span><span class="lbl">Terminal</span></a><a class="" href="cities.html" data-tip="dashboard individual por ciudad: mercado + modelos + PWS + historial" title="dashboard individual por ciudad: mercado + modelos + PWS + historial"><span class="ico">🏙</span><span class="lbl">Ciudades</span></a><a class="" href="history.html" data-tip="pronosticos desde el 08/07: pick congelado vs lo que pago Polymarket" title="pronosticos desde el 08/07: pick congelado vs lo que pago Polymarket"><span class="ico">🗓</span><span class="lbl">Historial</span></a><a class="" href="models.html" data-tip="que modelo acierta en cada ciudad (vivo pre-freeze + retro 90d)" title="que modelo acierta en cada ciudad (vivo pre-freeze + retro 90d)"><span class="ico">🧪</span><span class="lbl">Modelos</span></a><a class="on" href="leaderboard.html" data-tip="ranking de estaciones por track record vivo (exactos/top-2)" title="ranking de estaciones por track record vivo (exactos/top-2)"><span class="ico">🏆</span><span class="lbl">Leaderboard</span></a><a class="" href="stats.html" data-tip="estadisticas generales + rendimiento dia por dia (gano/perdio)" title="estadisticas generales + rendimiento dia por dia (gano/perdio)"><span class="ico">📊</span><span class="lbl">Estadisticas</span></a><span class="navspacer"></span></nav><div class="row1"><h1>🏆 Track record VIVO del bot — WXBT</h1>
+<div class="topbar"><nav class="wxnav"><span class="navbrand">WXBT</span><a class="" href="live_dashboard.html" data-tip="pronostico vs mercado en vivo, ventana 48h" title="pronostico vs mercado en vivo, ventana 48h"><span class="ico">🖥</span><span class="lbl">Terminal</span></a><a class="" href="cities.html" data-tip="dashboard por ciudad: mercado + modelos que mejor aciertan + PWS" title="dashboard por ciudad: mercado + modelos que mejor aciertan + PWS"><span class="ico">🏙</span><span class="lbl">Ciudades</span></a><a class="" href="value.html" data-tip="donde el bot ve mas ventaja contra lo que paga el mercado" title="donde el bot ve mas ventaja contra lo que paga el mercado"><span class="ico">💰</span><span class="lbl">Value bets</span></a><a class="on" href="leaderboard.html" data-tip="ranking de estaciones por track record vivo (exactos/top-2)" title="ranking de estaciones por track record vivo (exactos/top-2)"><span class="ico">🏆</span><span class="lbl">Leaderboard</span></a><a class="" href="stats.html" data-tip="estadisticas generales + rendimiento dia por dia (gano/perdio)" title="estadisticas generales + rendimiento dia por dia (gano/perdio)"><span class="ico">📊</span><span class="lbl">Estadisticas</span></a><span class="navspacer"></span></nav><div class="row1"><h1>🏆 Track record VIVO del bot — WXBT</h1>
 <span class="subt">ranking por RESULTADOS REALES contra el bucket ganador oficial de Polymarket
-· targets resueltos 08/07/2026&ndash;14/07/2026</span></div>
-<div class="updbar">🕒 Tabla actualizada: <b>15/07/2026 13:47</b> (hora Argentina) · se regenera cada corrida</div></div>
+· targets resueltos 08/07/2026&ndash;15/07/2026</span>
+<button class="qbtn" id="lb-refresh" style="margin-left:auto"
+  data-tip="re-consulta los ganadores en Gamma y recalcula el ranking al momento (requiere el dashboard servido con --serve)">🔄 Actualizar ahora</button></div>
+<div class="updbar">🕒 Tabla actualizada: <b>15/07/2026 14:47</b> (hora Argentina) · se regenera cada corrida ·
+<span id="lb-msg"></span></div></div>
 <p class="subt" style="margin:8px 0 14px"><b>Clic en cualquier fila</b> para ver el GAMELOG de esa
 ciudad: cada mercado con lo que ganó (WU), el pick del bot y el resultado —
 <span class="gv g-ex">✅ EXACTO</span> · <span class="gv g-t2">✅ TOP-2</span> ·
@@ -271,7 +342,7 @@ ciudad: cada mercado con lo que ganó (WU), el pick del bot y el resultado —
 <b>EXACTOS</b>, desempate TOP-2 y p ganador. <b>lab 60d</b> = hit del backfill (referencia).</p>
 <table class="lb"><thead><tr><th>#</th><th>estación</th><th>EXACTOS</th><th>TOP-2</th>
 <th>TOP-3</th><th>p ganador</th><th>n</th><th>lab 60d</th></tr></thead>
-<tbody><tr class="lbrow top" data-st="KORD" data-has="1"><td class="rk">1</td><td class="stn"><span class="caret">▸</span>KORD<span>Chicago · America</span></td><td class="num big">4/6</td><td class="num">6/6</td><td class="num">6/6</td><td class="num">38%</td><td class="num">6</td><td class="num lab">50%</td></tr><tr class="glrow hidden" data-for="KORD"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KORD · Chicago — 4 exactos · 6 top-2 · 6 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">92-93°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">86-87°F</td><td class="gp">84-85°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">82-83°F</td><td class="gp">82-83°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">80-81°F</td><td class="gp">82-83°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">86-87°F</td><td class="gp">86-87°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">08/07/2026</td><td class="gw">88-89°F</td><td class="gp">88-89°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LFPB" data-has="1"><td class="rk">2</td><td class="stn"><span class="caret">▸</span>LFPB<span>Paris · Europa</span></td><td class="num big">4/5</td><td class="num">5/5</td><td class="num">5/5</td><td class="num">31%</td><td class="num">5</td><td class="num lab">38%</td></tr><tr class="glrow hidden" data-for="LFPB"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LFPB · Paris — 4 exactos · 5 top-2 · 5 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">35°C</td><td class="gp">36°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">33°C</td><td class="gp">33°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LIMC" data-has="1"><td class="rk">3</td><td class="stn"><span class="caret">▸</span>LIMC<span>Milan · Europa</span></td><td class="num big">3/5</td><td class="num">4/5</td><td class="num">5/5</td><td class="num">36%</td><td class="num">5</td><td class="num lab">44%</td></tr><tr class="glrow hidden" data-for="LIMC"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LIMC · Milan — 3 exactos · 4 top-2 · 5 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">33°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">33°C</td><td class="gp">33°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="EGLC" data-has="1"><td class="rk">4</td><td class="stn"><span class="caret">▸</span>EGLC<span>Londres · Europa</span></td><td class="num big">3/5</td><td class="num">4/5</td><td class="num">5/5</td><td class="num">33%</td><td class="num">5</td><td class="num lab">35%</td></tr><tr class="glrow hidden" data-for="EGLC"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG EGLC · Londres — 3 exactos · 4 top-2 · 5 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">26°C</td><td class="gp">27°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">28°C</td><td class="gp">28°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">27°C</td><td class="gp">28°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="RJTT" data-has="1"><td class="rk">5</td><td class="stn"><span class="caret">▸</span>RJTT<span>Tokio · Asia</span></td><td class="num big">3/5</td><td class="num">3/5</td><td class="num">3/5</td><td class="num">20%</td><td class="num">5</td><td class="num lab">39%</td></tr><tr class="glrow hidden" data-for="RJTT"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG RJTT · Tokio — 3 exactos · 3 top-2 · 3 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">34°C</td><td class="gp">32°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">28°C</td><td class="gp">31°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">30°C</td><td class="gp">30°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">30°C</td><td class="gp">30°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="LEMD" data-has="1"><td class="rk">6</td><td class="stn"><span class="caret">▸</span>LEMD<span>Madrid · Europa</span></td><td class="num big">2/5</td><td class="num">5/5</td><td class="num">5/5</td><td class="num">33%</td><td class="num">5</td><td class="num lab">77%</td></tr><tr class="glrow hidden" data-for="LEMD"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LEMD · Madrid — 2 exactos · 5 top-2 · 5 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">33°C</td><td class="gp">≤32°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">34°C</td><td class="gp">33°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">38°C</td><td class="gp">37°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">36°C</td><td class="gp">36°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">38°C</td><td class="gp">38°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="ZBAA" data-has="1"><td class="rk">7</td><td class="stn"><span class="caret">▸</span>ZBAA<span>Beijing · Asia</span></td><td class="num big">2/5</td><td class="num">3/5</td><td class="num">3/5</td><td class="num">22%</td><td class="num">5</td><td class="num lab">36%</td></tr><tr class="glrow hidden" data-for="ZBAA"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG ZBAA · Beijing — 2 exactos · 3 top-2 · 3 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">33°C</td><td class="gp">33°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">34°C</td><td class="gp">32°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">31°C</td><td class="gp">29°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">≤27°C</td><td class="gp">28°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="RCSS" data-has="1"><td class="rk">8</td><td class="stn"><span class="caret">▸</span>RCSS<span>Taipei · Asia</span></td><td class="num big">2/5</td><td class="num">2/5</td><td class="num">3/5</td><td class="num">13%</td><td class="num">5</td><td class="num lab">23%</td></tr><tr class="glrow hidden" data-for="RCSS"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG RCSS · Taipei — 2 exactos · 2 top-2 · 3 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">37°C</td><td class="gp">35°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">28°C</td><td class="gp">31°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="KLGA" data-has="1"><td class="rk">9</td><td class="stn"><span class="caret">▸</span>KLGA<span>Nueva York · America</span></td><td class="num big">1/5</td><td class="num">4/5</td><td class="num">5/5</td><td class="num">25%</td><td class="num">5</td><td class="num lab">31%</td></tr><tr class="glrow hidden" data-for="KLGA"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KLGA · Nueva York — 1 exacto · 4 top-2 · 5 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">84-85°F</td><td class="gp">86-87°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">84-85°F</td><td class="gp">84-85°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">82-83°F</td><td class="gp">80-81°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">88-89°F</td><td class="gp">86-87°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">86-87°F</td><td class="gp">84-85°F</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="EDDM" data-has="1"><td class="rk">10</td><td class="stn"><span class="caret">▸</span>EDDM<span>Munich · Europa</span></td><td class="num big">1/5</td><td class="num">3/5</td><td class="num">5/5</td><td class="num">22%</td><td class="num">5</td><td class="num lab">41%</td></tr><tr class="glrow hidden" data-for="EDDM"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG EDDM · Munich — 1 exacto · 3 top-2 · 5 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">31°C</td><td class="gp">31°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">28°C</td><td class="gp">27°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">30°C</td><td class="gp">29°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">29°C</td><td class="gp">28°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">26°C</td><td class="gp">25°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KMIA" data-has="1"><td class="rk">11</td><td class="stn"><span class="caret">▸</span>KMIA<span>Miami · America</span></td><td class="num big">1/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">42%</td><td class="num">1</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KMIA"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KMIA · Miami — 1 exacto · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">92-93°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LTAC" data-has="1"><td class="rk">12</td><td class="stn"><span class="caret">▸</span>LTAC<span>Ankara · Europa</span></td><td class="num big">1/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">42%</td><td class="num">1</td><td class="num lab">33%</td></tr><tr class="glrow hidden" data-for="LTAC"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LTAC · Ankara — 1 exacto · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">32°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="MMMX" data-has="1"><td class="rk">13</td><td class="stn"><span class="caret">▸</span>MMMX<span>Ciudad de Mexico · America</span></td><td class="num big">1/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">39%</td><td class="num">1</td><td class="num lab">33%</td></tr><tr class="glrow hidden" data-for="MMMX"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG MMMX · Ciudad de Mexico — 1 exacto · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">24°C</td><td class="gp">24°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="NZWN" data-has="1"><td class="rk">14</td><td class="stn"><span class="caret">▸</span>NZWN<span>Wellington · Oceania</span></td><td class="num big">1/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">39%</td><td class="num">1</td><td class="num lab">83%</td></tr><tr class="glrow hidden" data-for="NZWN"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG NZWN · Wellington — 1 exacto · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">15°C</td><td class="gp">15°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KSFO" data-has="1"><td class="rk">15</td><td class="stn"><span class="caret">▸</span>KSFO<span>San Francisco · America</span></td><td class="num big">1/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">27%</td><td class="num">1</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KSFO"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KSFO · San Francisco — 1 exacto · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">76-77°F</td><td class="gp">76-77°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KAUS" data-has="1"><td class="rk">16</td><td class="stn"><span class="caret">▸</span>KAUS<span>Austin · America</span></td><td class="num big">1/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">26%</td><td class="num">1</td><td class="num lab">40%</td></tr><tr class="glrow hidden" data-for="KAUS"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KAUS · Austin — 1 exacto · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">92-93°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="WMKK" data-has="1"><td class="rk">17</td><td class="stn"><span class="caret">▸</span>WMKK<span>Kuala Lumpur · Asia</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">22%</td><td class="num">2</td><td class="num lab">17%</td></tr><tr class="glrow hidden" data-for="WMKK"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG WMKK · Kuala Lumpur — 1 exacto · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">33°C</td><td class="gp">31°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">32°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="ZGSZ" data-has="1"><td class="rk">18</td><td class="stn"><span class="caret">▸</span>ZGSZ<span>Shenzhen · Asia</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">17%</td><td class="num">2</td><td class="num lab">0%</td></tr><tr class="glrow hidden" data-for="ZGSZ"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG ZGSZ · Shenzhen — 1 exacto · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">34°C</td><td class="gp">32°C</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="WSSS" data-has="1"><td class="rk">19</td><td class="stn"><span class="caret">▸</span>WSSS<span>Singapur · Asia</span></td><td class="num big">0/2</td><td class="num">2/2</td><td class="num">2/2</td><td class="num">32%</td><td class="num">2</td><td class="num lab">67%</td></tr><tr class="glrow hidden" data-for="WSSS"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG WSSS · Singapur — 0 exactos · 2 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="RKSI" data-has="1"><td class="rk">20</td><td class="stn"><span class="caret">▸</span>RKSI<span>Seul · Asia</span></td><td class="num big">0/5</td><td class="num">2/5</td><td class="num">3/5</td><td class="num">17%</td><td class="num">5</td><td class="num lab">20%</td></tr><tr class="glrow hidden" data-for="RKSI"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG RKSI · Seul — 0 exactos · 2 top-2 · 3 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">32°C</td><td class="gp">30°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">≥34°C</td><td class="gp">32°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">32°C</td><td class="gp">30°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">28°C</td><td class="gp">27°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="SBGR" data-has="1"><td class="rk">21</td><td class="stn"><span class="caret">▸</span>SBGR<span>Sao Paulo · America</span></td><td class="num big">0/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">25%</td><td class="num">1</td><td class="num lab">50%</td></tr><tr class="glrow hidden" data-for="SBGR"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG SBGR · Sao Paulo — 0 exactos · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">17°C</td><td class="gp">16°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="CYYZ" data-has="1"><td class="rk">22</td><td class="stn"><span class="caret">▸</span>CYYZ<span>Toronto · America</span></td><td class="num big">0/1</td><td class="num">1/1</td><td class="num">1/1</td><td class="num">24%</td><td class="num">1</td><td class="num lab">17%</td></tr><tr class="glrow hidden" data-for="CYYZ"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG CYYZ · Toronto — 0 exactos · 1 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="ZSPD" data-has="1"><td class="rk">23</td><td class="stn"><span class="caret">▸</span>ZSPD<span>Shanghai · Asia</span></td><td class="num big">0/5</td><td class="num">1/5</td><td class="num">4/5</td><td class="num">19%</td><td class="num">5</td><td class="num lab">32%</td></tr><tr class="glrow hidden" data-for="ZSPD"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG ZSPD · Shanghai — 0 exactos · 1 top-2 · 4 top-3 de 5</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">36°C</td><td class="gp">34°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">31°C</td><td class="gp">30°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">31°C</td><td class="gp">30°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KATL" data-has="1"><td class="rk">24</td><td class="stn"><span class="caret">▸</span>KATL<span>Atlanta · America</span></td><td class="num big">0/1</td><td class="num">0/1</td><td class="num">1/1</td><td class="num">17%</td><td class="num">1</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KATL"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KATL · Atlanta — 0 exactos · 0 top-2 · 1 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">82-83°F</td><td class="gp">84-85°F</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KHOU" data-has="1"><td class="rk">25</td><td class="stn"><span class="caret">▸</span>KHOU<span>Houston · America</span></td><td class="num big">0/1</td><td class="num">0/1</td><td class="num">0/1</td><td class="num">13%</td><td class="num">1</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KHOU"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KHOU · Houston — 0 exactos · 0 top-2 · 0 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">84-85°F</td><td class="gp">88-89°F</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KLAX" data-has="1"><td class="rk">26</td><td class="stn"><span class="caret">▸</span>KLAX<span>Los Angeles · America</span></td><td class="num big">0/1</td><td class="num">0/1</td><td class="num">0/1</td><td class="num">9%</td><td class="num">1</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KLAX"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KLAX · Los Angeles — 0 exactos · 0 top-2 · 0 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">74-75°F</td><td class="gp">78-79°F</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="SAEZ" data-has="1"><td class="rk">27</td><td class="stn"><span class="caret">▸</span>SAEZ<span>Buenos Aires · America</span></td><td class="num big">0/1</td><td class="num">0/1</td><td class="num">0/1</td><td class="num">1%</td><td class="num">1</td><td class="num lab">40%</td></tr><tr class="glrow hidden" data-for="SAEZ"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG SAEZ · Buenos Aires — 0 exactos · 0 top-2 · 0 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">9°C</td><td class="gp">12°C</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="EFHK" data-has="1"><td class="rk">28</td><td class="stn"><span class="caret">▸</span>EFHK<span>Helsinki · Europa</span></td><td class="num big">0/1</td><td class="num">0/1</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1</td><td class="num lab">33%</td></tr><tr class="glrow hidden" data-for="EFHK"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG EFHK · Helsinki — 0 exactos · 0 top-2 · 0 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">20°C</td><td class="gp">24°C</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KDAL" data-has="1"><td class="rk">29</td><td class="stn"><span class="caret">▸</span>KDAL<span>Dallas · America</span></td><td class="num big">0/1</td><td class="num">0/1</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KDAL"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KDAL · Dallas — 0 exactos · 0 top-2 · 0 top-3 de 1</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">84-85°F</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr></tbody></table>
+<tbody><tr class="lbrow top" data-st="KORD" data-has="1"><td class="rk">1</td><td class="stn"><span class="caret">▸</span>KORD<span>Chicago · America</span></td><td class="num big">5/7</td><td class="num">7/7</td><td class="num">7/7</td><td class="num">38%</td><td class="num">7</td><td class="num lab">50%</td></tr><tr class="glrow hidden" data-for="KORD"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KORD · Chicago — 5 exactos · 7 top-2 · 7 top-3 de 7</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">96-97°F</td><td class="gp">96-97°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">92-93°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">86-87°F</td><td class="gp">84-85°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">82-83°F</td><td class="gp">82-83°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">80-81°F</td><td class="gp">82-83°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">86-87°F</td><td class="gp">86-87°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">08/07/2026</td><td class="gw">88-89°F</td><td class="gp">88-89°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LFPB" data-has="1"><td class="rk">2</td><td class="stn"><span class="caret">▸</span>LFPB<span>Paris · Europa</span></td><td class="num big">5/6</td><td class="num">6/6</td><td class="num">6/6</td><td class="num">31%</td><td class="num">6</td><td class="num lab">38%</td></tr><tr class="glrow hidden" data-for="LFPB"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LFPB · Paris — 5 exactos · 6 top-2 · 6 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">35°C</td><td class="gp">36°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">33°C</td><td class="gp">33°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="EGLC" data-has="1"><td class="rk">3</td><td class="stn"><span class="caret">▸</span>EGLC<span>Londres · Europa</span></td><td class="num big">4/6</td><td class="num">5/6</td><td class="num">6/6</td><td class="num">34%</td><td class="num">6</td><td class="num lab">35%</td></tr><tr class="glrow hidden" data-for="EGLC"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG EGLC · Londres — 4 exactos · 5 top-2 · 6 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">26°C</td><td class="gp">27°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">28°C</td><td class="gp">28°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">27°C</td><td class="gp">28°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LEMD" data-has="1"><td class="rk">4</td><td class="stn"><span class="caret">▸</span>LEMD<span>Madrid · Europa</span></td><td class="num big">3/6</td><td class="num">6/6</td><td class="num">6/6</td><td class="num">33%</td><td class="num">6</td><td class="num lab">77%</td></tr><tr class="glrow hidden" data-for="LEMD"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LEMD · Madrid — 3 exactos · 6 top-2 · 6 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">37°C</td><td class="gp">37°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">33°C</td><td class="gp">≤32°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">34°C</td><td class="gp">33°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">38°C</td><td class="gp">37°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">36°C</td><td class="gp">36°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">38°C</td><td class="gp">38°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LIMC" data-has="1"><td class="rk">5</td><td class="stn"><span class="caret">▸</span>LIMC<span>Milan · Europa</span></td><td class="num big">3/6</td><td class="num">5/6</td><td class="num">6/6</td><td class="num">35%</td><td class="num">6</td><td class="num lab">44%</td></tr><tr class="glrow hidden" data-for="LIMC"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LIMC · Milan — 3 exactos · 5 top-2 · 6 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">34°C</td><td class="gp">33°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">33°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">33°C</td><td class="gp">33°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="RJTT" data-has="1"><td class="rk">6</td><td class="stn"><span class="caret">▸</span>RJTT<span>Tokio · Asia</span></td><td class="num big">3/6</td><td class="num">4/6</td><td class="num">4/6</td><td class="num">20%</td><td class="num">6</td><td class="num lab">39%</td></tr><tr class="glrow hidden" data-for="RJTT"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG RJTT · Tokio — 3 exactos · 4 top-2 · 4 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">34°C</td><td class="gp">32°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">28°C</td><td class="gp">31°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">30°C</td><td class="gp">30°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">30°C</td><td class="gp">30°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="ZBAA" data-has="1"><td class="rk">7</td><td class="stn"><span class="caret">▸</span>ZBAA<span>Beijing · Asia</span></td><td class="num big">2/6</td><td class="num">3/6</td><td class="num">3/6</td><td class="num">19%</td><td class="num">6</td><td class="num lab">36%</td></tr><tr class="glrow hidden" data-for="ZBAA"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG ZBAA · Beijing — 2 exactos · 3 top-2 · 3 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">38°C</td><td class="gp">35°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">33°C</td><td class="gp">33°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">34°C</td><td class="gp">32°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">31°C</td><td class="gp">29°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">≤27°C</td><td class="gp">28°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="ZGSZ" data-has="1"><td class="rk">8</td><td class="stn"><span class="caret">▸</span>ZGSZ<span>Shenzhen · Asia</span></td><td class="num big">2/3</td><td class="num">2/3</td><td class="num">2/3</td><td class="num">22%</td><td class="num">3</td><td class="num lab">0%</td></tr><tr class="glrow hidden" data-for="ZGSZ"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG ZGSZ · Shenzhen — 2 exactos · 2 top-2 · 2 top-3 de 3</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">29°C</td><td class="gp">29°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">34°C</td><td class="gp">32°C</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="RCSS" data-has="1"><td class="rk">9</td><td class="stn"><span class="caret">▸</span>RCSS<span>Taipei · Asia</span></td><td class="num big">2/6</td><td class="num">2/6</td><td class="num">4/6</td><td class="num">13%</td><td class="num">6</td><td class="num lab">23%</td></tr><tr class="glrow hidden" data-for="RCSS"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG RCSS · Taipei — 2 exactos · 2 top-2 · 4 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">36°C</td><td class="gp">35°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">35°C</td><td class="gp">35°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">34°C</td><td class="gp">34°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">37°C</td><td class="gp">35°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">28°C</td><td class="gp">31°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="KLGA" data-has="1"><td class="rk">10</td><td class="stn"><span class="caret">▸</span>KLGA<span>Nueva York · America</span></td><td class="num big">1/6</td><td class="num">4/6</td><td class="num">5/6</td><td class="num">23%</td><td class="num">6</td><td class="num lab">31%</td></tr><tr class="glrow hidden" data-for="KLGA"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KLGA · Nueva York — 1 exacto · 4 top-2 · 5 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">92-93°F</td><td class="gp">96-97°F</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">84-85°F</td><td class="gp">86-87°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">84-85°F</td><td class="gp">84-85°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">82-83°F</td><td class="gp">80-81°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">88-89°F</td><td class="gp">86-87°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">86-87°F</td><td class="gp">84-85°F</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="EDDM" data-has="1"><td class="rk">11</td><td class="stn"><span class="caret">▸</span>EDDM<span>Munich · Europa</span></td><td class="num big">1/6</td><td class="num">4/6</td><td class="num">6/6</td><td class="num">22%</td><td class="num">6</td><td class="num lab">41%</td></tr><tr class="glrow hidden" data-for="EDDM"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG EDDM · Munich — 1 exacto · 4 top-2 · 6 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">29°C</td><td class="gp">28°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">31°C</td><td class="gp">31°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">28°C</td><td class="gp">27°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">30°C</td><td class="gp">29°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">29°C</td><td class="gp">28°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">09/07/2026</td><td class="gw">26°C</td><td class="gp">25°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="WSSS" data-has="1"><td class="rk">12</td><td class="stn"><span class="caret">▸</span>WSSS<span>Singapur · Asia</span></td><td class="num big">1/3</td><td class="num">3/3</td><td class="num">3/3</td><td class="num">33%</td><td class="num">3</td><td class="num lab">67%</td></tr><tr class="glrow hidden" data-for="WSSS"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG WSSS · Singapur — 1 exacto · 3 top-2 · 3 top-3 de 3</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">32°C</td><td class="gp">32°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="LTAC" data-has="1"><td class="rk">13</td><td class="stn"><span class="caret">▸</span>LTAC<span>Ankara · Europa</span></td><td class="num big">1/2</td><td class="num">2/2</td><td class="num">2/2</td><td class="num">36%</td><td class="num">2</td><td class="num lab">33%</td></tr><tr class="glrow hidden" data-for="LTAC"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG LTAC · Ankara — 1 exacto · 2 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">29°C</td><td class="gp">28°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">32°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KSFO" data-has="1"><td class="rk">14</td><td class="stn"><span class="caret">▸</span>KSFO<span>San Francisco · America</span></td><td class="num big">1/2</td><td class="num">2/2</td><td class="num">2/2</td><td class="num">27%</td><td class="num">2</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KSFO"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KSFO · San Francisco — 1 exacto · 2 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">80-81°F</td><td class="gp">82-83°F</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">76-77°F</td><td class="gp">76-77°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="CYYZ" data-has="1"><td class="rk">15</td><td class="stn"><span class="caret">▸</span>CYYZ<span>Toronto · America</span></td><td class="num big">1/2</td><td class="num">2/2</td><td class="num">2/2</td><td class="num">26%</td><td class="num">2</td><td class="num lab">17%</td></tr><tr class="glrow hidden" data-for="CYYZ"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG CYYZ · Toronto — 1 exacto · 2 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">36°C</td><td class="gp">36°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="NZWN" data-has="1"><td class="rk">16</td><td class="stn"><span class="caret">▸</span>NZWN<span>Wellington · Oceania</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">2/2</td><td class="num">30%</td><td class="num">2</td><td class="num lab">83%</td></tr><tr class="glrow hidden" data-for="NZWN"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG NZWN · Wellington — 1 exacto · 1 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">16°C</td><td class="gp">15°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">15°C</td><td class="gp">15°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KMIA" data-has="1"><td class="rk">17</td><td class="stn"><span class="caret">▸</span>KMIA<span>Miami · America</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">2/2</td><td class="num">28%</td><td class="num">2</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KMIA"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KMIA · Miami — 1 exacto · 1 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">94-95°F</td><td class="gp">92-93°F</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">92-93°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="MMMX" data-has="1"><td class="rk">18</td><td class="stn"><span class="caret">▸</span>MMMX<span>Ciudad de Mexico · America</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">25%</td><td class="num">2</td><td class="num lab">33%</td></tr><tr class="glrow hidden" data-for="MMMX"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG MMMX · Ciudad de Mexico — 1 exacto · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">26°C</td><td class="gp">24°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">24°C</td><td class="gp">24°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow ok" data-st="WMKK" data-has="1"><td class="rk">19</td><td class="stn"><span class="caret">▸</span>WMKK<span>Kuala Lumpur · Asia</span></td><td class="num big">1/3</td><td class="num">1/3</td><td class="num">2/3</td><td class="num">21%</td><td class="num">3</td><td class="num lab">17%</td></tr><tr class="glrow hidden" data-for="WMKK"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG WMKK · Kuala Lumpur — 1 exacto · 1 top-2 · 2 top-3 de 3</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">33°C</td><td class="gp">31°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">32°C</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KAUS" data-has="1"><td class="rk">20</td><td class="stn"><span class="caret">▸</span>KAUS<span>Austin · America</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">20%</td><td class="num">2</td><td class="num lab">40%</td></tr><tr class="glrow hidden" data-for="KAUS"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KAUS · Austin — 1 exacto · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">78-79°F</td><td class="gp">82-83°F</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">92-93°F</td><td class="gv g-ex">✅ EXACTO</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="KLAX" data-has="1"><td class="rk">21</td><td class="stn"><span class="caret">▸</span>KLAX<span>Los Angeles · America</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">15%</td><td class="num">2</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KLAX"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KLAX · Los Angeles — 1 exacto · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">76-77°F</td><td class="gp">76-77°F</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">74-75°F</td><td class="gp">78-79°F</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow top" data-st="EFHK" data-has="1"><td class="rk">22</td><td class="stn"><span class="caret">▸</span>EFHK<span>Helsinki · Europa</span></td><td class="num big">1/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">15%</td><td class="num">2</td><td class="num lab">33%</td></tr><tr class="glrow hidden" data-for="EFHK"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG EFHK · Helsinki — 1 exacto · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">23°C</td><td class="gp">23°C</td><td class="gv g-ex">✅ EXACTO</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">20°C</td><td class="gp">24°C</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="RKSI" data-has="1"><td class="rk">23</td><td class="stn"><span class="caret">▸</span>RKSI<span>Seul · Asia</span></td><td class="num big">0/6</td><td class="num">2/6</td><td class="num">4/6</td><td class="num">17%</td><td class="num">6</td><td class="num lab">20%</td></tr><tr class="glrow hidden" data-for="RKSI"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG RKSI · Seul — 0 exactos · 2 top-2 · 4 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">28°C</td><td class="gp">29°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">32°C</td><td class="gp">30°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">≥34°C</td><td class="gp">32°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">32°C</td><td class="gp">30°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">28°C</td><td class="gp">27°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="SBGR" data-has="1"><td class="rk">24</td><td class="stn"><span class="caret">▸</span>SBGR<span>Sao Paulo · America</span></td><td class="num big">0/2</td><td class="num">1/2</td><td class="num">2/2</td><td class="num">20%</td><td class="num">2</td><td class="num lab">50%</td></tr><tr class="glrow hidden" data-for="SBGR"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG SBGR · Sao Paulo — 0 exactos · 1 top-2 · 2 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">19°C</td><td class="gp">18°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">17°C</td><td class="gp">16°C</td><td class="gv g-t2">✅ TOP-2</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="ZSPD" data-has="1"><td class="rk">25</td><td class="stn"><span class="caret">▸</span>ZSPD<span>Shanghai · Asia</span></td><td class="num big">0/6</td><td class="num">1/6</td><td class="num">4/6</td><td class="num">17%</td><td class="num">6</td><td class="num lab">32%</td></tr><tr class="glrow hidden" data-for="ZSPD"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG ZSPD · Shanghai — 0 exactos · 1 top-2 · 4 top-3 de 6</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">15/07/2026</td><td class="gw">39°C</td><td class="gp">37°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">14/07/2026</td><td class="gw">36°C</td><td class="gp">34°C</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">33°C</td><td class="gp">32°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">12/07/2026</td><td class="gw">31°C</td><td class="gp">30°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">11/07/2026</td><td class="gw">31°C</td><td class="gp">30°C</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">10/07/2026</td><td class="gw">32°C</td><td class="gp">31°C</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="SAEZ" data-has="1"><td class="rk">26</td><td class="stn"><span class="caret">▸</span>SAEZ<span>Buenos Aires · America</span></td><td class="num big">0/2</td><td class="num">1/2</td><td class="num">1/2</td><td class="num">14%</td><td class="num">2</td><td class="num lab">40%</td></tr><tr class="glrow hidden" data-for="SAEZ"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG SAEZ · Buenos Aires — 0 exactos · 1 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">16°C</td><td class="gp">15°C</td><td class="gv g-t2">✅ TOP-2</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">9°C</td><td class="gp">12°C</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KHOU" data-has="1"><td class="rk">27</td><td class="stn"><span class="caret">▸</span>KHOU<span>Houston · America</span></td><td class="num big">0/2</td><td class="num">0/2</td><td class="num">1/2</td><td class="num">15%</td><td class="num">2</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KHOU"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KHOU · Houston — 0 exactos · 0 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">80-81°F</td><td class="gp">82-83°F</td><td class="gv g-t3">🔶 TOP-3</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">84-85°F</td><td class="gp">88-89°F</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KATL" data-has="1"><td class="rk">28</td><td class="stn"><span class="caret">▸</span>KATL<span>Atlanta · America</span></td><td class="num big">0/2</td><td class="num">0/2</td><td class="num">1/2</td><td class="num">14%</td><td class="num">2</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KATL"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KATL · Atlanta — 0 exactos · 0 top-2 · 1 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">84-85°F</td><td class="gp">80-81°F</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">82-83°F</td><td class="gp">84-85°F</td><td class="gv g-t3">🔶 TOP-3</td></tr></tbody></table></div></td></tr><tr class="lbrow bad" data-st="KDAL" data-has="1"><td class="rk">29</td><td class="stn"><span class="caret">▸</span>KDAL<span>Dallas · America</span></td><td class="num big">0/2</td><td class="num">0/2</td><td class="num">0/2</td><td class="num">4%</td><td class="num">2</td><td class="num lab">&mdash;</td></tr><tr class="glrow hidden" data-for="KDAL"><td></td><td colspan="7"><div class="glbox"><div class="glhead">📊 GAMELOG KDAL · Dallas — 0 exactos · 0 top-2 · 0 top-3 de 2</div><table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th><th>resultado</th></tr></thead><tbody><tr><td class="gd">14/07/2026</td><td class="gw">90-91°F</td><td class="gp">86-87°F</td><td class="gv g-bad">❌ PERDIDA</td></tr><tr><td class="gd">13/07/2026</td><td class="gw">92-93°F</td><td class="gp">84-85°F</td><td class="gv g-bad">❌ PERDIDA</td></tr></tbody></table></div></td></tr></tbody></table>
 <p class="subt" style="margin-top:14px">Pick oficial = <code>floor(μ_cal)</code> del snapshot más
 fresco (mín lead_h) — WU FLOOREA la obs siempre. Con pocos días esto es indicativo, no veredicto.
 Regenerar: <code>python scripts/leaderboard.py</code></p></div><script>
@@ -284,6 +355,15 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div><script>
       var open=det.classList.toggle('hidden')===false;
       row.classList.toggle('open',open);
     });
+  });
+  // Refresh manual: POST /action?do=leaderboard (lo sirve el dashboard con --serve), luego recarga.
+  var btn=document.getElementById('lb-refresh'), msg=document.getElementById('lb-msg');
+  if(btn) btn.addEventListener('click',function(){
+    if(location.protocol==='file:'){ msg.textContent='abrí el dashboard servido (http) para usar el refresh en vivo'; return; }
+    btn.classList.add('busy'); btn.disabled=true; msg.textContent='recalculando ranking…';
+    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){return r.json();})
+      .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},600); })
+      .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent='error: '+e; });
   });
 })();
 </script></body></html>
