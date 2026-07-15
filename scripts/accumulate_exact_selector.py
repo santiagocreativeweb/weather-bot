@@ -85,7 +85,24 @@ def city_mu(station, target, unit, values):
     return raw + offset
 
 
+LOCK = os.path.join(D, ".exact_selector.lock")
+
+
 def main():
+    # [FIX 2026-07-15] lock cross-proceso (mismo patron que accumulate_lamp_shadow): el guard
+    # `done` NO protege dos corridas CONCURRENTES (task 12:00 + boton "live" del dashboard
+    # lanzando run_daily a la vez) — ambas leian `done` antes de que la otra escribiera y el
+    # snapshot quedaba DUPLICADO (lo cazo check_accumulation el 15/07: 171 claves dup).
+    from accumulate_lamp_shadow import acquire_lock, release_lock
+    if not acquire_lock(LOCK):
+        print(f"{VERSION}: [SKIP] otra captura CITYX activa"); return
+    try:
+        _main_locked()
+    finally:
+        release_lock(LOCK)
+
+
+def _main_locked():
     path = os.path.join(D, "models_forward.csv")
     if not os.path.exists(path):
         print(f"{VERSION}: models_forward.csv no existe"); return

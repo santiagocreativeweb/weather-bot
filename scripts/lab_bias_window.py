@@ -94,6 +94,11 @@ def rolling_bias(err_st, d, kind, win, minn):
 def score_variant(name, kind, win, minn, base, err, real_map, win_map, lead):
     rows = []
     for (st, d), b in base.items():
+        # [FIX 2026-07-15] la SOMBRA MED60 se pre-registro (07-12) sobre las 12 estaciones
+        # originales; el backfill ahora trae 29 -> las nuevas se SALTAN (crecer el universo
+        # contaminaria la regla pre-registrada; ademas CONT[st] crasheaba con KeyError CYYZ).
+        if st not in CONT:
+            continue
         if d < D0_EVAL:
             continue
         unit = b["unit"]

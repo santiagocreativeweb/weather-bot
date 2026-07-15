@@ -1,4 +1,4 @@
-
+<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>WXBT · Ciudades</title><style>
 /* ============ WXBT TERMINAL v2 (2026-07-11, rehecho de 0 a pedido de Santiago) ============
    Estetica terminal financiera: fondo profundo, paneles con borde fino, verde fosforo para el
    bot, cyan para el mercado, ambar para warnings, numeros SIEMPRE en monospace. Dark-only. */
@@ -205,41 +205,32 @@ html,body{margin:0;padding:0;background:#06090d;min-height:100vh;}
 #tl-modal tr.tl-r1 td:nth-child(2){color:#00e5a0;font-weight:700;}
 #tl-modal tr.tl-r2 td:nth-child(2){color:#ffd23e;} #tl-modal tr.tl-r3 td:nth-child(2){color:#ff8c42;}
 
-.viz-root #alerts-box{margin:10px 0 2px;border:1px solid var(--bd);border-left:3px solid #d99b23;
-  border-radius:10px;background:var(--s2);padding:8px 12px;}
-.viz-root #alerts-box.empty{display:none;}
-.viz-root .aclearall{margin-left:10px;cursor:pointer;font-size:10px;color:var(--mut);
-  border:1px solid var(--bd);border-radius:3px;padding:1px 7px;white-space:nowrap;vertical-align:middle;}
-.viz-root .aclearall:hover{color:var(--red);border-color:var(--red);}
-.viz-root .ahead{font-weight:700;font-size:13px;}
-.viz-root .ahint{font-weight:400;font-size:10.5px;color:var(--mut);margin-left:8px;}
-.viz-root .abadge{display:inline-block;min-width:16px;text-align:center;background:#d03b3b;
-  color:#fff;border-radius:9px;font-size:10.5px;margin-left:6px;padding:1px 6px;font-weight:700;}
-.viz-root .abadge:empty{display:none;}
-.viz-root .arow-al{display:flex;gap:8px;align-items:baseline;padding:4px 0;
-  border-top:1px dashed var(--grid);font-size:12.5px;}
-.viz-root #alerts-list .arow-al:first-child{border-top:0;margin-top:4px;}
-.viz-root .arow-al .at{color:var(--mut);font-size:10.5px;white-space:nowrap;
-  font-variant-numeric:tabular-nums;}
-.viz-root .arow-al .atx{flex:1;}
-.viz-root .arow-al.warn .atx{color:#d99b23;}
-.viz-root .arow-al.ok .atx{color:var(--fin);}
-.viz-root .arow-al .aclose{cursor:pointer;color:var(--mut);font-weight:700;padding:0 5px;}
-.viz-root .arow-al .aclose:hover{color:#d03b3b;}
-
-/* [2026-07-15] panel VALUE BETS + bot-vs-vivo */
-.viz-root #value-panel .vbrow{display:flex;gap:12px;align-items:baseline;padding:5px 0;
-  border-bottom:1px solid var(--grid);font-size:12px;flex-wrap:wrap;}
-.viz-root #value-panel .vbe{font-family:var(--mono);font-weight:700;color:var(--fc);
-  min-width:44px;text-align:right;font-size:14px;}
-.viz-root #value-panel .vbst{min-width:150px;font-weight:700;}
-.viz-root #value-panel .vbst a{color:var(--mkt);text-decoration:none;}
-.viz-root #value-panel .vbtier{font-family:var(--mono);font-size:10px;min-width:52px;}
-.viz-root #value-panel .vbtxt{color:var(--ink2);}
-.viz-root table.vbt{border-collapse:collapse;width:100%;max-width:720px;font-size:12px;}
-.viz-root table.vbt th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:left;
+.viz-root .cols{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;}
+.viz-root .col{flex:1 1 420px;min-width:340px;}
+.viz-root .panelbox{background:var(--s1);border:1px solid var(--bd);border-radius:8px;
+  padding:12px 14px;margin:12px 0;}
+.viz-root .panelbox h4{margin:0 0 8px;font-size:11px;color:var(--fc);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.1em;}
+.viz-root table.ct{border-collapse:collapse;width:100%;font-size:12.5px;}
+.viz-root table.ct th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:right;
   padding:4px 8px;border-bottom:1px solid var(--bd);}
-.viz-root table.vbt th.num,.viz-root table.vbt td.num{text-align:right;}
-.viz-root table.vbt td{padding:4px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);}
-.viz-root table.vbt tr.vbw td{background:rgba(255,176,32,.07);}
-.viz-root .vbwarn{color:var(--warn);font-weight:700;}
+.viz-root table.ct th:first-child{text-align:left;}
+.viz-root table.ct td{padding:5px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);
+  font-variant-numeric:tabular-nums;}
+.viz-root table.ct td.num{text-align:right;}
+.viz-root table.ct tr.pick td{color:var(--fc);font-weight:700;}
+.viz-root table.ct tr.win td{color:var(--fin);font-weight:700;}
+.viz-root table.ct tr.dead td{color:var(--mut);text-decoration:line-through;}
+.viz-root .gv{font-weight:700;white-space:nowrap;}
+.viz-root .gv.g-ex{color:var(--fin);} .viz-root .gv.g-t2{color:#ffd23e;}
+.viz-root .gv.g-t3{color:#ff8c42;} .viz-root .gv.g-bad{color:#d03b3b;}
+.viz-root .links a{color:var(--mkt);margin-right:14px;}
+.viz-root .est{font-size:20px;color:var(--live);font-family:var(--mono);font-weight:700;}
+.viz-root svg text{font-family:var(--mono);}
+.viz-root a{color:var(--mkt);}
+</style></head><body><div class="viz-root">
+<div class="topbar"><div class="row1"><h1>🏙 Ciudades — WXBT</h1>
+<span class="subt">dashboard individual por ciudad: mercado, modelos, PWS, historial ·
+<a href="live_dashboard.html">← dashboard</a></span></div>
+<div style="font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px">🕒 15/07/2026 13:21 (AR)</div></div>
+<div style="display:flex;flex-wrap:wrap;margin-top:14px"><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_LTAC.html"><b>Ankara</b> · LTAC — 1/2 exactos · 2/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KATL.html"><b>Atlanta</b> · KATL — 0/2 exactos · 0/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KAUS.html"><b>Austin</b> · KAUS — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_ZBAA.html"><b>Beijing</b> · ZBAA — 2/5 exactos · 2/5 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_SAEZ.html"><b>Buenos Aires</b> · SAEZ — 0/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KORD.html"><b>Chicago</b> · KORD — 5/7 exactos · 7/7 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_MMMX.html"><b>Ciudad de Mexico</b> · MMMX — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KDAL.html"><b>Dallas</b> · KDAL — 0/2 exactos · 0/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_EFHK.html"><b>Helsinki</b> · EFHK — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KHOU.html"><b>Houston</b> · KHOU — 0/2 exactos · 0/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_WMKK.html"><b>Kuala Lumpur</b> · WMKK — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_EGLC.html"><b>Londres</b> · EGLC — 4/6 exactos · 5/6 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KLAX.html"><b>Los Angeles</b> · KLAX — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_LEMD.html"><b>Madrid</b> · LEMD — 3/6 exactos · 6/6 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KMIA.html"><b>Miami</b> · KMIA — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_LIMC.html"><b>Milan</b> · LIMC — 3/6 exactos · 5/6 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_EDDM.html"><b>Munich</b> · EDDM — 1/6 exactos · 4/6 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KLGA.html"><b>Nueva York</b> · KLGA — 1/6 exactos · 4/6 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_LFPB.html"><b>Paris</b> · LFPB — 5/6 exactos · 6/6 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_KSFO.html"><b>San Francisco</b> · KSFO — 1/2 exactos · 2/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_SBGR.html"><b>Sao Paulo</b> · SBGR — 0/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_RKSI.html"><b>Seul</b> · RKSI — 0/5 exactos · 1/5 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_ZSPD.html"><b>Shanghai</b> · ZSPD — 0/5 exactos · 1/5 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_ZGSZ.html"><b>Shenzhen</b> · ZGSZ — 1/2 exactos · 1/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_WSSS.html"><b>Singapur</b> · WSSS — 0/2 exactos · 2/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_RCSS.html"><b>Taipei</b> · RCSS — 2/5 exactos · 3/5 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_RJTT.html"><b>Tokio</b> · RJTT — 3/5 exactos · 3/5 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_CYYZ.html"><b>Toronto</b> · CYYZ — 1/2 exactos · 2/2 top-2</a><a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" href="city_NZWN.html"><b>Wellington</b> · NZWN — 1/1 exactos · 1/1 top-2</a></div></div></body></html>

@@ -37,7 +37,15 @@ D = os.path.join(os.path.dirname(__file__), "..", "data")
 LAB_M = os.path.join(D, "lab_m.csv")
 CONT = {"KLGA": "America", "KORD": "America", "EGLC": "Europa", "LFPB": "Europa",
         "LEMD": "Europa", "EDDM": "Europa", "LIMC": "Europa", "RJTT": "Asia",
-        "RKSI": "Asia", "ZSPD": "Asia", "ZBAA": "Asia", "RCSS": "Asia"}
+        "RKSI": "Asia", "ZSPD": "Asia", "ZBAA": "Asia", "RCSS": "Asia",
+        # [FIX 2026-07-15] +17 (el backfill extendido a las 29 crasheaba CONT[st] KeyError CYYZ).
+        # El DUMP de station_bias es mecanico por estacion (V2 fija) — cubrir las 29 es el diseño;
+        # la eval de variantes es informativa. Grupos = STATION_META del dashboard.
+        "NZWN": "Oceania", "LTAC": "Europa", "KMIA": "America", "WSSS": "Asia",
+        "WMKK": "Asia", "ZGSZ": "Asia", "KSFO": "America", "KLAX": "America",
+        "KDAL": "America", "KATL": "America", "KHOU": "America", "KAUS": "America",
+        "CYYZ": "America", "SBGR": "America", "SAEZ": "America", "MMMX": "America",
+        "EFHK": "Europa"}
 MODELS_OM = {"gefs": ("gfs_seamless", 5.0), "ecmwf": ("ecmwf_ifs025", 7.0), "icon": ("icon_seamless", 7.0)}
 LEAD_COL = {2: "temperature_2m_previous_day1", 3: "temperature_2m_previous_day2"}  # SIN lead1 (nowcast)
 # [2026-07-12] D1 DINAMICO (antes hardcodeado -> el refresh semanal del bias era NO-OP silencioso):
@@ -230,7 +238,7 @@ def main():
             unit = STATIONS[st][3]
             w = win_map.get((st, d)); y = real_map.get((st, d))
             mu_mkt = mu - 0.5 if (floor_fix and unit == "F") else mu
-            rec = dict(st=st, d=d, cont=CONT[st])
+            rec = dict(st=st, d=d, cont=CONT.get(st, "Otro"))   # ciudades futuras no crashean
             if w is not None:
                 wb = parse_win(w, unit)
                 pb = pred_bucket(mu_mkt, unit)

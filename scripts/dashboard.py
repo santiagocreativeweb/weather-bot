@@ -1210,6 +1210,8 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
              f'<a class="badge wu" target="_blank" href="{wu_url(code, d)}" '
              f'data-tip="WU es la fuente que RESUELVE este mercado — abrir la pagina oficial de la '
              f'estacion para esta fecha">WU ↗</a>'
+             f'<a class="badge wu" href="city_{code}.html" '
+             f'data-tip="vista ciudad: mercado + modelos + PWS + historial">🏙</a>'
              f'<span class="badge tlb" data-tlst="{code}" data-tlfe="{d.isoformat()}" '
              f'data-tip="TIMELINE: como se movieron las cuotas del mercado y la prediccion del bot '
              f'en las ultimas 24h — slider de 30 min, hora UTC-3">⏱ 24h</span></span></div>')
@@ -1378,9 +1380,15 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
                  f'<div class="sub">{"min " + fmt((live_d or {}).get("min")) + deg if live_d else ("aun no empezo el dia alli" if state == "prox" else "sin dato IEM")}</div></div></div>')
         if mx_models:
             rng_lo, rng_hi = min(mx_models.values()), max(mx_models.values())
+            # [2026-07-15] badge del MEJOR modelo en ESTA ciudad (model_city_rank.csv, n>=5) —
+            # referencia informativa (pedido Santiago), no cambia el mix del bot.
+            bm = _load_model_rank().get(code)
+            bm_txt = (f' · 🏅 <b data-tip="mejor modelo en esta ciudad vs bucket ganador '
+                      f'({bm[3]}, n={bm[2]}) — referencia, no cambia el mix">{bm[0]} {bm[1]:.0%}</b>'
+                      if bm else '')
             h.append(f'<div class="models">gefs <b>{mx_models.get("gefs","-")}</b> · '
                      f'ecmwf <b>{mx_models.get("ecmwf","-")}</b> · icon <b>{mx_models.get("icon","-")}</b>'
-                     f' · desacuerdo <b>{rng_hi-rng_lo:.1f}{deg}</b></div>')
+                     f' · desacuerdo <b>{rng_hi-rng_lo:.1f}{deg}</b>{bm_txt}</div>')
         # ¿ESTOY A TIEMPO DE ENTRAR? — en TODAS las cards operables, incluida PRÓXIMO
         # (fix 2026-07-09: solo se mostraba en encurso/soon; a media tarde todos los de HOY ya
         # estaban post-pico y los de MAÑANA — donde SÍ estás a tiempo — no tenían badge)
@@ -1439,6 +1447,7 @@ def actions_bar():
         ("orderbook",    "🔃 Recargar orderbook",     "re-baja precios/buckets de Polymarket AHORA (si las cards quedaron atrás del mercado)"),
         ("sync",         "♻ Sincronización completa", "lanza run_daily.ps1 en background: acumuladores + fuentes + leaderboard + stats + Excel/DB"),
         ("alerts_clear", "🗑 Limpiar alertas",        "borra TODAS las alertas por evento del servidor (se limpian en todos los dispositivos, celu incluido)"),
+        ("pages",        "🏙 Regenerar páginas",      "regenera historial (desde 08/07), modelos por ciudad y vistas por ciudad (PWS incluido) — tarda ~1-2 min"),
     ]
     cells = "".join(
         f'<button class="qbtn" data-do="{did}" data-tip="{tip}">{lbl}</button>' for did, lbl, tip in btns)
@@ -1475,6 +1484,25 @@ def toolbar_html(today, all_dates=()):
         '<span class="reset" id="f-reset">limpiar</span>'
         '<span class="count" id="f-count"></span></div>')
 
+
+VB_CSS = """
+/* [2026-07-15] panel VALUE BETS + bot-vs-vivo */
+.viz-root #value-panel .vbrow{display:flex;gap:12px;align-items:baseline;padding:5px 0;
+  border-bottom:1px solid var(--grid);font-size:12px;flex-wrap:wrap;}
+.viz-root #value-panel .vbe{font-family:var(--mono);font-weight:700;color:var(--fc);
+  min-width:44px;text-align:right;font-size:14px;}
+.viz-root #value-panel .vbst{min-width:150px;font-weight:700;}
+.viz-root #value-panel .vbst a{color:var(--mkt);text-decoration:none;}
+.viz-root #value-panel .vbtier{font-family:var(--mono);font-size:10px;min-width:52px;}
+.viz-root #value-panel .vbtxt{color:var(--ink2);}
+.viz-root table.vbt{border-collapse:collapse;width:100%;max-width:720px;font-size:12px;}
+.viz-root table.vbt th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:left;
+  padding:4px 8px;border-bottom:1px solid var(--bd);}
+.viz-root table.vbt th.num,.viz-root table.vbt td.num{text-align:right;}
+.viz-root table.vbt td{padding:4px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);}
+.viz-root table.vbt tr.vbw td{background:rgba(255,176,32,.07);}
+.viz-root .vbwarn{color:var(--warn);font-weight:700;}
+"""
 
 ALERT_CSS = """
 .viz-root #alerts-box{margin:10px 0 2px;border:1px solid var(--bd);border-left:3px solid #d99b23;
@@ -1781,7 +1809,7 @@ def write_assets():
     <link>/<script src>, servibles tanto por file:// (doble-click) como por http (--serve)."""
     d = os.path.dirname(os.path.abspath(OUT))
     with open(os.path.join(d, "wxbt.css"), "w", encoding="utf-8") as f:
-        f.write(CSS + ALERT_CSS)
+        f.write(CSS + ALERT_CSS + VB_CSS)
     with open(os.path.join(d, "wxbt.js"), "w", encoding="utf-8") as f:
         f.write(FILTER_JS + "\n" + INTERVAL_JS)
 
@@ -1891,6 +1919,159 @@ def stats_panel(stats):
             f'real y crecen cada día.</p></div>')
 
 
+def _load_model_rank():
+    """{station: (model, rate, n, src)} mejor modelo por ciudad (data/model_city_rank.csv, lo
+    genera models_page.py). Solo con n>=5. Cache 1h."""
+    now = time.monotonic()
+    ts, m = _CACHE.get("mrank", (0.0, None))
+    if m is not None and now - ts < PARAMS_TTL:
+        return m
+    m = {}
+    p = os.path.join(os.path.dirname(os.path.abspath(OUT)), "model_city_rank.csv")
+    try:
+        import csv as _csv
+        for r in _csv.DictReader(open(p, encoding="utf-8")):
+            if r["rank"] == "1" and int(r["n"]) >= 5:
+                m[r["station"]] = (r["model"], float(r["rate"]), int(r["n"]), r["src"])
+    except Exception:
+        m = {}
+    _CACHE["mrank"] = (now, m)
+    return m
+
+
+def value_bets_panel(mk, preds, live, audit, today, horizon, now_utc):
+    """💰 VALUE BETS (pedido Santiago 2026-07-15): pbot del pick (congelado si existe) vs mid del
+    mercado, sobre datos YA fetcheados por este mismo refresco (cero requests extra). Edge BRUTO
+    sin fees/spread/shrink — screener, NO señal. Excluye buckets ya imposibles por la obs viva."""
+    try:
+        from playbook import STRONG, WEAK   # lazy: playbook importa dashboard (ciclo solo en import-time)
+    except Exception:
+        STRONG, WEAK = set(), set()
+    rows = []
+    for code in STATIONS:
+        unit = STATIONS[code][3]
+        for d in [today + dt.timedelta(days=k) for k in range(horizon + 1)]:
+            info = (mk or {}).get(code, {}).get(d)
+            if not info or not info.get("buckets"):
+                continue
+            state, _ = state_of(code, d, info, now_utc)
+            if state not in ("encurso", "soon", "prox"):
+                continue
+            # pico pasado = tmax ya ocurrio, el mercado ya lo vio (nowcast): edge ilusorio.
+            if now_utc > peak_utc(code, d) + dt.timedelta(hours=1):
+                continue
+            pr = (preds or {}).get((code, d))
+            if not pr or pr[0] is None:
+                continue
+            mu, sg = pr
+            sg = sg or (2.6 if unit == "F" else 1.5)
+            priced = [(lab, lo, hi, p) for lab, lo, hi, p in info["buckets"] if p is not None]
+            if not priced:
+                continue
+            live_max = ((live or {}).get((code, d)) or {}).get("max") if state in ("encurso", "soon") else None
+            floor_live = int(math.floor(live_max)) if live_max is not None else None
+            lost = {lab for lab, lo, hi, p in priced
+                    if floor_live is not None and hi is not None and hi < floor_live}
+            pbot = {lab: pbot_floor(mu, sg, lo, hi) for lab, lo, hi, p in priced}
+            px = {lab: p for lab, lo, hi, p in priced}
+            rank = [l for l, _ in sorted(pbot.items(), key=lambda kv: -kv[1]) if l not in lost]
+            if not rank:
+                continue
+            t1 = rank[0]
+            t2 = rank[1] if len(rank) > 1 else None
+            edge1 = (pbot[t1] - px.get(t1, 1.0)) * 100
+            pair = ((pbot[t1] + (pbot.get(t2, 0) if t2 else 0)) -
+                    (px.get(t1, 1.0) + (px.get(t2, 1.0) if t2 else 1.0))) * 100
+            longs = [(lab, px[lab], pbot[lab]) for lab, lo, hi, p in priced
+                     if lab not in lost and 0.005 <= p <= 0.10
+                     and pbot.get(lab, 0) >= max(0.15, 3 * p)]
+            frozen = forecast_frozen(code, d, now_utc)
+            tier = "FUERTE" if code in STRONG else ("DEBIL" if code in WEAK else "MEDIA")
+            jug = None
+            if edge1 >= RECO_EDGE_MIN and pbot[t1] >= 0.35:
+                jug = (f'comprar top-1 <b>{t1}</b> (bot {pbot[t1]:.0%} vs {px.get(t1, 0):.2f})', edge1)
+            elif t2 and pair >= 12:
+                jug = (f'par top-2 <b>{t1}+{t2}</b> (bot {pbot[t1] + pbot.get(t2, 0):.0%} vs '
+                       f'{px.get(t1, 0) + px.get(t2, 0):.2f})', pair)
+            elif longs:
+                lab, p, pb = longs[0]
+                jug = (f'🎯 longshot <b>{lab}</b> @{p:.2f} (bot {pb:.0%}) — size chico', (pb - p) * 100)
+            if jug:
+                rows.append((jug[1], code, d, tier, frozen, jug[0]))
+    rows.sort(key=lambda r: -r[0])
+    if not rows:
+        body = ('<p class="empty">sin value bets ahora — ningún top-1 con Δ¢ ≥ +10, par ≥ +12 ni '
+                'longshot vivo.</p>')
+    else:
+        tcol = {"FUERTE": "var(--fin)", "MEDIA": "#ffd23e", "DEBIL": "#d03b3b"}
+        items = []
+        for edge, code, d, tier, frozen, txt in rows[:12]:
+            items.append(
+                f'<div class="vbrow"><span class="vbe">{edge:+.0f}¢</span>'
+                f'<span class="vbst"><a href="https://polymarket.com/event/{pm_slug(code, d)}" '
+                f'target="_blank">{STATION_META[code][2]} · {ddmmyyyy(d)}</a></span>'
+                f'<span class="vbtier" style="color:{tcol[tier]}">{tier}</span>'
+                f'<span class="vbtxt">{txt}{" · 🔒" if frozen else " · ◷"}</span></div>')
+        body = "".join(items)
+    return (f'<div class="timing" id="value-panel"><h4>💰 Value bets — bot vs mercado</h4>'
+            f'<p style="color:var(--mut);font-size:10.5px;margin:0 0 6px">Δ¢ BRUTO (pbot − mid), '
+            f'sin fees/spread/shrink — screener, NO señal. Reglas playbook: solo FUERTES, maker, '
+            f'entrar temprano; DÉBIL = no operar. Buckets ya imposibles por la obs viva quedan '
+            f'afuera.</p>{body}</div>')
+
+
+def botlive_panel(fc, preds, audit, today, horizon):
+    """🤖 Predicciones del bot vs EN VIVO (pedido Santiago 2026-07-15): por mercado vigente, el
+    pick CONGELADO (lo que se opera/mide) al lado de lo que los modelos dicen AHORA — para ver de
+    un vistazo si el pronóstico vivo se movió después del freeze."""
+    rows = []
+    for code in STATIONS:
+        unit = STATIONS[code][3]
+        deg = "°F" if unit == "F" else "°C"
+        for d in [today + dt.timedelta(days=k) for k in range(horizon + 1)]:
+            key = f"{code}|{d.isoformat()}"
+            froze = ((audit or {}).get(key) or {}).get("froze") or {}
+            mu_f = froze.get("mu")
+            fcd = (fc or {}).get(code, {}).get(d)
+            cl = calibrated_live(code, d, fcd) if fcd else None
+            mu_l = cl[0] if cl else None
+            if mu_f is None and mu_l is None:
+                continue
+            if mu_f is None:               # aún no congeló: mostrar snapshot/vivo solamente
+                mu_show, tag = mu_l, "◷"
+                drift = None
+            else:
+                mu_show, tag = mu_f, "🔒"
+                drift = (mu_l - mu_f) if mu_l is not None else None
+            fb = int(math.floor(mu_show))
+            pick = (f"{fb if fb % 2 == 0 else fb - 1}-{(fb if fb % 2 == 0 else fb - 1) + 1}°F"
+                    if unit == "F" else f"{fb}°C")
+            warn = drift is not None and abs(drift) >= 1.0
+            rows.append((warn, abs(drift or 0), code, d, tag, mu_show, deg, pick, mu_l, drift))
+    if not rows:
+        return ""
+    rows.sort(key=lambda r: (-r[0], -r[1]))
+    items = []
+    for warn, _, code, d, tag, mu_show, deg, pick, mu_l, drift in rows[:60]:
+        dr = (f'<span class="{"vbwarn" if warn else ""}">{drift:+.1f}{deg}</span>'
+              if drift is not None else "—")
+        lv = f"{mu_l:.1f}{deg}" if mu_l is not None else "—"
+        items.append(f'<tr{" class=vbw" if warn else ""}>'
+                     f'<td>{STATION_META[code][2]} <span style="color:var(--mut)">{code}</span></td>'
+                     f'<td>{ddmmyyyy(d)}</td><td>{tag} {mu_show:.1f}{deg} → <b>{pick}</b></td>'
+                     f'<td class="num">{lv}</td><td class="num">{dr}</td></tr>')
+    return (f'<details class="timing" id="botlive-panel"><summary style="cursor:pointer">'
+            f'<b>🤖 Bot congelado vs pronóstico EN VIVO</b> <span style="color:var(--mut);font-size:10.5px">'
+            f'(abrir — ⚠ = el vivo se movió ≥1° del pick fijado)</span></summary>'
+            f'<p style="color:var(--mut);font-size:10.5px;margin:6px 0">🔒 = pick fijado a las 04:30 '
+            f'locales (lo que se opera y se mide). "vivo" = recalibrado con la corrida más reciente. '
+            f'Si divergen fuerte, el mercado probablemente ya lo sabe (nowcast) — sirve para decidir '
+            f'salidas, no para re-pickear.</p>'
+            f'<table class="vbt"><thead><tr><th>ciudad</th><th>fecha</th><th>pick</th>'
+            f'<th class="num">vivo</th><th class="num">Δ</th></tr></thead>'
+            f'<tbody>{"".join(items)}</tbody></table></details>')
+
+
 def render(today, horizon, fc, mk, interval=None, preds=None, timing=None, live=None, hist=None, audit=None, alerts_ctx=None):
     now_utc = dt.datetime.now(dt.timezone.utc).replace(tzinfo=None)
     now_art = to_art(now_utc)
@@ -1918,6 +2099,9 @@ def render(today, horizon, fc, mk, interval=None, preds=None, timing=None, live=
              '<span class="clock"><span id="viz-clock">--:--:--</span><small>UTC-3 Argentina</small></span>'
              '<a href="leaderboard.html" class="reset" style="margin-left:10px" data-tip="ranking de estaciones por track record vivo">🏆 Leaderboard</a>'
              '<a href="stats.html" class="reset" style="margin-left:8px" data-tip="estadísticas generales + rendimiento día por día (ganó/perdió por mercado)">📊 Estadísticas</a>'
+             '<a href="history.html" class="reset" style="margin-left:8px" data-tip="pronósticos de días anteriores desde el 08/07: pick congelado vs lo que pagó Polymarket, con los modelos de cada día">🗓 Historial</a>'
+             '<a href="models.html" class="reset" style="margin-left:8px" data-tip="qué modelo acierta en cada ciudad (capturas vivas pre-freeze + retro 90d)">🧪 Modelos</a>'
+             '<a href="cities.html" class="reset" style="margin-left:8px" data-tip="dashboard individual por ciudad: mercado + modelos + PWS + historial">🏙 Ciudades</a>'
              f'<span class="subt">{sub}</span></div>'
              f'<div class="runs"><span data-tip="Los modelos corren 4 veces al dia (00/06/12/18 UTC). Cada una tarda ~6h en publicarse; abajo, en hora Argentina. El bot recalibra al llegar cada una — esas son las mejores ventanas de entrada.">🕓 Nuevas corridas del modelo llegan (hora AR):</span>{"".join(runs)}</div>'
              + actions_bar() + toolbar_html(today, dates_for_picker) + '</div>',
@@ -1960,6 +2144,10 @@ def render(today, horizon, fc, mk, interval=None, preds=None, timing=None, live=
                     sec.append(f'<div class="cont-lbl">{cont.upper()}</div>'
                                f'<div class="grid">' + "".join(by_cont[cont]) + '</div>')
             parts.append("".join(sec))
+    # [2026-07-15] panel de VALUE BETS + panel bot-congelado-vs-vivo, arriba de las cards
+    # (datos ya fetcheados por este refresco: cero requests extra).
+    parts.insert(1, botlive_panel(fc, preds, audit, today, horizon))
+    parts.insert(1, value_bets_panel(mk, preds, live, audit, today, horizon, now_utc))
     # panel de alertas: se arma DESPUES del loop (las cards llenan alerts_ctx["new"]) pero se
     # inserta arriba de todo (posicion 1, bajo la topbar) — hijo estable para el morph.
     if alerts_ctx is not None:
@@ -2134,6 +2322,18 @@ def _make_action_runner(today_s, horizon, interval):
                     except Exception as e:
                         outs.append(scr.split(".")[0] + f" fallo ({e})")
                 return True, "modelos: " + ", ".join(outs)
+            if do == "pages":
+                # [2026-07-15] regenera las paginas nuevas: modelos por ciudad + historial +
+                # vistas por ciudad (con PWS). Por URL: POST /action?do=pages
+                outs = []
+                for scr in ("models_page.py", "history_page.py", "city_pages.py"):
+                    try:
+                        ok, m = run_py(scr, ["--refresh"] if scr != "city_pages.py" else [],
+                                       timeout=420)
+                        outs.append(scr.split("_")[0] + ("✓" if ok else "·"))
+                    except Exception:
+                        outs.append(scr.split("_")[0] + "✗")
+                return True, "páginas regeneradas: " + " ".join(outs)
             if do == "leaderboard":
                 ok, m = run_py("leaderboard.py"); return ok, "leaderboard: " + m
             if do == "stats":

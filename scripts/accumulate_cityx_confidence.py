@@ -43,7 +43,23 @@ def build_rows(exact, models):
     return rows
 
 
+LOCK = os.path.join(D, ".cityx_confidence.lock")
+
+
 def main():
+    # [FIX 2026-07-15] lock cross-proceso + dedupe within-run: corridas concurrentes (task 12:00
+    # + run_daily manual) duplicaban snapshots, y un padre CITYX2 duplicado producia dos filas
+    # identicas EN LA MISMA corrida (el guard `done` solo miraba el archivo viejo).
+    from accumulate_lamp_shadow import acquire_lock, release_lock
+    if not acquire_lock(LOCK):
+        print(f"{VERSION}: [SKIP] otra captura CITYCONF activa"); return
+    try:
+        _main_locked()
+    finally:
+        release_lock(LOCK)
+
+
+def _main_locked():
     exact_path = os.path.join(D, "exact_selector_forward.csv")
     models_path = os.path.join(D, "models_forward.csv")
     if not os.path.exists(exact_path) or not os.path.exists(models_path):
@@ -54,8 +70,14 @@ def main():
     if os.path.exists(OUT):
         old = pd.read_csv(OUT)
         done = set(zip(old.station, old.target.astype(str), old.capture_utc.astype(str), old.version))
-    rows = [row for row in rows if (row["station"], row["target"], row["capture_utc"],
-                                    row["version"]) not in done]
+    uniq, seen = [], set()
+    for row in rows:
+        key = (row["station"], row["target"], row["capture_utc"], row["version"])
+        if key in done or key in seen:
+            continue
+        seen.add(key)
+        uniq.append(row)
+    rows = uniq
     if rows:
         new = not os.path.exists(OUT)
         with open(OUT, "a", newline="", encoding="utf-8") as handle:

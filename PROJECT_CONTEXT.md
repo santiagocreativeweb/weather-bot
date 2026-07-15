@@ -952,6 +952,55 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (encadenado en run_daily.ps1, data/smn_forward.csv). (c) Obs abiertas regtemp (TMAX diaria
   1 decimal, 365d) como verificación cruzada. METAR SAEZ: AWOS, horario, °C enteros (PDF SMN).
 
+### Plataforma de vistas + Telegram + PWS (2026-07-15, pedidos de Santiago)
+
+Capa de LECTURA nueva, `scripts/wxbt_insights.py` (no toca el motor ni las acciones):
+- **Ganadores oficiales unificados**: `load_winners()` = backfill_check + gamma_labels +
+  `data/winners_cache.json` (con `refresh=True` completa faltantes recientes por slug de Gamma y
+  hace top-up de obs IEM — un resuelto es inmutable, se cachea para siempre).
+- **Historial desde 08/07** (`scripts/history_page.py` → `data/history.html`): un bloque por día,
+  pick CONGELADO vs lo que PAGÓ Polymarket + qué dijo CADA modelo ese día (última captura
+  pre-freeze; para <12/07 el retro Previous-Runs, etiquetado bug #5). Solo evidencia congelada
+  scorea (mismo criterio que leaderboard; forward-fallback no cuenta).
+- **Modelos por ciudad** (`scripts/models_page.py` → `data/models.html` +
+  `data/model_city_rank.csv`): % de veces que el floor de cada modelo cayó en el bucket ganador,
+  DOS fuentes SIEMPRE etiquetadas: `vivo` (models_forward pre-freeze, crece a diario — la que
+  manda cuando junte n≥5) y `retro` (lab_m8 90d, bug #5, referencia). El dashboard muestra el
+  badge 🏅 "mejor modelo acá" (n≥5). OJO: es CONTEXTO — la selección de modelos por estación ya
+  demostró ser winner's curse (V8/lab_city_models); no cambiar el mix sin gate pre-registrado.
+- **Value bets**: `value_bets()` (insights) + panel 💰 en el dashboard + `/value` en Telegram.
+  Edge BRUTO (pbot − mid, sin fees/spread/shrink) del pick congelado (o snapshot) — screener con
+  umbrales del playbook (top-1 ≥10¢ & pbot≥0.35, par ≥12¢, longshots), EXCLUYE buckets ya
+  imposibles por la obs viva (regla `lost`). NO es señal.
+- **Bot congelado vs vivo**: panel 🤖 en el dashboard (μ fijado 04:30 vs recalibrado con la
+  corrida más reciente; ⚠ si divergen ≥1° — sirve para salidas, no para re-pickear).
+- **Estabilidad por ciudad**: `stability()` = cota inferior de Wilson del TOP-2 congelado (n
+  chico penaliza solo). Es el /top de Telegram y el orden de `data/cities.html`.
+
+**Bot de TELEGRAM** (`scripts/telegram_bot.py`, solo lectura): /picks /pick <ciudad> /value /top
+/modelos /vivo /historial /pws. Token de @BotFather en `data/.telegram_token` (gitignoreado) o
+env `WXBT_TG_TOKEN`; `--poll` = loop long-poll; `--push` = resumen diario (encadenado en
+run_daily.ps1, no-op silencioso sin token); `--dry-run "/cmd"` para probar sin token. Registra
+chats en `data/telegram_chats.json` (gitignoreado).
+
+**Sistema PWS** (`scripts/pws_setup.py`): por estación descubre las PWS de WU más cercanas
+(api.weather.com `v3/location/near`, key pública del frontend — override en `data/.wu_key`),
+mide su bias contra la estación oficial (obs.csv) en hasta 180 días muestreados
+(`v2/pws/history/daily`), y mantiene 3-5 referencias por ciudad en `data/pws_reference.csv`
+(criterio: std del diff BAJA = espejo estable; el nivel del bias se corrige, la varianza no;
+outliers >8°C/15°F descartados). `--update` diario densifica; `--live` estima el sensor oficial
+AHORA = mediana(PWS_vivo − bias). Historial en `data/pws_history.csv` (append-only, idempotente).
+LIMC validada en vivo: 5 refs, std 0.76-1.00, estimador coherente con METAR.
+
+**Vistas por ciudad** (`scripts/city_pages.py` → `data/city_<ICAO>.html` + `data/cities.html`):
+mercado HOY/MAÑANA (rango completo con mid/pbot/Δ¢), 12 modelos pre-freeze, performance de
+modelos ahí, gamelog, PWS con mini-mapa SVG y estimador vivo, gráfico 30d obs-vs-pick. Cards del
+dashboard → badge 🏙. Regenerables desde el dashboard (botón "🏙 Regenerar páginas" =
+POST /action?do=pages) y encadenadas en run_daily.ps1.
+
+Tests: `tests/test_insights.py` (12, offline, incluye el filtro `lost` del screener y la regla
+pre-freeze de model_perf). Suite completa 80/80.
+
 ## 8. Invariantes que no se negocian (si un cambio los rompe, el cambio está mal)
 
 - `evaluate_market()` es una función pura (snapshot→orden) y es la MISMA en backtest/paper/live.

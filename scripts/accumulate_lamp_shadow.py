@@ -136,6 +136,9 @@ def build_row(station, target, lav, cityx, captured, nowcast):
         "obs_min": round(nowcast["obs_min"], 4),
         "obs_trend_fph": round(nowcast["obs_trend_fph"], 4),
         "lav_at_obs": round(nowcast["lav_at_obs"], 4),
+        # [FIX 2026-07-15] provenance que exige check_accumulation: timestamp de la hora LAV
+        # matcheada con la obs (select_features ya lo devolvia, no se persistia).
+        "lav_match_utc": nowcast["lav_match_utc"],
         "lav_slope_fph": round(nowcast["lav_slope_fph"], 4),
         "lav_peak_utc": nowcast["lav_peak_utc"],
         "lav_peak_hour_local": nowcast["lav_peak_hour_local"],
@@ -143,6 +146,24 @@ def build_row(station, target, lav, cityx, captured, nowcast):
         "innovation": round(nowcast["innovation"], 4),
         "mu_nowx": round(now_prediction(mu_lampx, nowcast["innovation"]), 4),
     }
+
+
+def _migrate_header(path, fieldnames):
+    """Reescribe el CSV agregando columnas nuevas (vacias en filas viejas) si el header cambio.
+    Solo bajo lock (el caller ya lo tiene). Sin cambio de header, no toca nada."""
+    with open(path, newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        old_fields = reader.fieldnames or []
+        if set(fieldnames) <= set(old_fields):
+            return
+        old_rows = list(reader)
+    merged = old_fields + [c for c in fieldnames if c not in old_fields]
+    tmp = path + ".tmp"
+    with open(tmp, "w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=merged)
+        writer.writeheader()
+        writer.writerows(old_rows)
+    os.replace(tmp, path)
 
 
 def log_run(target, status, detail):
@@ -197,8 +218,13 @@ def main():
                 failures.append(f"{station}: {exc}")
         if rows:
             new = not os.path.exists(OUT)
+            fieldnames = list(rows[0])
+            if not new:
+                _migrate_header(OUT, fieldnames)      # columnas nuevas -> viejas quedan vacias
+                with open(OUT, newline="", encoding="utf-8") as handle:
+                    fieldnames = csv.DictReader(handle).fieldnames  # orden del ARCHIVO
             with open(OUT, "a", newline="", encoding="utf-8") as handle:
-                writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+                writer = csv.DictWriter(handle, fieldnames=fieldnames)
                 if new:
                     writer.writeheader()
                 writer.writerows(rows)

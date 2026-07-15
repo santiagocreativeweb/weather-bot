@@ -1,4 +1,4 @@
-
+<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>WXBT · Beijing</title><style>
 /* ============ WXBT TERMINAL v2 (2026-07-11, rehecho de 0 a pedido de Santiago) ============
    Estetica terminal financiera: fondo profundo, paneles con borde fino, verde fosforo para el
    bot, cyan para el mercado, ambar para warnings, numeros SIEMPRE en monospace. Dark-only. */
@@ -205,41 +205,45 @@ html,body{margin:0;padding:0;background:#06090d;min-height:100vh;}
 #tl-modal tr.tl-r1 td:nth-child(2){color:#00e5a0;font-weight:700;}
 #tl-modal tr.tl-r2 td:nth-child(2){color:#ffd23e;} #tl-modal tr.tl-r3 td:nth-child(2){color:#ff8c42;}
 
-.viz-root #alerts-box{margin:10px 0 2px;border:1px solid var(--bd);border-left:3px solid #d99b23;
-  border-radius:10px;background:var(--s2);padding:8px 12px;}
-.viz-root #alerts-box.empty{display:none;}
-.viz-root .aclearall{margin-left:10px;cursor:pointer;font-size:10px;color:var(--mut);
-  border:1px solid var(--bd);border-radius:3px;padding:1px 7px;white-space:nowrap;vertical-align:middle;}
-.viz-root .aclearall:hover{color:var(--red);border-color:var(--red);}
-.viz-root .ahead{font-weight:700;font-size:13px;}
-.viz-root .ahint{font-weight:400;font-size:10.5px;color:var(--mut);margin-left:8px;}
-.viz-root .abadge{display:inline-block;min-width:16px;text-align:center;background:#d03b3b;
-  color:#fff;border-radius:9px;font-size:10.5px;margin-left:6px;padding:1px 6px;font-weight:700;}
-.viz-root .abadge:empty{display:none;}
-.viz-root .arow-al{display:flex;gap:8px;align-items:baseline;padding:4px 0;
-  border-top:1px dashed var(--grid);font-size:12.5px;}
-.viz-root #alerts-list .arow-al:first-child{border-top:0;margin-top:4px;}
-.viz-root .arow-al .at{color:var(--mut);font-size:10.5px;white-space:nowrap;
-  font-variant-numeric:tabular-nums;}
-.viz-root .arow-al .atx{flex:1;}
-.viz-root .arow-al.warn .atx{color:#d99b23;}
-.viz-root .arow-al.ok .atx{color:var(--fin);}
-.viz-root .arow-al .aclose{cursor:pointer;color:var(--mut);font-weight:700;padding:0 5px;}
-.viz-root .arow-al .aclose:hover{color:#d03b3b;}
-
-/* [2026-07-15] panel VALUE BETS + bot-vs-vivo */
-.viz-root #value-panel .vbrow{display:flex;gap:12px;align-items:baseline;padding:5px 0;
-  border-bottom:1px solid var(--grid);font-size:12px;flex-wrap:wrap;}
-.viz-root #value-panel .vbe{font-family:var(--mono);font-weight:700;color:var(--fc);
-  min-width:44px;text-align:right;font-size:14px;}
-.viz-root #value-panel .vbst{min-width:150px;font-weight:700;}
-.viz-root #value-panel .vbst a{color:var(--mkt);text-decoration:none;}
-.viz-root #value-panel .vbtier{font-family:var(--mono);font-size:10px;min-width:52px;}
-.viz-root #value-panel .vbtxt{color:var(--ink2);}
-.viz-root table.vbt{border-collapse:collapse;width:100%;max-width:720px;font-size:12px;}
-.viz-root table.vbt th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:left;
+.viz-root .cols{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;}
+.viz-root .col{flex:1 1 420px;min-width:340px;}
+.viz-root .panelbox{background:var(--s1);border:1px solid var(--bd);border-radius:8px;
+  padding:12px 14px;margin:12px 0;}
+.viz-root .panelbox h4{margin:0 0 8px;font-size:11px;color:var(--fc);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.1em;}
+.viz-root table.ct{border-collapse:collapse;width:100%;font-size:12.5px;}
+.viz-root table.ct th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:right;
   padding:4px 8px;border-bottom:1px solid var(--bd);}
-.viz-root table.vbt th.num,.viz-root table.vbt td.num{text-align:right;}
-.viz-root table.vbt td{padding:4px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);}
-.viz-root table.vbt tr.vbw td{background:rgba(255,176,32,.07);}
-.viz-root .vbwarn{color:var(--warn);font-weight:700;}
+.viz-root table.ct th:first-child{text-align:left;}
+.viz-root table.ct td{padding:5px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);
+  font-variant-numeric:tabular-nums;}
+.viz-root table.ct td.num{text-align:right;}
+.viz-root table.ct tr.pick td{color:var(--fc);font-weight:700;}
+.viz-root table.ct tr.win td{color:var(--fin);font-weight:700;}
+.viz-root table.ct tr.dead td{color:var(--mut);text-decoration:line-through;}
+.viz-root .gv{font-weight:700;white-space:nowrap;}
+.viz-root .gv.g-ex{color:var(--fin);} .viz-root .gv.g-t2{color:#ffd23e;}
+.viz-root .gv.g-t3{color:#ff8c42;} .viz-root .gv.g-bad{color:#d03b3b;}
+.viz-root .links a{color:var(--mkt);margin-right:14px;}
+.viz-root .est{font-size:20px;color:var(--live);font-family:var(--mono);font-weight:700;}
+.viz-root svg text{font-family:var(--mono);}
+.viz-root a{color:var(--mkt);}
+</style></head><body><div class="viz-root">
+<div class="topbar"><div class="row1"><h1>🏙 Beijing · ZBAA</h1>
+<span class="subt">China · Asia · 40.0801, 116.5846 · resolucion WU ZBAA</span></div>
+<div class="links" style="margin-top:6px;font-size:12px">
+<a href="live_dashboard.html">← dashboard</a>
+<a href="cities.html">🏙 ciudades</a>
+<a href="history.html">🗓 historial</a>
+<a href="models.html">🧪 modelos</a>
+<a href="https://www.windy.com/40.080/116.585" target="_blank">Windy ↗</a>
+<a href="https://zoom.earth/maps/temperature/#view=40.08,116.58,9z" target="_blank">Zoom Earth ↗</a>
+<a href="https://www.wunderground.com/dashboard/pws/" target="_blank">WU PWS ↗</a>
+</div>
+<div style="font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px">
+🕒 15/07/2026 13:21 (AR) · regenerar: <code>python scripts/city_pages.py --station ZBAA</code></div></div>
+<div class="cols"><div class="col"><div class="panelbox"><h4>🎯 Mercado HOY — mie 15/07/2026</h4><p class="subt" style="margin:0 0 8px">μ <b>35.1°C</b> σ 2.1 🔒 congelado · max en vivo: <b>38.0°C</b> · <a href="https://polymarket.com/event/highest-temperature-in-beijing-on-july-15-2026" target="_blank">Polymarket ↗</a> · <a href="https://www.wunderground.com/history/daily/cn/beijing/ZBAA/date/2026-7-15" target="_blank">WU ↗</a></p><table class="ct"><thead><tr><th>rango</th><th>mercado (mid)</th><th>p bot</th><th>Δ¢</th></tr></thead><tbody><tr class="dead"><td>31°C or below</td><td class="num">0.00</td><td class="num">7%</td><td class="num">+7</td></tr><tr class="dead"><td>32°C</td><td class="num">0.00</td><td class="num">9%</td><td class="num">+9</td></tr><tr class="dead"><td>33°C</td><td class="num">0.00</td><td class="num">14%</td><td class="num">+14</td></tr><tr class="dead"><td>34°C</td><td class="num">0.00</td><td class="num">18%</td><td class="num">+18</td></tr><tr class="pick dead"><td>35°C</td><td class="num">0.00</td><td class="num">19%</td><td class="num">+18</td></tr><tr class="dead"><td>36°C</td><td class="num">0.00</td><td class="num">15%</td><td class="num">+15</td></tr><tr class="dead"><td>37°C</td><td class="num">0.00</td><td class="num">10%</td><td class="num">+10</td></tr><tr class=""><td>38°C</td><td class="num">1.00</td><td class="num">5%</td><td class="num">-95</td></tr><tr class=""><td>39°C</td><td class="num">0.00</td><td class="num">2%</td><td class="num">+2</td></tr><tr class=""><td>40°C</td><td class="num">0.00</td><td class="num">1%</td><td class="num">+1</td></tr><tr class=""><td>41°C or higher</td><td class="num">0.00</td><td class="num">0%</td><td class="num">+0</td></tr></tbody></table></div><div class="panelbox"><h4>🎯 Mercado MAÑANA — jue 16/07/2026</h4><p class="subt" style="margin:0 0 8px">μ <b>32.5°C</b> σ 2.1 ◷ snapshot · max en vivo: <b>27.0°C</b> · <a href="https://polymarket.com/event/highest-temperature-in-beijing-on-july-16-2026" target="_blank">Polymarket ↗</a> · <a href="https://www.wunderground.com/history/daily/cn/beijing/ZBAA/date/2026-7-16" target="_blank">WU ↗</a></p><table class="ct"><thead><tr><th>rango</th><th>mercado (mid)</th><th>p bot</th><th>Δ¢</th></tr></thead><tbody><tr class=""><td>31°C or below</td><td class="num">0.06</td><td class="num">41%</td><td class="num">+35</td></tr><tr class="pick"><td>32°C</td><td class="num">0.17</td><td class="num">19%</td><td class="num">+2</td></tr><tr class=""><td>33°C</td><td class="num">0.40</td><td class="num">17%</td><td class="num">-23</td></tr><tr class=""><td>34°C</td><td class="num">0.26</td><td class="num">12%</td><td class="num">-14</td></tr><tr class=""><td>35°C</td><td class="num">0.10</td><td class="num">7%</td><td class="num">-4</td></tr><tr class=""><td>36°C</td><td class="num">0.04</td><td class="num">3%</td><td class="num">-1</td></tr><tr class=""><td>37°C</td><td class="num">0.01</td><td class="num">1%</td><td class="num">-0</td></tr><tr class=""><td>38°C</td><td class="num">0.00</td><td class="num">0%</td><td class="num">+0</td></tr><tr class=""><td>39°C</td><td class="num">0.00</td><td class="num">0%</td><td class="num">-0</td></tr><tr class=""><td>40°C</td><td class="num">0.00</td><td class="num">0%</td><td class="num">-0</td></tr><tr class=""><td>41°C or higher</td><td class="num">0.00</td><td class="num">0%</td><td class="num">-0</td></tr></tbody></table></div><div class="panelbox"><h4>📦 Modelos pre-freeze de HOY</h4><table class="ct"><tbody><tr><td>meteofrance</td><td class="num">31.8°C</td></tr><tr><td>arpege</td><td class="num">32.8°C</td></tr><tr><td>ecmwf</td><td class="num">34.4°C</td></tr><tr><td>gem</td><td class="num">34.6°C</td></tr><tr><td>knmi</td><td class="num">34.6°C</td></tr><tr><td>aifs</td><td class="num">36.1°C</td></tr><tr><td>ukmo</td><td class="num">36.3°C</td></tr><tr><td>icon</td><td class="num">36.4°C</td></tr><tr><td>cma</td><td class="num">36.6°C</td></tr><tr><td>gfs13</td><td class="num">38.0°C</td></tr><tr><td>jma</td><td class="num">38.3°C</td></tr><tr><td>gefs</td><td class="num">39.1°C</td></tr></tbody></table></div></div>
+<div class="col"><div class="panelbox"><h4>📍 PWS de referencia</h4><p class="subt">sin datos aun — correr <code>python scripts/pws_setup.py --stations ZBAA</code> (baja historial WU de las ~10 mas cercanas y elige las 5 mas estables).</p></div><div class="panelbox"><h4>🧪 Que modelo acierta aca</h4><table class="ct"><thead><tr><th>modelo</th><th>fuente</th><th>exactos</th><th>%</th><th>MAE</th></tr></thead><tbody><tr><td>knmi</td><td class="num">vivo</td><td class="num">1/1</td><td class="num">100%</td><td class="num">0.00</td></tr><tr><td>ecmwf</td><td class="num">vivo</td><td class="num">1/1</td><td class="num">100%</td><td class="num">0.50</td></tr><tr><td>gem</td><td class="num">vivo</td><td class="num">1/1</td><td class="num">100%</td><td class="num">0.70</td></tr><tr><td>aifs</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1.20</td></tr><tr><td>arpege</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1.20</td></tr><tr><td>cma</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1.20</td></tr><tr><td>gem</td><td class="num">retro</td><td class="num">17/57</td><td class="num">30%</td><td class="num">2.08</td></tr><tr><td>jma</td><td class="num">retro</td><td class="num">17/63</td><td class="num">27%</td><td class="num">1.93</td></tr><tr><td>ecmwf</td><td class="num">retro</td><td class="num">14/63</td><td class="num">22%</td><td class="num">1.68</td></tr><tr><td>ukmo</td><td class="num">retro</td><td class="num">11/50</td><td class="num">22%</td><td class="num">1.46</td></tr><tr><td>gefs</td><td class="num">retro</td><td class="num">13/63</td><td class="num">21%</td><td class="num">2.36</td></tr><tr><td>icon</td><td class="num">retro</td><td class="num">12/63</td><td class="num">19%</td><td class="num">1.57</td></tr></tbody></table><p class="subt" style="margin:6px 0 0">vivo = capturas reales pre-freeze · retro = Previous-Runs 90d (bug #5, referencia). <a href="models.html">tabla completa ↗</a></p></div><div class="panelbox"><h4>🗓 Historial (desde 08/07) — 2 exactos · 2 top-2 de 5</h4><table class="ct"><thead><tr><th>fecha</th><th>pick 🔒</th><th>gano</th><th>resultado</th></tr></thead><tbody><tr><td>15/07</td><td>35°C</td><td>—</td><td><span class="subt">pendiente</span></td></tr><tr><td>14/07</td><td>33°C</td><td>33°C</td><td><span class="gv g-ex">✅ EXACTO</span></td></tr><tr><td>13/07</td><td>32°C</td><td>34°C</td><td><span class="gv g-bad">❌ PERDIDA</span></td></tr><tr><td>12/07</td><td>29°C</td><td>31°C</td><td><span class="gv g-bad">❌ PERDIDA</span></td></tr><tr><td>11/07</td><td>29°C</td><td>29°C</td><td><span class="gv g-ex">✅ EXACTO</span></td></tr><tr><td>10/07</td><td>28°C</td><td>&lt;= 27°C</td><td><span class="gv g-bad">❌ PERDIDA</span></td></tr></tbody></table></div></div></div>
+<div class="panelbox"><h4>📈 Ultimos 30 dias — obs real vs pick congelado</h4><svg viewBox="0 0 640 190" width="100%" style="max-width:720px;background:#0a1016;border:1px solid var(--bd);border-radius:6px"><line x1="45" x2="615" y1="151.48669201520912" y2="151.48669201520912" stroke="#1a2836" stroke-width="1"/><text x="40" y="154.48669201520912" text-anchor="end" font-size="9" fill="#587085">24°</text><line x1="45" x2="615" y1="129.4334600760456" y2="129.4334600760456" stroke="#1a2836" stroke-width="1"/><text x="40" y="132.4334600760456" text-anchor="end" font-size="9" fill="#587085">26°</text><line x1="45" x2="615" y1="107.38022813688212" y2="107.38022813688212" stroke="#1a2836" stroke-width="1"/><text x="40" y="110.38022813688212" text-anchor="end" font-size="9" fill="#587085">28°</text><line x1="45" x2="615" y1="85.32699619771863" y2="85.32699619771863" stroke="#1a2836" stroke-width="1"/><text x="40" y="88.32699619771863" text-anchor="end" font-size="9" fill="#587085">30°</text><line x1="45" x2="615" y1="63.27376425855512" y2="63.27376425855512" stroke="#1a2836" stroke-width="1"/><text x="40" y="66.27376425855512" text-anchor="end" font-size="9" fill="#587085">32°</text><line x1="45" x2="615" y1="41.22053231939162" y2="41.22053231939162" stroke="#1a2836" stroke-width="1"/><text x="40" y="44.22053231939162" text-anchor="end" font-size="9" fill="#587085">34°</text><line x1="45" x2="615" y1="19.167300380228117" y2="19.167300380228117" stroke="#1a2836" stroke-width="1"/><text x="40" y="22.167300380228117" text-anchor="end" font-size="9" fill="#587085">36°</text><polyline points="45.0,118.4 64.0,140.5 83.0,63.3 102.0,96.4 121.0,96.4 140.0,85.3 159.0,74.3 178.0,74.3 197.0,118.4 216.0,85.3 235.0,63.3 254.0,41.2 273.0,30.2 292.0,41.2 311.0,118.4 330.0,85.3 349.0,74.3 368.0,41.2 387.0,30.2 406.0,52.2 425.0,41.2 444.0,52.2 463.0,52.2 482.0,63.3 501.0,30.2 520.0,118.4 539.0,96.4 558.0,74.3 577.0,41.2 596.0,52.2" fill="none" stroke="#38c6ff" stroke-width="1.6"/><circle cx="45.0" cy="118.4" r="2" fill="#38c6ff"/><circle cx="64.0" cy="140.5" r="2" fill="#38c6ff"/><circle cx="83.0" cy="63.3" r="2" fill="#38c6ff"/><circle cx="102.0" cy="96.4" r="2" fill="#38c6ff"/><circle cx="121.0" cy="96.4" r="2" fill="#38c6ff"/><circle cx="140.0" cy="85.3" r="2" fill="#38c6ff"/><circle cx="159.0" cy="74.3" r="2" fill="#38c6ff"/><circle cx="178.0" cy="74.3" r="2" fill="#38c6ff"/><circle cx="197.0" cy="118.4" r="2" fill="#38c6ff"/><circle cx="216.0" cy="85.3" r="2" fill="#38c6ff"/><circle cx="235.0" cy="63.3" r="2" fill="#38c6ff"/><circle cx="254.0" cy="41.2" r="2" fill="#38c6ff"/><circle cx="273.0" cy="30.2" r="2" fill="#38c6ff"/><circle cx="292.0" cy="41.2" r="2" fill="#38c6ff"/><circle cx="311.0" cy="118.4" r="2" fill="#38c6ff"/><circle cx="330.0" cy="85.3" r="2" fill="#38c6ff"/><circle cx="349.0" cy="74.3" r="2" fill="#38c6ff"/><circle cx="368.0" cy="41.2" r="2" fill="#38c6ff"/><circle cx="387.0" cy="30.2" r="2" fill="#38c6ff"/><circle cx="406.0" cy="52.2" r="2" fill="#38c6ff"/><circle cx="425.0" cy="41.2" r="2" fill="#38c6ff"/><circle cx="444.0" cy="52.2" r="2" fill="#38c6ff"/><circle cx="463.0" cy="52.2" r="2" fill="#38c6ff"/><circle cx="482.0" cy="63.3" r="2" fill="#38c6ff"/><circle cx="501.0" cy="30.2" r="2" fill="#38c6ff"/><circle cx="520.0" cy="118.4" r="2" fill="#38c6ff"/><circle cx="539.0" cy="96.4" r="2" fill="#38c6ff"/><circle cx="558.0" cy="74.3" r="2" fill="#38c6ff"/><circle cx="577.0" cy="41.2" r="2" fill="#38c6ff"/><circle cx="596.0" cy="52.2" r="2" fill="#38c6ff"/><circle cx="520.0" cy="103.9" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="539.0" cy="96.0" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="558.0" cy="92.1" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="577.0" cy="53.8" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="596.0" cy="48.7" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="615.0" cy="28.5" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><text x="45" y="186" text-anchor="middle" font-size="8.5" fill="#587085">15/06</text><text x="140" y="186" text-anchor="middle" font-size="8.5" fill="#587085">20/06</text><text x="235" y="186" text-anchor="middle" font-size="8.5" fill="#587085">25/06</text><text x="330" y="186" text-anchor="middle" font-size="8.5" fill="#587085">30/06</text><text x="425" y="186" text-anchor="middle" font-size="8.5" fill="#587085">05/07</text><text x="520" y="186" text-anchor="middle" font-size="8.5" fill="#587085">10/07</text><text x="615" y="186" text-anchor="middle" font-size="8.5" fill="#587085">15/07</text><text x="615" y="12" text-anchor="end" font-size="9" fill="#38c6ff">— obs real</text><text x="615" y="24" text-anchor="end" font-size="9" fill="#00e5a0">○ pick congelado</text></svg></div>
+<p class="subt">Δ¢ = p bot − mid, edge BRUTO sin fees/spread/shrink — screener, no señal.
+El pick mostrado es el CONGELADO del audit cuando existe (lo que se opera y se mide).</p></div></body></html>

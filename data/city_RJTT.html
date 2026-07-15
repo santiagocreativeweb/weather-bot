@@ -1,0 +1,249 @@
+<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>WXBT · Tokio</title><style>
+/* ============ WXBT TERMINAL v2 (2026-07-11, rehecho de 0 a pedido de Santiago) ============
+   Estetica terminal financiera: fondo profundo, paneles con borde fino, verde fosforo para el
+   bot, cyan para el mercado, ambar para warnings, numeros SIEMPRE en monospace. Dark-only. */
+html,body{margin:0;padding:0;background:#06090d;min-height:100vh;}
+.viz-root{--s1:#0c1218;--s2:#111a23;--page:#06090d;--ink:#d7e5f0;--ink2:#9fb6c9;--mut:#587085;
+  --grid:#1a2836;--base:#2b3f52;--bd:#1d2d3c;--mkt:#38c6ff;--fc:#00e5a0;
+  --fcw:rgba(0,229,160,.08);--live:#ffc247;--fin:#2fd575;--finw:rgba(47,213,117,.10);
+  --warn:#ffb020;--soon:#ffb020;--red:#ff5468;
+  --mono:"Cascadia Mono","Consolas",ui-monospace,monospace;
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--page);color:var(--ink);
+  padding:0 22px 40px;max-width:1500px;margin:0 auto;}
+.viz-root a{color:inherit;}
+.viz-root .topbar{position:sticky;top:0;z-index:20;padding:10px 0 8px;
+  background:linear-gradient(180deg,#08101a 0%,var(--page) 100%);
+  border-bottom:1px solid var(--bd);box-shadow:0 1px 0 rgba(0,229,160,.12);}
+.viz-root .row1{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+.viz-root h1{font-size:15px;margin:0;letter-spacing:.14em;text-transform:uppercase;
+  font-family:var(--mono);color:var(--fc);}
+.viz-root h1::before{content:"▮ ";animation:blink 1.4s steps(1) infinite;}
+@keyframes blink{50%{opacity:.15;}}
+.viz-root .clock{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--live);
+  text-shadow:0 0 12px rgba(255,194,71,.35);}
+.viz-root .clock small{color:var(--mut);font-weight:400;font-size:10px;margin-left:6px;font-family:"Segoe UI",sans-serif;}
+.viz-root .subt{color:var(--mut);font-size:11px;}
+.viz-root .runs{font-size:10.5px;color:var(--mut);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;
+  font-family:var(--mono);}
+.viz-root .runs .next{color:var(--fc);font-weight:600;}
+.viz-root .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+.viz-root .filters select,.viz-root .filters input[type=date]{background:var(--s2);color:var(--ink);
+  border:1px solid var(--bd);border-radius:4px;padding:4px 8px;font-size:12px;font-family:inherit;}
+.viz-root .chip{font-size:11px;padding:3px 10px;border-radius:3px;border:1px solid var(--bd);
+  background:var(--s2);color:var(--ink2);cursor:pointer;user-select:none;transition:all .15s;}
+.viz-root .chip.on{background:var(--fc);color:#03110c;border-color:var(--fc);font-weight:700;}
+.viz-root .count{font-size:11px;color:var(--mut);margin-left:auto;font-family:var(--mono);}
+.viz-root .reset{font-size:11px;color:var(--mkt);cursor:pointer;text-decoration:underline;}
+.viz-root h3.dia{font-size:12px;color:var(--fc);margin:20px 0 10px;text-transform:uppercase;
+  letter-spacing:.14em;font-family:var(--mono);}
+.viz-root h3.dia::before{content:"┌─ ";color:var(--base);}
+.viz-root .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(345px,1fr));gap:10px;}
+.viz-root .card{background:var(--s1);border:1px solid var(--bd);border-radius:6px;
+  padding:11px 13px 9px;transition:opacity .2s;position:relative;}
+.viz-root .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--base);border-radius:6px 0 0 6px;}
+.viz-root .card[data-estado="encurso"]::before{background:var(--fc);box-shadow:0 0 8px rgba(0,229,160,.5);}
+.viz-root .card[data-estado="soon"]::before{background:var(--warn);box-shadow:0 0 8px rgba(255,176,32,.5);}
+.viz-root .card[data-estado="resol"]::before,.viz-root .card[data-estado="pendrev"]::before{background:var(--mkt);}
+.viz-root .card.fin::before{background:var(--fin);}
+.viz-root .card:hover{border-color:var(--base);}
+.viz-root .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;}
+.viz-root .card-head .st a{font-size:14px;font-weight:700;text-decoration:none;font-family:var(--mono);
+  letter-spacing:.02em;border-bottom:1px dashed var(--base);}
+.viz-root .card-head .st a:hover{color:var(--mkt);border-color:var(--mkt);}
+.viz-root .card-head .city{font-size:10px;color:var(--mut);display:block;margin-top:2px;}
+.viz-root .card-head .city.local{white-space:nowrap;color:var(--ink2);margin-top:1px;}
+.viz-root .card-head .city.local b{color:var(--live);font-family:var(--mono);}
+.viz-root .badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+.viz-root .badge{font-size:9px;padding:2px 7px;border-radius:3px;background:var(--s2);
+  color:var(--mut);white-space:nowrap;border:1px solid var(--bd);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.05em;}
+.viz-root .badge.encurso{color:var(--fc);border-color:rgba(0,229,160,.4);background:var(--fcw);}
+.viz-root .badge.fin{color:#03110c;background:var(--fin);border-color:var(--fin);font-weight:700;}
+.viz-root .badge.soon{color:var(--soon);border-color:rgba(255,176,32,.45);background:rgba(255,176,32,.08);}
+.viz-root .badge.resol{color:var(--mkt);border-color:rgba(56,198,255,.4);font-weight:700;}
+.viz-root .badge.pendrev{color:var(--warn);border-color:rgba(255,176,32,.5);font-weight:700;}
+.viz-root .badge.frozen{color:#0a0f14;background:var(--mut);border-color:var(--mut);font-weight:700;}
+.viz-root .badge.abierto{color:var(--mkt);border-color:rgba(56,198,255,.4);}
+.viz-root .badge.wu{cursor:pointer;text-decoration:none;display:inline-block;}
+.viz-root .badge.wu:hover{color:var(--mkt);border-color:var(--mkt);}
+.viz-root .badge.tlb{cursor:pointer;color:var(--ink2);}
+.viz-root .badge.tlb:hover{color:var(--fc);border-color:rgba(0,229,160,.5);}
+.viz-root .trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:0 0 8px;}
+.viz-root .stat{background:var(--s2);border:1px solid var(--grid);border-radius:4px;padding:6px 9px 5px;}
+.viz-root .stat .lbl{font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.09em;margin-bottom:2px;}
+.viz-root .stat .val{font-size:18px;font-weight:700;font-family:var(--mono);line-height:1.12;}
+.viz-root .stat .sub{font-size:9.5px;color:var(--ink2);font-family:var(--mono);}
+.viz-root .stat.bot .val{color:var(--fc);text-shadow:0 0 14px rgba(0,229,160,.3);}
+.viz-root .stat.live .val{color:var(--live);text-shadow:0 0 14px rgba(255,194,71,.3);}
+.viz-root .stat.finres .val{color:var(--fin);}
+.viz-root .models{font-size:10px;color:var(--mut);margin:0 0 6px;font-family:var(--mono);}
+.chg{animation:chg 2.5s ease-out;}
+@keyframes chg{0%{background:rgba(0,229,160,.30);}100%{background:transparent;}}
+.viz-root .lostwarn{font-size:10.5px;color:var(--mut);background:var(--s2);border-radius:4px;
+  border:1px solid var(--grid);padding:4px 8px;margin:0 0 6px;}
+.viz-root .wstat{font-size:11px;font-weight:600;padding:4px 8px;border-radius:4px;margin:0 0 8px;
+  font-family:var(--mono);border:1px solid transparent;}
+.viz-root .wstat.ok{color:var(--fin);background:var(--finw);border-color:rgba(47,213,117,.25);}
+.viz-root .wstat.late{color:var(--warn);background:rgba(255,176,32,.08);border-color:rgba(255,176,32,.25);}
+.viz-root .wstat.closed{color:var(--red);background:rgba(255,84,104,.08);border-color:rgba(255,84,104,.25);}
+.viz-root .wstat.pend{color:var(--warn);background:rgba(255,176,32,.10);border-color:rgba(255,176,32,.3);}
+.viz-root table.bkts td .miss{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--mut);}
+.viz-root .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+.viz-root .qbtn{font-size:11px;padding:4px 10px;border-radius:3px;border:1px solid var(--bd);
+  background:var(--s2);color:var(--ink);cursor:pointer;font-family:inherit;text-decoration:none;
+  display:inline-block;transition:all .12s;}
+.viz-root .qbtn:hover{border-color:var(--fc);color:var(--fc);box-shadow:0 0 8px rgba(0,229,160,.2);}
+.viz-root .qbtn.dl{border-color:rgba(47,213,117,.5);color:var(--fin);}
+.viz-root .qbtn:disabled{opacity:.4;cursor:not-allowed;}
+.viz-root .qbtn.busy{opacity:.6;pointer-events:none;}
+.viz-root .qmsg{font-size:11px;color:var(--mut);margin-left:4px;}
+.viz-root .qmsg.ok{color:var(--fin);} .viz-root .qmsg.err{color:var(--red);}
+.viz-root .models b{color:var(--ink2);font-weight:600;}
+.viz-root table.bkts{border-collapse:collapse;width:100%;font-size:11.5px;}
+.viz-root table.bkts th{font-size:8px;color:var(--mut);text-align:left;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;padding:2px 4px;border-bottom:1px solid var(--grid);}
+.viz-root table.bkts td{padding:2.5px 4px;font-family:var(--mono);font-size:11px;
+  border-bottom:1px solid rgba(26,40,54,.55);}
+.viz-root table.bkts tr:hover td{background:var(--s2);}
+.viz-root table.bkts .num{text-align:right;}
+.viz-root .track{background:var(--grid);border-radius:0 2px 2px 0;height:8px;min-width:56px;display:block;}
+.viz-root .fill{background:var(--mkt);height:100%;border-radius:0 2px 2px 0;min-width:2px;display:block;
+  box-shadow:0 0 6px rgba(56,198,255,.35);}
+.viz-root .dot{display:inline-block;width:7px;height:7px;border-radius:1px;background:var(--fc);}
+.viz-root .edgehi{font-weight:700;color:var(--fc);}
+.viz-root .chipno{font-size:8.5px;font-weight:700;color:var(--warn);border:1px solid rgba(255,176,32,.4);
+  border-radius:3px;padding:0 4px;font-family:var(--mono);}
+.viz-root .verdict{display:flex;gap:10px;align-items:center;font-size:12px;margin:4px 0 2px;
+  font-family:var(--mono);}
+.viz-root .verdict .ok{color:var(--fin);font-weight:700;}
+.viz-root .verdict .bad{color:var(--red);font-weight:700;}
+.viz-root details.acc{margin-top:8px;border-top:1px solid var(--grid);padding-top:6px;}
+.viz-root details.acc summary{cursor:pointer;font-size:10.5px;color:var(--mut);list-style:none;}
+.viz-root details.acc summary::before{content:"▸ ";transition:transform .2s;}
+.viz-root details.acc[open] summary::before{content:"▾ ";}
+.viz-root details.acc .inner{font-size:11px;color:var(--ink2);padding:6px 2px 2px;line-height:1.6;
+  animation:accIn .18s ease;}
+@keyframes accIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.viz-root .empty{font-size:11px;color:var(--mut);font-style:italic;}
+.viz-root .timing{background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+  padding:13px 16px;margin-top:22px;font-size:12px;color:var(--ink2);}
+.viz-root .timing h4{margin:0 0 6px;font-size:12.5px;color:var(--ink);}
+.viz-root .timing table{border-collapse:collapse;font-size:11px;}
+.viz-root .timing td,.viz-root .timing th{padding:2px 12px 2px 0;font-variant-numeric:tabular-nums;
+  color:var(--ink2);text-align:left;}
+.viz-root .timing th{color:var(--mut);font-size:9px;text-transform:uppercase;}
+.viz-root .cont-lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;
+  margin:10px 0 6px;font-weight:700;}
+.viz-root .cont-lbl::after{content:"";display:inline-block;width:60px;height:1px;background:var(--grid);
+  margin-left:10px;vertical-align:middle;}
+.viz-root .alog{display:flex;flex-direction:column;gap:2px;max-height:340px;overflow-y:auto;}
+.viz-root .arow{display:flex;gap:10px;align-items:baseline;font-size:11.5px;padding:3px 0;
+  border-bottom:1px solid var(--s2);font-variant-numeric:tabular-nums;}
+.viz-root .arow .at{color:var(--mut);min-width:78px;font-size:10.5px;}
+.viz-root .arow .ast{font-weight:700;min-width:44px;}
+.viz-root .arow .ad{color:var(--mut);min-width:74px;}
+.viz-root .arow .aval{color:var(--ink2);}
+.viz-root .arow .aval b{color:var(--ink);}
+.viz-root .arow .up{color:#d03b3b;font-weight:700;}
+.viz-root .arow .down{color:var(--mkt);font-weight:700;}
+.viz-root .arow .frzt{color:var(--mut);font-size:10px;border:1px solid var(--bd);border-radius:3px;padding:0 5px;}
+.viz-root .fill.y2{background:#ffd23e;box-shadow:0 0 6px rgba(255,210,62,.4);}
+.viz-root .fill.o3{background:#ff8c42;box-shadow:0 0 6px rgba(255,140,66,.4);}
+.viz-root .fill.lost{background:var(--base);opacity:.4;box-shadow:none;}
+.viz-root tr.lostrow td{color:var(--mut);text-decoration:line-through;text-decoration-thickness:1px;}
+.viz-root tr.lostrow td:first-child,.viz-root tr.lostrow td:nth-child(3){text-decoration:none;}
+.viz-root .dot.y2{background:#ffd23e;}
+/* colores pedidos 2026-07-12: pick/EXACTO verde, top-2 amarillo, top-3 naranja */
+.viz-root .dot.g1{background:var(--fin);}
+.viz-root .dot.o3{background:#ff8c42;}
+.viz-root .fill.g1{background:var(--fin);box-shadow:0 0 6px rgba(47,213,117,.4);}
+.viz-root .okc{color:var(--fin);font-weight:800;}
+.viz-root .badc{color:var(--red);font-weight:800;}
+.viz-root .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:4px 0 8px;}
+.viz-root .scard{background:var(--s2);border:1px solid var(--grid);border-radius:4px;padding:9px 11px;}
+.viz-root .scard .lbl{font-size:8.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.09em;}
+.viz-root .scard .big{font-size:23px;font-weight:700;font-family:var(--mono);line-height:1.2;color:var(--fc);}
+.viz-root .scard .sub{font-size:10px;color:var(--ink2);font-family:var(--mono);}
+.viz-root .scard.y .big{color:#ffd23e;} .viz-root .scard.o .big{color:#ff8c42;}
+.viz-root .scard.bad .big{color:var(--red);}
+.viz-root .cchips{display:flex;gap:8px;flex-wrap:wrap;}
+.viz-root .cchip{font-size:11px;color:var(--ink2);background:var(--s2);border:1px solid var(--grid);
+  border-radius:3px;padding:3px 9px;font-family:var(--mono);}
+#viz-tooltip{position:fixed;pointer-events:none;background:#e8f2fa;color:#0a1017;font-size:11px;
+  padding:4px 8px;border-radius:4px;opacity:0;transition:opacity .1s;z-index:100;max-width:340px;
+  white-space:normal;font-family:"Segoe UI",system-ui,sans-serif;}
+.viz-root .hidden{display:none !important;}
+/* ---------- TIMELINE 24h (modal fuera de .viz-root, a salvo del morph) ---------- */
+#tl-modal{position:fixed;inset:0;background:rgba(3,6,9,.78);z-index:200;display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+#tl-modal .tl-box{background:#0c1218;border:1px solid #2b3f52;border-radius:8px;width:min(560px,92vw);
+  max-height:86vh;overflow-y:auto;padding:14px 18px;color:#d7e5f0;
+  font-family:"Segoe UI",system-ui,sans-serif;box-shadow:0 0 40px rgba(0,229,160,.12);}
+#tl-modal .tl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;color:#00e5a0;letter-spacing:.06em;}
+#tl-modal .tl-x{cursor:pointer;color:#587085;font-weight:700;padding:2px 8px;}
+#tl-modal .tl-x:hover{color:#ff5468;}
+#tl-modal .tl-ctl{display:flex;gap:12px;align-items:center;margin:6px 0 10px;}
+#tl-modal input[type=range]{flex:1;accent-color:#00e5a0;}
+#tl-modal .tl-time{font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;color:#ffc247;
+  min-width:150px;text-align:right;white-space:nowrap;}
+#tl-modal .tl-bot{font-size:12px;margin:0 0 8px;color:#9fb6c9;font-family:"Cascadia Mono",monospace;}
+#tl-modal .tl-bot b{color:#00e5a0;}
+#tl-modal table{border-collapse:collapse;width:100%;font-size:11.5px;}
+#tl-modal th{font-size:8px;color:#587085;text-align:left;text-transform:uppercase;letter-spacing:.08em;
+  padding:2px 4px;border-bottom:1px solid #1a2836;}
+#tl-modal td{padding:2.5px 4px;font-family:"Cascadia Mono","Consolas",monospace;
+  border-bottom:1px solid rgba(26,40,54,.55);}
+#tl-modal .num{text-align:right;}
+#tl-modal .track{background:#1a2836;height:8px;min-width:120px;display:block;border-radius:0 2px 2px 0;}
+#tl-modal .fill{background:#38c6ff;height:100%;min-width:2px;display:block;border-radius:0 2px 2px 0;}
+#tl-modal .tl-note{font-size:10px;color:#587085;margin-top:8px;}
+#tl-modal .tl-bot .tl-y{color:#ffd23e;} #tl-modal .tl-bot .tl-o{color:#ff8c42;}
+#tl-modal .tl-dot{display:inline-block;width:7px;height:7px;border-radius:1px;}
+#tl-modal .tl-dot.g{background:#00e5a0;} #tl-modal .tl-dot.y{background:#ffd23e;} #tl-modal .tl-dot.o{background:#ff8c42;}
+#tl-modal tr.tl-r1 td:nth-child(2){color:#00e5a0;font-weight:700;}
+#tl-modal tr.tl-r2 td:nth-child(2){color:#ffd23e;} #tl-modal tr.tl-r3 td:nth-child(2){color:#ff8c42;}
+
+.viz-root .cols{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;}
+.viz-root .col{flex:1 1 420px;min-width:340px;}
+.viz-root .panelbox{background:var(--s1);border:1px solid var(--bd);border-radius:8px;
+  padding:12px 14px;margin:12px 0;}
+.viz-root .panelbox h4{margin:0 0 8px;font-size:11px;color:var(--fc);font-family:var(--mono);
+  text-transform:uppercase;letter-spacing:.1em;}
+.viz-root table.ct{border-collapse:collapse;width:100%;font-size:12.5px;}
+.viz-root table.ct th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:right;
+  padding:4px 8px;border-bottom:1px solid var(--bd);}
+.viz-root table.ct th:first-child{text-align:left;}
+.viz-root table.ct td{padding:5px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);
+  font-variant-numeric:tabular-nums;}
+.viz-root table.ct td.num{text-align:right;}
+.viz-root table.ct tr.pick td{color:var(--fc);font-weight:700;}
+.viz-root table.ct tr.win td{color:var(--fin);font-weight:700;}
+.viz-root table.ct tr.dead td{color:var(--mut);text-decoration:line-through;}
+.viz-root .gv{font-weight:700;white-space:nowrap;}
+.viz-root .gv.g-ex{color:var(--fin);} .viz-root .gv.g-t2{color:#ffd23e;}
+.viz-root .gv.g-t3{color:#ff8c42;} .viz-root .gv.g-bad{color:#d03b3b;}
+.viz-root .links a{color:var(--mkt);margin-right:14px;}
+.viz-root .est{font-size:20px;color:var(--live);font-family:var(--mono);font-weight:700;}
+.viz-root svg text{font-family:var(--mono);}
+.viz-root a{color:var(--mkt);}
+</style></head><body><div class="viz-root">
+<div class="topbar"><div class="row1"><h1>🏙 Tokio · RJTT</h1>
+<span class="subt">Japon · Asia · 35.5533, 139.7811 · resolucion WU RJTT</span></div>
+<div class="links" style="margin-top:6px;font-size:12px">
+<a href="live_dashboard.html">← dashboard</a>
+<a href="cities.html">🏙 ciudades</a>
+<a href="history.html">🗓 historial</a>
+<a href="models.html">🧪 modelos</a>
+<a href="https://www.windy.com/35.553/139.781" target="_blank">Windy ↗</a>
+<a href="https://zoom.earth/maps/temperature/#view=35.55,139.78,9z" target="_blank">Zoom Earth ↗</a>
+<a href="https://www.wunderground.com/dashboard/pws/IYOKOH37" target="_blank">WU PWS ↗</a>
+</div>
+<div style="font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px">
+🕒 15/07/2026 13:21 (AR) · regenerar: <code>python scripts/city_pages.py --station RJTT</code></div></div>
+<div class="cols"><div class="col"><div class="panelbox"><h4>🎯 Mercado HOY — mie 15/07/2026</h4><p class="subt" style="margin:0 0 8px">μ <b>32.6°C</b> σ 1.9 🔒 congelado · max en vivo: <b>33.0°C</b> · <a href="https://polymarket.com/event/highest-temperature-in-tokyo-on-july-15-2026" target="_blank">Polymarket ↗</a> · <a href="https://www.wunderground.com/history/daily/jp/tokyo/RJTT/date/2026-7-15" target="_blank">WU ↗</a></p><table class="ct"><thead><tr><th>rango</th><th>mercado (mid)</th><th>p bot</th><th>Δ¢</th></tr></thead><tbody><tr class="dead"><td>26°C or below</td><td class="num">0.00</td><td class="num">0%</td><td class="num">-0</td></tr><tr class="dead"><td>27°C</td><td class="num">0.00</td><td class="num">1%</td><td class="num">+1</td></tr><tr class="dead"><td>28°C</td><td class="num">0.00</td><td class="num">2%</td><td class="num">+2</td></tr><tr class="dead"><td>29°C</td><td class="num">0.01</td><td class="num">6%</td><td class="num">+5</td></tr><tr class="dead"><td>30°C</td><td class="num">0.01</td><td class="num">11%</td><td class="num">+10</td></tr><tr class="dead"><td>31°C</td><td class="num">0.00</td><td class="num">17%</td><td class="num">+17</td></tr><tr class="pick dead"><td>32°C</td><td class="num">0.01</td><td class="num">21%</td><td class="num">+20</td></tr><tr class="win"><td>33°C</td><td class="num">1.00</td><td class="num">19%</td><td class="num">-81</td></tr><tr class=""><td>34°C</td><td class="num">0.00</td><td class="num">13%</td><td class="num">+13</td></tr><tr class=""><td>35°C</td><td class="num">0.00</td><td class="num">7%</td><td class="num">+7</td></tr><tr class=""><td>36°C or higher</td><td class="num">0.00</td><td class="num">4%</td><td class="num">+4</td></tr></tbody></table><p class="subt">🏁 resuelto — gano <b>33°C</b></p></div><div class="panelbox"><h4>🎯 Mercado MAÑANA — jue 16/07/2026</h4><p class="subt" style="margin:0 0 8px">μ <b>33.5°C</b> σ 1.9 ◷ snapshot · max en vivo: <b>28.0°C</b> · <a href="https://polymarket.com/event/highest-temperature-in-tokyo-on-july-16-2026" target="_blank">Polymarket ↗</a> · <a href="https://www.wunderground.com/history/daily/jp/tokyo/RJTT/date/2026-7-16" target="_blank">WU ↗</a></p><table class="ct"><thead><tr><th>rango</th><th>mercado (mid)</th><th>p bot</th><th>Δ¢</th></tr></thead><tbody><tr class=""><td>28°C or below</td><td class="num">0.00</td><td class="num">1%</td><td class="num">+1</td></tr><tr class=""><td>29°C</td><td class="num">0.00</td><td class="num">2%</td><td class="num">+2</td></tr><tr class=""><td>30°C</td><td class="num">0.00</td><td class="num">6%</td><td class="num">+6</td></tr><tr class=""><td>31°C</td><td class="num">0.03</td><td class="num">12%</td><td class="num">+9</td></tr><tr class=""><td>32°C</td><td class="num">0.19</td><td class="num">18%</td><td class="num">-1</td></tr><tr class="pick"><td>33°C</td><td class="num">0.39</td><td class="num">20%</td><td class="num">-18</td></tr><tr class=""><td>34°C</td><td class="num">0.30</td><td class="num">18%</td><td class="num">-13</td></tr><tr class=""><td>35°C</td><td class="num">0.12</td><td class="num">12%</td><td class="num">+1</td></tr><tr class=""><td>36°C</td><td class="num">0.01</td><td class="num">6%</td><td class="num">+5</td></tr><tr class=""><td>37°C</td><td class="num">0.01</td><td class="num">3%</td><td class="num">+2</td></tr><tr class=""><td>38°C or higher</td><td class="num">0.00</td><td class="num">1%</td><td class="num">+1</td></tr></tbody></table></div><div class="panelbox"><h4>📦 Modelos pre-freeze de HOY</h4><table class="ct"><tbody><tr><td>meteofrance</td><td class="num">28.4°C</td></tr><tr><td>jma</td><td class="num">28.6°C</td></tr><tr><td>arpege</td><td class="num">29.1°C</td></tr><tr><td>gefs</td><td class="num">31.0°C</td></tr><tr><td>icon</td><td class="num">31.1°C</td></tr><tr><td>knmi</td><td class="num">31.2°C</td></tr><tr><td>gem</td><td class="num">31.5°C</td></tr><tr><td>cma</td><td class="num">31.5°C</td></tr><tr><td>gfs13</td><td class="num">32.7°C</td></tr><tr><td>aifs</td><td class="num">33.9°C</td></tr><tr><td>ecmwf</td><td class="num">35.4°C</td></tr><tr><td>ukmo</td><td class="num">35.8°C</td></tr></tbody></table></div></div>
+<div class="col"><div class="panelbox"><h4>📍 PWS de referencia (bias vs RJTT)</h4><div class="cols"><div class="col"><table class="ct"><thead><tr><th>pws</th><th>km</th><th>n</th><th>bias</th><th>σ</th><th>ahora</th></tr></thead><tbody><tr><td>IYOKOH37</td><td class="num">10.5</td><td class="num">14</td><td class="num">+1.20</td><td class="num">1.16</td><td class="num">27.6°C</td></tr><tr><td>ITOKYO157</td><td class="num">10.9</td><td class="num">23</td><td class="num">+1.80</td><td class="num">1.34</td><td class="num">27.7°C</td></tr><tr><td>ITOKYOOO2</td><td class="num">10.4</td><td class="num">24</td><td class="num">+1.60</td><td class="num">1.74</td><td class="num">28.0°C</td></tr><tr><td>ITOKYO179</td><td class="num">7.4</td><td class="num">25</td><td class="num">+1.70</td><td class="num">1.97</td><td class="num">27.6°C</td></tr><tr><td>ITOKYO106</td><td class="num">8.4</td><td class="num">12</td><td class="num">+2.75</td><td class="num">2.02</td><td class="num">27.9°C</td></tr></tbody></table><p class="subt" style="margin:8px 0 0">estimado del sensor oficial AHORA: <span class="est">25.9°C</span> = mediana(PWS vivo − bias)</p></div><div class="col"><svg viewBox="0 0 360 250" width="100%" style="max-width:420px;background:#0a1016;border:1px solid var(--bd);border-radius:6px"><text x="286.6666666666488" y="168.52174853927738" text-anchor="middle" font-size="16" fill="#ffc247">★</text><text x="286.6666666666488" y="182.52174853927738" text-anchor="middle" font-size="9" fill="#ffc247">RJTT</text><circle cx="73.33333333335119" cy="194.9999999999982" r="5" fill="#38c6ff" opacity="0.85"/><text x="73.33333333335119" y="186.9999999999982" text-anchor="middle" font-size="9" fill="#38c6ff">27.6°</text><text x="73.33333333335119" y="208.9999999999982" text-anchor="middle" font-size="7.5" fill="#587085">IYOKOH37</text><circle cx="132.68680445150054" cy="55.00000000000179" r="5" fill="#38c6ff" opacity="0.85"/><text x="132.68680445150054" y="47.00000000000179" text-anchor="middle" font-size="9" fill="#38c6ff">27.7°</text><text x="132.68680445150054" y="69.00000000000179" text-anchor="middle" font-size="7.5" fill="#587085">ITOKYO157</text><circle cx="81.71818877701163" cy="120.06167496212797" r="5" fill="#38c6ff" opacity="0.85"/><text x="81.71818877701163" y="112.06167496212797" text-anchor="middle" font-size="9" fill="#38c6ff">28.0°</text><text x="81.71818877701163" y="134.06167496212797" text-anchor="middle" font-size="7.5" fill="#587085">ITOKYOOO2</text><circle cx="155.297650591753" cy="111.50292144557956" r="5" fill="#38c6ff" opacity="0.85"/><text x="155.297650591753" y="103.50292144557956" text-anchor="middle" font-size="9" fill="#38c6ff">27.6°</text><text x="155.297650591753" y="125.50292144557956" text-anchor="middle" font-size="7.5" fill="#587085">ITOKYO179</text><circle cx="209.0360949184451" cy="62.66500757412043" r="5" fill="#38c6ff" opacity="0.85"/><text x="209.0360949184451" y="54.66500757412043" text-anchor="middle" font-size="9" fill="#38c6ff">27.9°</text><text x="209.0360949184451" y="76.66500757412044" text-anchor="middle" font-size="7.5" fill="#587085">ITOKYO106</text></svg></div></div><p class="subt" style="margin:6px 0 0">bias = mediana(PWS − estacion) en la ventana evaluada (hasta 180d, muestreado). σ baja = espejo confiable del sensor que resuelve. Setup: <code>python scripts/pws_setup.py --stations RJTT</code></p></div><div class="panelbox"><h4>🧪 Que modelo acierta aca</h4><table class="ct"><thead><tr><th>modelo</th><th>fuente</th><th>exactos</th><th>%</th><th>MAE</th></tr></thead><tbody><tr><td>ukmo</td><td class="num">vivo</td><td class="num">1/1</td><td class="num">100%</td><td class="num">0.50</td></tr><tr><td>aifs</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">0.40</td></tr><tr><td>cma</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">0.80</td></tr><tr><td>ecmwf</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1.10</td></tr><tr><td>gfs13</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">1.40</td></tr><tr><td>knmi</td><td class="num">vivo</td><td class="num">0/1</td><td class="num">0%</td><td class="num">2.50</td></tr><tr><td>ecmwf</td><td class="num">retro</td><td class="num">25/63</td><td class="num">40%</td><td class="num">1.20</td></tr><tr><td>ukmo</td><td class="num">retro</td><td class="num">14/50</td><td class="num">28%</td><td class="num">1.31</td></tr><tr><td>gefs</td><td class="num">retro</td><td class="num">15/63</td><td class="num">24%</td><td class="num">1.31</td></tr><tr><td>gem</td><td class="num">retro</td><td class="num">13/57</td><td class="num">23%</td><td class="num">1.41</td></tr><tr><td>knmi</td><td class="num">retro</td><td class="num">13/63</td><td class="num">21%</td><td class="num">1.16</td></tr><tr><td>icon</td><td class="num">retro</td><td class="num">12/63</td><td class="num">19%</td><td class="num">1.20</td></tr></tbody></table><p class="subt" style="margin:6px 0 0">vivo = capturas reales pre-freeze · retro = Previous-Runs 90d (bug #5, referencia). <a href="models.html">tabla completa ↗</a></p></div><div class="panelbox"><h4>🗓 Historial (desde 08/07) — 3 exactos · 3 top-2 de 5</h4><table class="ct"><thead><tr><th>fecha</th><th>pick 🔒</th><th>gano</th><th>resultado</th></tr></thead><tbody><tr><td>15/07</td><td>32°C</td><td>—</td><td><span class="subt">pendiente</span></td></tr><tr><td>14/07</td><td>32°C</td><td>34°C</td><td><span class="gv g-bad">❌ PERDIDA</span></td></tr><tr><td>13/07</td><td>31°C</td><td>28°C</td><td><span class="gv g-bad">❌ PERDIDA</span></td></tr><tr><td>12/07</td><td>29°C</td><td>29°C</td><td><span class="gv g-ex">✅ EXACTO</span></td></tr><tr><td>11/07</td><td>30°C</td><td>30°C</td><td><span class="gv g-ex">✅ EXACTO</span></td></tr><tr><td>10/07</td><td>30°C</td><td>30°C</td><td><span class="gv g-ex">✅ EXACTO</span></td></tr></tbody></table></div></div></div>
+<div class="panelbox"><h4>📈 Ultimos 30 dias — obs real vs pick congelado</h4><svg viewBox="0 0 640 190" width="100%" style="max-width:720px;background:#0a1016;border:1px solid var(--bd);border-radius:6px"><line x1="45" x2="615" y1="152.16666666666666" y2="152.16666666666666" stroke="#1a2836" stroke-width="1"/><text x="40" y="155.16666666666666" text-anchor="end" font-size="9" fill="#587085">21°</text><line x1="45" x2="615" y1="132.83333333333334" y2="132.83333333333334" stroke="#1a2836" stroke-width="1"/><text x="40" y="135.83333333333334" text-anchor="end" font-size="9" fill="#587085">23°</text><line x1="45" x2="615" y1="113.5" y2="113.5" stroke="#1a2836" stroke-width="1"/><text x="40" y="116.5" text-anchor="end" font-size="9" fill="#587085">25°</text><line x1="45" x2="615" y1="94.16666666666667" y2="94.16666666666667" stroke="#1a2836" stroke-width="1"/><text x="40" y="97.16666666666667" text-anchor="end" font-size="9" fill="#587085">27°</text><line x1="45" x2="615" y1="74.83333333333334" y2="74.83333333333334" stroke="#1a2836" stroke-width="1"/><text x="40" y="77.83333333333334" text-anchor="end" font-size="9" fill="#587085">29°</text><line x1="45" x2="615" y1="55.50000000000001" y2="55.50000000000001" stroke="#1a2836" stroke-width="1"/><text x="40" y="58.50000000000001" text-anchor="end" font-size="9" fill="#587085">31°</text><line x1="45" x2="615" y1="36.16666666666666" y2="36.16666666666666" stroke="#1a2836" stroke-width="1"/><text x="40" y="39.16666666666666" text-anchor="end" font-size="9" fill="#587085">33°</text><line x1="45" x2="615" y1="16.833333333333332" y2="16.833333333333332" stroke="#1a2836" stroke-width="1"/><text x="40" y="19.833333333333332" text-anchor="end" font-size="9" fill="#587085">35°</text><polyline points="45.0,142.5 64.0,103.8 83.0,84.5 102.0,103.8 121.0,74.8 140.0,123.2 159.0,103.8 178.0,84.5 197.0,132.8 216.0,113.5 235.0,142.5 254.0,84.5 273.0,132.8 292.0,123.2 311.0,113.5 330.0,94.2 349.0,94.2 368.0,123.2 387.0,103.8 406.0,84.5 425.0,103.8 444.0,103.8 463.0,123.2 482.0,84.5 501.0,65.2 520.0,65.2 539.0,65.2 558.0,74.8 577.0,84.5 596.0,26.5" fill="none" stroke="#38c6ff" stroke-width="1.6"/><circle cx="45.0" cy="142.5" r="2" fill="#38c6ff"/><circle cx="64.0" cy="103.8" r="2" fill="#38c6ff"/><circle cx="83.0" cy="84.5" r="2" fill="#38c6ff"/><circle cx="102.0" cy="103.8" r="2" fill="#38c6ff"/><circle cx="121.0" cy="74.8" r="2" fill="#38c6ff"/><circle cx="140.0" cy="123.2" r="2" fill="#38c6ff"/><circle cx="159.0" cy="103.8" r="2" fill="#38c6ff"/><circle cx="178.0" cy="84.5" r="2" fill="#38c6ff"/><circle cx="197.0" cy="132.8" r="2" fill="#38c6ff"/><circle cx="216.0" cy="113.5" r="2" fill="#38c6ff"/><circle cx="235.0" cy="142.5" r="2" fill="#38c6ff"/><circle cx="254.0" cy="84.5" r="2" fill="#38c6ff"/><circle cx="273.0" cy="132.8" r="2" fill="#38c6ff"/><circle cx="292.0" cy="123.2" r="2" fill="#38c6ff"/><circle cx="311.0" cy="113.5" r="2" fill="#38c6ff"/><circle cx="330.0" cy="94.2" r="2" fill="#38c6ff"/><circle cx="349.0" cy="94.2" r="2" fill="#38c6ff"/><circle cx="368.0" cy="123.2" r="2" fill="#38c6ff"/><circle cx="387.0" cy="103.8" r="2" fill="#38c6ff"/><circle cx="406.0" cy="84.5" r="2" fill="#38c6ff"/><circle cx="425.0" cy="103.8" r="2" fill="#38c6ff"/><circle cx="444.0" cy="103.8" r="2" fill="#38c6ff"/><circle cx="463.0" cy="123.2" r="2" fill="#38c6ff"/><circle cx="482.0" cy="84.5" r="2" fill="#38c6ff"/><circle cx="501.0" cy="65.2" r="2" fill="#38c6ff"/><circle cx="520.0" cy="65.2" r="2" fill="#38c6ff"/><circle cx="539.0" cy="65.2" r="2" fill="#38c6ff"/><circle cx="558.0" cy="74.8" r="2" fill="#38c6ff"/><circle cx="577.0" cy="84.5" r="2" fill="#38c6ff"/><circle cx="596.0" cy="26.5" r="2" fill="#38c6ff"/><circle cx="520.0" cy="57.9" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="539.0" cy="62.3" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="558.0" cy="71.3" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="577.0" cy="47.2" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="596.0" cy="43.6" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><circle cx="615.0" cy="39.7" r="3.2" fill="none" stroke="#00e5a0" stroke-width="1.6"/><text x="45" y="186" text-anchor="middle" font-size="8.5" fill="#587085">15/06</text><text x="140" y="186" text-anchor="middle" font-size="8.5" fill="#587085">20/06</text><text x="235" y="186" text-anchor="middle" font-size="8.5" fill="#587085">25/06</text><text x="330" y="186" text-anchor="middle" font-size="8.5" fill="#587085">30/06</text><text x="425" y="186" text-anchor="middle" font-size="8.5" fill="#587085">05/07</text><text x="520" y="186" text-anchor="middle" font-size="8.5" fill="#587085">10/07</text><text x="615" y="186" text-anchor="middle" font-size="8.5" fill="#587085">15/07</text><text x="615" y="12" text-anchor="end" font-size="9" fill="#38c6ff">— obs real</text><text x="615" y="24" text-anchor="end" font-size="9" fill="#00e5a0">○ pick congelado</text></svg></div>
+<p class="subt">Δ¢ = p bot − mid, edge BRUTO sin fees/spread/shrink — screener, no señal.
+El pick mostrado es el CONGELADO del audit cuando existe (lo que se opera y se mide).</p></div></body></html>

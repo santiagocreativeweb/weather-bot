@@ -17,7 +17,11 @@ from wxbt.lamp_shadow import NOW_VERSION, VERSION as LAMP_VERSION  # noqa: E402
 
 # TIERS por track record real (leaderboard vivo + backtest 45d, regla floor). Revisar al re-medir.
 STRONG = {"KORD", "LEMD", "LIMC", "EGLC", "LFPB"}   # exacto alto / MAE bajo -> operables
-WEAK = {"RCSS", "ZSPD", "KLGA"}                     # desastre consistente -> NO operar (sin fuente local)
+# WEAK: desastre consistente o resolucion rota -> NO operar.
+#   ZGSZ [2026-07-15]: gate IEM-vs-Gamma FALLO (23% acuerdo, WU usa fuente china no-METAR,
+#   PROJECT_CONTEXT 07-13 noche) — faltaba aca y el screener la mostraba como MEDIA.
+#   RKSI [2026-07-15]: 1/5 top-2 vivo, sesgo frio −1.1°C + gefs (modelo de produccion) MAE 5-7°C ahi.
+WEAK = {"RCSS", "ZSPD", "KLGA", "ZGSZ", "RKSI"}
 EDGE_MIN = 0.10        # edge bruto minimo para considerar comprar top-1
 PAIR_EDGE_MIN = 0.12   # (pbot1+pbot2) - (px1+px2) minimo para comprar el PAR top-2
 NO_PX_MIN, NO_PBOT_MAX = 0.08, 0.04   # bucket caro que el bot ve improbable -> candidato a NO

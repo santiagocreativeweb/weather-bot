@@ -65,3 +65,9 @@ data/wrf_cache/
 *.bak-0712
 *.bak-egll
 *.bak-onboard*
+
+# Telegram bot (2026-07-15): token + registro de chats (privado, no versionar)
+data/.telegram_token
+data/telegram_chats.json
+data/.wu_key
+*.bak-dedup0715

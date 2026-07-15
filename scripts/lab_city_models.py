@@ -213,6 +213,11 @@ def main():
                     sg = float(np.std([e for _, e in errs])) if len(errs) >= MINN else (2.5 if unit == "F" else 1.5)
                     sg = max(sg, 0.6)
                 if D0_EVAL <= d <= D1 and y is not None:
+                    # [FIX 2026-07-15] sombras H1/H2/H3 pre-registradas (07-12) sobre las 12
+                    # originales: lab_m8 ahora trae 29 estaciones -> las nuevas se saltan
+                    # (crecer el universo contamina la regla; CONT[st] crasheaba KeyError CYYZ).
+                    if st not in CONT:
+                        continue
                     tb = true_bucket_floor(y, unit)
                     pb = pred_bucket_floor(mu, unit)
                     rk = ranked_buckets(mu, sg, unit)

@@ -267,6 +267,8 @@ def variant_mu(name, b, bias60):
 def score_variant(name, base, err, real_map_lead, win_map_lead, lead):
     rows = []
     for (st, d), b in base.items():
+        if st not in CONT:   # [FIX 2026-07-15] universo pre-registrado (12): saltar nuevas, no crashear
+            continue
         if not (D0_EVAL <= d <= D1):
             continue
         unit = b["unit"]
