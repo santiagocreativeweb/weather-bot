@@ -261,9 +261,13 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
   if(btn) btn.addEventListener('click',function(){
     if(location.protocol==='file:'){ msg.textContent='abrí el dashboard servido (http) para usar el refresh en vivo'; return; }
     btn.classList.add('busy'); btn.disabled=true; msg.textContent='recalculando ranking…';
-    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){return r.json();})
+    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){
+        var ct=(r.headers&&r.headers.get&&r.headers.get('content-type'))||'';
+        if(!r.ok||ct.indexOf('application/json')<0){ throw new Error('abrí el dashboard con --serve (http://…:8765) para usar el refresh en vivo'); }
+        return r.json();
+      })
       .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},600); })
-      .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent='error: '+e; });
+      .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent=(e&&e.message)||(''+e); });
   });
 })();
 </script>'''

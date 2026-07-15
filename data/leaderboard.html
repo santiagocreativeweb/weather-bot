@@ -333,7 +333,7 @@ html,body{margin:0;padding:0;min-height:100vh;background:#05080c;
 · targets resueltos 08/07/2026&ndash;15/07/2026</span>
 <button class="qbtn" id="lb-refresh" style="margin-left:auto"
   data-tip="re-consulta los ganadores en Gamma y recalcula el ranking al momento (requiere el dashboard servido con --serve)">🔄 Actualizar ahora</button></div>
-<div class="updbar">🕒 Tabla actualizada: <b>15/07/2026 14:47</b> (hora Argentina) · se regenera cada corrida ·
+<div class="updbar">🕒 Tabla actualizada: <b>15/07/2026 18:45</b> (hora Argentina) · se regenera cada corrida ·
 <span id="lb-msg"></span></div></div>
 <p class="subt" style="margin:8px 0 14px"><b>Clic en cualquier fila</b> para ver el GAMELOG de esa
 ciudad: cada mercado con lo que ganó (WU), el pick del bot y el resultado —
@@ -361,9 +361,13 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div><script>
   if(btn) btn.addEventListener('click',function(){
     if(location.protocol==='file:'){ msg.textContent='abrí el dashboard servido (http) para usar el refresh en vivo'; return; }
     btn.classList.add('busy'); btn.disabled=true; msg.textContent='recalculando ranking…';
-    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){return r.json();})
+    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){
+        var ct=(r.headers&&r.headers.get&&r.headers.get('content-type'))||'';
+        if(!r.ok||ct.indexOf('application/json')<0){ throw new Error('abrí el dashboard con --serve (http://…:8765) para usar el refresh en vivo'); }
+        return r.json();
+      })
       .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},600); })
-      .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent='error: '+e; });
+      .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent=(e&&e.message)||(''+e); });
   });
 })();
 </script></body></html>

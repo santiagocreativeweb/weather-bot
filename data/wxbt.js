@@ -107,6 +107,18 @@
     hideAlerts();
   });
   window.__wxbtApply = function(){ apply(); hideAudit(); hideAlerts(); };
+  // [FIX 2026-07-15] endpoints /timeline y /action SOLO existen bajo el servidor propio del
+  // dashboard (--serve). Servido por un http.server comun (o file://) devuelven HTML 404/501 y
+  // el .json() reventaba con "Unexpected token '<'". wxJSON detecta el caso y tira un mensaje
+  // claro y accionable en vez del error criptico.
+  var WX_SERVE_MSG='Esta función necesita el dashboard corriendo con su propio servidor. '
+    +'Arrancalo así:  python scripts/dashboard.py --watch --serve  '
+    +'y abrí http://127.0.0.1:8765/live_dashboard.html (no el archivo suelto ni otro servidor).';
+  function wxJSON(r){
+    var ct=(r.headers && r.headers.get && r.headers.get('content-type'))||'';
+    if(!r.ok || ct.indexOf('application/json')<0){ throw new Error(WX_SERVE_MSG); }
+    return r.json();
+  }
   // TIMELINE 24h por card (slider 30 min, hora UTC-3). Modal appendeado a <body>, FUERA de
   // .viz-root: el morph del --watch jamas lo toca, sobrevive refrescos.
   function tlOpen(st, fe){
@@ -123,10 +135,11 @@
     document.getElementById('tl-title').textContent='⏱ '+st+' · '+fe;
     var body=document.getElementById('tl-body');
     body.textContent='cargando timeline de 24h…';
+    if(location.protocol.indexOf('http')!==0){ body.textContent=WX_SERVE_MSG; return; }
     fetch('/timeline?st='+encodeURIComponent(st)+'&date='+encodeURIComponent(fe))
-      .then(function(r){return r.json()})
+      .then(wxJSON)
       .then(function(j){ if(!j.ok){ body.textContent='sin datos: '+(j.msg||''); return; } tlRender(body,j,st); })
-      .catch(function(e){ body.textContent='error: '+e; });
+      .catch(function(e){ body.textContent=(e&&e.message)||(''+e); });
   }
   function tlRender(body, j, st){
     var n=j.times.length;
