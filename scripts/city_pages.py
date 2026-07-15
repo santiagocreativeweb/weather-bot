@@ -22,6 +22,7 @@ import wxbt_insights as I                                            # noqa: E40
 import dashboard as D                                                # noqa: E402
 from show_live import STATIONS                                       # noqa: E402
 import pws_setup as P                                                # noqa: E402
+from wxbt_nav import nav_html, NAV_CSS                               # noqa: E402
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
 
@@ -296,13 +297,10 @@ def build_city(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws_ref,
                  f'{chart}</div>') if chart else ""
 
     body = f"""<div class="viz-root">
-<div class="topbar"><div class="row1"><h1>🏙 {esc(ciudad)} · {code}</h1>
+<div class="topbar">{nav_html("cities")}<div class="row1"><h1>🏙 {esc(ciudad)} · {code}</h1>
 <span class="subt">{esc(pais)} · {cont} · {lat:.4f}, {lon:.4f} · resolucion WU {code}</span></div>
 <div class="links" style="margin-top:6px;font-size:12px">
-<a href="live_dashboard.html">← dashboard</a>
-<a href="cities.html">🏙 ciudades</a>
-<a href="history.html">🗓 historial</a>
-<a href="models.html">🧪 modelos</a>
+<a href="cities.html">← todas las ciudades</a>
 <a href="https://www.windy.com/{lat:.3f}/{lon:.3f}" target="_blank">Windy ↗</a>
 <a href="https://zoom.earth/maps/temperature/#view={lat:.2f},{lon:.2f},9z" target="_blank">Zoom Earth ↗</a>
 <a href="https://www.wunderground.com/dashboard/pws/{(pws_ref.get(code) or [{}])[0].get('pws_id', '')}" target="_blank">WU PWS ↗</a>
@@ -316,7 +314,7 @@ def build_city(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws_ref,
 El pick mostrado es el CONGELADO del audit cuando existe (lo que se opera y se mide).</p></div>"""
     return (f"<!doctype html><html lang='es'><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            f"<title>WXBT · {esc(ciudad)}</title><style>{D.CSS}{EXTRA_CSS}</style></head>"
+            f"<title>WXBT · {esc(ciudad)}</title><style>{D.CSS}{NAV_CSS}{EXTRA_CSS}</style></head>"
             f"<body>{body}</body></html>")
 
 
@@ -331,14 +329,13 @@ def build_index(today, stability_rows):
         items.append(f'<a class="chip" style="font-size:13px;padding:10px 14px;margin:4px" '
                      f'href="city_{code}.html"><b>{esc(ciudad)}</b> · {code} — {track}</a>')
     body = f"""<div class="viz-root">
-<div class="topbar"><div class="row1"><h1>🏙 Ciudades — WXBT</h1>
-<span class="subt">dashboard individual por ciudad: mercado, modelos, PWS, historial ·
-<a href="live_dashboard.html">← dashboard</a></span></div>
+<div class="topbar">{nav_html("cities")}<div class="row1"><h1>🏙 Ciudades — WXBT</h1>
+<span class="subt">dashboard individual por ciudad: mercado, modelos, PWS, historial</span></div>
 <div style="font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px">🕒 {upd} (AR)</div></div>
 <div style="display:flex;flex-wrap:wrap;margin-top:14px">{"".join(items)}</div></div>"""
     return (f"<!doctype html><html lang='es'><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            f"<title>WXBT · Ciudades</title><style>{D.CSS}{EXTRA_CSS}</style></head>"
+            f"<title>WXBT · Ciudades</title><style>{D.CSS}{NAV_CSS}{EXTRA_CSS}</style></head>"
             f"<body>{body}</body></html>")
 
 

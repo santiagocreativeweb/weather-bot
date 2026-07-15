@@ -35,6 +35,8 @@ import wxbt_insights as I                                            # noqa: E40
 from show_live import STATIONS, CITY_STATION                         # noqa: E402
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+# El token NUNCA va en el codigo (se commitea y queda expuesto en el remoto). Vive en
+# data/.telegram_token (gitignoreado) o en la env WXBT_TG_TOKEN. Ya quedo guardado ahi.
 TOKEN_FILE = os.path.join(DATA, ".telegram_token")
 STATE_FILE = os.path.join(DATA, "telegram_chats.json")
 POLL_TIMEOUT = 50          # long-poll de getUpdates

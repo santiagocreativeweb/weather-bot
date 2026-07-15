@@ -27,6 +27,7 @@ from dashboard import STATION_META, CSS, ddmmyyyy, to_art, STATIONS             
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp     # noqa: E402
 from wxbt.market import bucket_prob                                               # noqa: E402
 from wxbt.forward_scoring import frozen_forecast, audit_only_targets              # noqa: E402
+from wxbt_nav import nav_html, NAV_CSS                                            # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -190,10 +191,9 @@ def main():
     updated = to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m/%Y %H:%M")
 
     body = f'''<div class="viz-root">
-<div class="topbar"><div class="row1"><h1>🏆 Track record VIVO del bot — WXBT</h1>
+<div class="topbar">{nav_html("leaderboard")}<div class="row1"><h1>🏆 Track record VIVO del bot — WXBT</h1>
 <span class="subt">ranking por RESULTADOS REALES contra el bucket ganador oficial de Polymarket
-· targets resueltos {rango}
-· <a href="live_dashboard.html">← volver al dashboard</a></span></div>
+· targets resueltos {rango}</span></div>
 <div class="updbar">🕒 Tabla actualizada: <b>{updated}</b> (hora Argentina) · se regenera cada corrida</div></div>
 <p class="subt" style="margin:8px 0 14px"><b>Clic en cualquier fila</b> para ver el GAMELOG de esa
 ciudad: cada mercado con lo que ganó (WU), el pick del bot y el resultado —
@@ -258,7 +258,7 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
     html = (f"<!doctype html><html><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
             f"<title>WXBT · Track record vivo</title>"
-            f"<style>{CSS}{extra_css}</style></head><body>{body}{lb_js}</body></html>")
+            f"<style>{CSS}{NAV_CSS}{extra_css}</style></head><body>{body}{lb_js}</body></html>")
     out = os.path.abspath(os.path.join(D, "leaderboard.html"))
     open(out, "w", encoding="utf-8").write(html)
     print(f"Leaderboard -> {out}   (actualizado {updated} AR)")

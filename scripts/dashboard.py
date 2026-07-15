@@ -31,6 +31,7 @@ from wxbt.engine import fit_all, clim_val, _lead_day                          # 
 from wxbt.calibration import predict                                          # noqa: E402
 import pandas as _pd                                                          # noqa: E402
 from check_predictions import NETWORKS                                        # noqa: E402
+from wxbt_nav import nav_html, NAV_CSS                                         # noqa: E402
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "data", "live_dashboard.html")
 TIMING_JSON = os.path.join(os.path.dirname(__file__), "..", "data", "timing_analysis.json")
@@ -1809,7 +1810,7 @@ def write_assets():
     <link>/<script src>, servibles tanto por file:// (doble-click) como por http (--serve)."""
     d = os.path.dirname(os.path.abspath(OUT))
     with open(os.path.join(d, "wxbt.css"), "w", encoding="utf-8") as f:
-        f.write(CSS + ALERT_CSS + VB_CSS)
+        f.write(CSS + ALERT_CSS + VB_CSS + NAV_CSS)
     with open(os.path.join(d, "wxbt.js"), "w", encoding="utf-8") as f:
         f.write(FILTER_JS + "\n" + INTERVAL_JS)
 
@@ -2094,14 +2095,10 @@ def render(today, horizon, fc, mk, interval=None, preds=None, timing=None, live=
     ayer = today - dt.timedelta(days=1)
     win_lo, win_hi = ayer, today + dt.timedelta(days=horizon)
     dates_for_picker = [today + dt.timedelta(days=k) for k in range(horizon, -2, -1)]  # +2,+1,hoy,ayer
-    parts = ['<div class="viz-root"><div class="topbar"><div class="row1">'
+    parts = ['<div class="viz-root"><div class="topbar">'
+             + nav_html("dashboard") + '<div class="row1">'
              '<h1>WXBT://TERMINAL</h1>'
              '<span class="clock"><span id="viz-clock">--:--:--</span><small>UTC-3 Argentina</small></span>'
-             '<a href="leaderboard.html" class="reset" style="margin-left:10px" data-tip="ranking de estaciones por track record vivo">🏆 Leaderboard</a>'
-             '<a href="stats.html" class="reset" style="margin-left:8px" data-tip="estadísticas generales + rendimiento día por día (ganó/perdió por mercado)">📊 Estadísticas</a>'
-             '<a href="history.html" class="reset" style="margin-left:8px" data-tip="pronósticos de días anteriores desde el 08/07: pick congelado vs lo que pagó Polymarket, con los modelos de cada día">🗓 Historial</a>'
-             '<a href="models.html" class="reset" style="margin-left:8px" data-tip="qué modelo acierta en cada ciudad (capturas vivas pre-freeze + retro 90d)">🧪 Modelos</a>'
-             '<a href="cities.html" class="reset" style="margin-left:8px" data-tip="dashboard individual por ciudad: mercado + modelos + PWS + historial">🏙 Ciudades</a>'
              f'<span class="subt">{sub}</span></div>'
              f'<div class="runs"><span data-tip="Los modelos corren 4 veces al dia (00/06/12/18 UTC). Cada una tarda ~6h en publicarse; abajo, en hora Argentina. El bot recalibra al llegar cada una — esas son las mejores ventanas de entrada.">🕓 Nuevas corridas del modelo llegan (hora AR):</span>{"".join(runs)}</div>'
              + actions_bar() + toolbar_html(today, dates_for_picker) + '</div>',

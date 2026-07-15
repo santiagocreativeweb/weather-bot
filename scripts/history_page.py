@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import wxbt_insights as I                                          # noqa: E402
 from dashboard import CSS, STATION_META, fecha_es, to_art          # noqa: E402
+from wxbt_nav import nav_html, NAV_CSS                             # noqa: E402
 from show_live import STATIONS                                     # noqa: E402
 from wxbt.market import resolve_bucket                             # noqa: E402
 
@@ -123,10 +124,9 @@ def main(a):
 
     updated = to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m/%Y %H:%M")
     body = f"""<div class="viz-root">
-<div class="topbar"><div class="row1"><h1>🗓 Historial de pronosticos — WXBT</h1>
+<div class="topbar">{nav_html("history")}<div class="row1"><h1>🗓 Historial de pronosticos — WXBT</h1>
 <span class="subt">pick CONGELADO vs lo que pago Polymarket, dia por dia desde el
-{I.HISTORY_START.strftime('%d/%m/%Y')} · <a href="live_dashboard.html">← dashboard</a>
-· <a href="models.html">🧪 modelos</a> · <a href="leaderboard.html">🏆 leaderboard</a></span></div>
+{I.HISTORY_START.strftime('%d/%m/%Y')}</span></div>
 <div style="font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px">
 🕒 Actualizado: <b style="color:var(--live)">{updated}</b> (hora Argentina) ·
 regenerar: <code>python scripts/history_page.py --refresh</code></div></div>
@@ -143,7 +143,7 @@ local); para dias previos al 12/07 se muestra el retro Previous-Runs (referencia
 {"".join(secs)}</div>"""
     html = (f"<!doctype html><html lang='es'><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            f"<title>WXBT · Historial de pronosticos</title><style>{CSS}{EXTRA_CSS}</style></head>"
+            f"<title>WXBT · Historial de pronosticos</title><style>{CSS}{NAV_CSS}{EXTRA_CSS}</style></head>"
             f"<body>{body}</body></html>")
     open(OUT_HTML, "w", encoding="utf-8").write(html)
     print(f"Historial -> {os.path.abspath(OUT_HTML)}  ({n} picks scoreados, {ex} exactos, "

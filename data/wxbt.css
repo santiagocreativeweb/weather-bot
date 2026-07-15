@@ -243,3 +243,24 @@ html,body{margin:0;padding:0;background:#06090d;min-height:100vh;}
 .viz-root table.vbt td{padding:4px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);}
 .viz-root table.vbt tr.vbw td{background:rgba(255,176,32,.07);}
 .viz-root .vbwarn{color:var(--warn);font-weight:700;}
+
+/* ===== NAVBAR compartido (2026-07-15) ===== */
+.viz-root .wxnav{display:flex;gap:2px;align-items:stretch;flex-wrap:wrap;
+  margin:0 -22px 8px;padding:0 22px;border-bottom:1px solid var(--bd);}
+.viz-root .wxnav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+  font-family:var(--mono);font-size:12px;color:var(--ink2);padding:8px 13px;
+  border:1px solid transparent;border-bottom:2px solid transparent;
+  border-radius:6px 6px 0 0;white-space:nowrap;transition:all .13s;letter-spacing:.02em;}
+.viz-root .wxnav a .ico{font-size:13px;filter:saturate(.6);}
+.viz-root .wxnav a:hover{color:var(--ink);background:var(--s2);}
+.viz-root .wxnav a.on{color:var(--fc);background:var(--fcw);border-color:var(--bd);
+  border-bottom-color:var(--fc);font-weight:700;}
+.viz-root .wxnav a.on .ico{filter:none;}
+.viz-root .wxnav .navspacer{flex:1 1 auto;}
+.viz-root .wxnav .navbrand{display:inline-flex;align-items:center;color:var(--mut);
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:8px 6px;text-transform:uppercase;}
+@media (max-width:640px){
+  .viz-root .wxnav a{padding:7px 9px;font-size:11px;}
+  .viz-root .wxnav a .lbl{display:none;}   /* en pantalla chica: solo iconos */
+  .viz-root .wxnav .navbrand{display:none;}
+}

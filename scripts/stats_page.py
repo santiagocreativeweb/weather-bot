@@ -18,6 +18,7 @@ from dashboard import STATION_META, CSS, ddmmyyyy, fecha_es, STATIONS           
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp        # noqa: E402
 from wxbt.market import bucket_prob                                                  # noqa: E402
 from wxbt.forward_scoring import frozen_forecast, audit_only_targets                 # noqa: E402
+from wxbt_nav import nav_html, NAV_CSS                                               # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -159,9 +160,8 @@ def main():
             f'<th>resultado</th><th class="num">error</th></tr></thead><tbody>{"".join(trs)}</tbody></table></div>')
 
     body = f'''<div class="viz-root">
-<div class="topbar"><div class="row1"><h1>📊 ESTADÍSTICAS — rendimiento del bot</h1>
-<span class="subt">track record vivo vs ganador oficial de Polymarket · crece cada día
-· <a href="live_dashboard.html">← volver a la terminal</a> · <a href="leaderboard.html">🏆 leaderboard</a></span></div></div>
+<div class="topbar">{nav_html("stats")}<div class="row1"><h1>📊 ESTADÍSTICAS — rendimiento del bot</h1>
+<span class="subt">track record vivo vs ganador oficial de Polymarket · crece cada día</span></div></div>
 <div class="sgrid">{cards}</div>
 <p class="subt" style="margin:6px 0 12px">Rendimiento <b>día por día</b>: en cada mercado, el
 <b>pick</b> del bot (floor μ) contra el <b>bucket que ganó</b>, y el veredicto —
@@ -197,7 +197,7 @@ def main():
 '''
     html = (f"<!doctype html><html lang='es'><head><meta charset='utf-8'>"
             f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            f"<title>WXBT · Estadísticas</title><style>{CSS}{extra}</style></head><body>{body}</body></html>")
+            f"<title>WXBT · Estadísticas</title><style>{CSS}{NAV_CSS}{extra}</style></head><body>{body}</body></html>")
     out = os.path.abspath(os.path.join(D, "stats.html"))
     open(out, "w", encoding="utf-8").write(html)
     print(f"Stats -> {out}")
