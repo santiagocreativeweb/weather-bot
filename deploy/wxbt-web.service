@@ -1,0 +1,16 @@
+[Unit]
+Description=WXBT dashboard (web + serve 8765)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__REPO__
+ExecStart=__REPO__/.venv/bin/python -u scripts/dashboard.py --watch --serve 8765 --interval 180
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

@@ -49,7 +49,7 @@ FREEZE_LOCAL_H = 4.5      # [2026-07-13] bloqueo a las 04:30 HORA LOCAL del targ
 # Resolucion de mercado (objetivo #1): NO marcar FINALIZADO hasta que Gamma valide. Antes de eso,
 # si el payout ya llego a >=99.5% Y el pico ya paso -> estado "pendiente de revision" (no finalizado).
 MKT_RESOLVED_MIN = 0.995
-FC_TTL, OBS_TTL, RESOLVED_TTL = 900, 600, 100000
+FC_TTL, OBS_TTL, RESOLVED_TTL = 1800, 600, 100000   # [2026-07-16] fc cache 30min (antes 15) para
 DIAS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"]
 AUDIT_JSON = os.path.join(os.path.dirname(__file__), "..", "data", "forecast_audit.json")
 FC_HIST = os.path.join(os.path.dirname(__file__), "..", "data", "forecasts.csv")
