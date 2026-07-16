@@ -952,6 +952,40 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (encadenado en run_daily.ps1, data/smn_forward.csv). (c) Obs abiertas regtemp (TMAX diaria
   1 decimal, 365d) como verificación cruzada. METAR SAEZ: AWOS, horario, °C enteros (PDF SMN).
 
+### Hong Kong + city pages v2 + pick 48h + bot v2 (2026-07-16, pedidos de Santiago)
+
+- **HONG KONG (HKO) INTEGRADA** — la vieja razon del NO_GO (resuelve por HK Observatory a 1
+  decimal, sin WU/METAR) se resolvio con FUENTE PROPIA (`scripts/hko_source.py`): verdad oficial
+  = CLMMAXT (meses completos) + **Daily Extract del CIS** (`dailyExtract_YYYYMM.xml`, cubre el
+  mes EN CURSO — CLMMAXT devuelve vacio hasta cerrar el mes); vivo = CSVs regionales
+  (`latest_since_midnight_maxmin` / `latest_1min_temperature`, fila "HK Observatory", 1 decimal).
+  Los buckets del mercado son ENTEROS de 1°C → la regla FLOOR queda exacta (31.4→"31°C"), no se
+  toco pbot_floor. Serie Gamma 11312 (hong-kong-daily-weather). Alta: `onboard_hko.py` (obs 760d
+  + forecasts Previous-Runs 3909 filas por lat/lon del OBSERVATORY, no del aeropuerto), STATIONS/
+  STATION_META/CITY_SERIES/config/calib_lab CONT, wu_url→CIS, fetch_obs_live con branch HKO,
+  `hko_source.py --append-obs` encadenado en run_daily (IEM no cubre HKO). PWS: 5 refs a 3km
+  (std 0.5-0.8). check_accumulation: pares esperados ahora POR DIA (el alta de una estacion
+  hacia fallar los dias previos). Gate de operacion normal: n>=15 forward.
+- **City pages v2**: mapa REAL Leaflet + tiles dark de CARTO (estacion ★ + PWS con temp viva y
+  tooltip bias/σ/km), charts INTERACTIVOS Chart.js (timeline del mercado 24/48hs con precios por
+  bucket + μ del bot clavada post-freeze; obs vs picks 30d), stat cards (exactos, % top-2 con n,
+  max registrada del dia + temp actual — UNA sola card si coinciden), picks fijados 24h/48h.
+  CDN: unpkg (Leaflet 1.9) + jsdelivr (Chart.js 4) — requieren internet al abrir.
+- **PICK 48H**: segundo freeze INMUTABLE `froze48` en el audit, capturado 24h antes del bloqueo
+  normal (04:30 local del dia ANTERIOR ≈ 44h antes de que termine el dia del mercado) con
+  `_last_rev_before` (point-in-time honesto). stats.html ahora tiene TABS **24hs** (el KPI de
+  siempre) y **48hs** (scorea froze48 via `bot_history(kind="froze48")`; acumula desde 16/07).
+  Mide "apostar mas largo con mejor precio de entrada" (consistente con lab_entry_timing).
+- **Bot Telegram v2**: menus INLINE + callbacks editando el mensaje (nada de comandos a mano):
+  /picks → selector de 30 ciudades → panel (clima actual WMO/Open-Meteo — para HKO la temp exacta
+  del Observatory —, max registrada vs temp actual con la regla "una sola linea si coinciden",
+  hora local, pico, estado, fijado si/no, top-3 bids, posicion de estabilidad + % exacto/top-2,
+  picks 24h/48h, botones Historial/Estadistica). /top ranking completo, /status (uptime + mtimes
+  de fuentes), /estadisticas (general + por continente). setMyCommands, 409-handling, log por
+  evento. UN solo poller a la vez.
+- **VALUE BETS ELIMINADA** "de momento" (tab + panel del dashboard + comando): queda solo
+  `wxbt_insights.value_bets()` como infra con sus tests.
+
 ### Rediseño UI + reorg de tabs (2026-07-15 tarde, pedidos de Santiago)
 
 - **CSS rehecho de 0** (`scripts/wxbt_nav.py:NAV_CSS` + `dashboard.py:CSS/VB_CSS/ALERT_CSS`,

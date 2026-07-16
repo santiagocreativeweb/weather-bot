@@ -1672,5 +1672,67 @@
 "lat": 60.25,
 "lon": 24.918
 }
+],
+"HKO": [
+{
+"pws_id": "IHONGKON111",
+"dist_km": 1.63,
+"lat": 22.31661,
+"lon": 114.17326
+},
+{
+"pws_id": "IKOWLOON3",
+"dist_km": 2.39,
+"lat": 22.32347,
+"lon": 114.17333
+},
+{
+"pws_id": "IHONGK71",
+"dist_km": 2.57,
+"lat": 22.2819,
+"lon": 114.1863
+},
+{
+"pws_id": "IKOWLO16",
+"dist_km": 2.65,
+"lat": 22.32397,
+"lon": 114.18409
+},
+{
+"pws_id": "IYAUTS4",
+"dist_km": 2.72,
+"lat": 22.32603,
+"lon": 114.16908
+},
+{
+"pws_id": "IKOWLO11",
+"dist_km": 2.88,
+"lat": 22.32788,
+"lon": 114.17585
+},
+{
+"pws_id": "ISHAMS15",
+"dist_km": 2.89,
+"lat": 22.327,
+"lon": 114.1664
+},
+{
+"pws_id": "IPRINCE39",
+"dist_km": 2.95,
+"lat": 22.32695,
+"lon": 114.18371
+},
+{
+"pws_id": "IKOWLO9",
+"dist_km": 3.2,
+"lat": 22.32958,
+"lon": 114.18286
+},
+{
+"pws_id": "IHONGKON55",
+"dist_km": 3.2,
+"lat": 22.28313,
+"lon": 114.15048
+}
 ]
 }

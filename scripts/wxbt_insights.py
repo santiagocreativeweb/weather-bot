@@ -159,8 +159,18 @@ def load_winners(refresh=False, today=None, lookback_days=14):
         if need_obs:
             from concurrent.futures import ThreadPoolExecutor
             from check_predictions import fetch_obs_iem
+
+            def _fetch(p):
+                st_, d_ = p
+                if st_ == "HKO":     # [2026-07-16] HK no esta en IEM: verdad oficial CLMMAXT
+                    try:
+                        import hko_source
+                        return p, hko_source.clmmaxt_range(d_, d_).get(d_)
+                    except Exception:
+                        return p, None
+                return p, fetch_obs_iem(st_, d_)
             with ThreadPoolExecutor(max_workers=8) as tp:
-                obs = list(tp.map(lambda p: (p, fetch_obs_iem(*p)), need_obs))
+                obs = list(tp.map(_fetch, need_obs))
             for (st, d), v in obs:
                 if v is None:
                     continue
@@ -348,14 +358,31 @@ def _synthetic_buckets(unit, win_lo, win_hi, mu, span=6):
     return [(lo0 + i * w, lo0 + i * w + w - 1) for i in range(2 * span + 1)]
 
 
-def bot_history(start=HISTORY_START, end=None, refresh=False, today=None):
+def bot_history(start=HISTORY_START, end=None, refresh=False, today=None, kind="froze"):
     """[{station, target, mu, sg, src, pick_lo, pick_hi, pick_lbl, win_lbl, nivel, pwin}] —
     historial dia por dia del pick CONGELADO vs el ganador oficial. Mismo criterio de honestidad
-    que leaderboard.py: filas sin evidencia point-in-time (forward-fallback) NO se scorean."""
+    que leaderboard.py: filas sin evidencia point-in-time (forward-fallback) NO se scorean.
+    kind="froze"  -> pick normal (fijado 04:30 local del target).
+    kind="froze48"-> pick 48H (fijado 24h antes; tab 48hs de stats — acumula desde 2026-07-16,
+                     SOLO evidencia froze48 explicita, sin fallbacks)."""
     today = today or dt.date.today()
     end = end or today
     audit = _load_audit()
     winners = load_winners(refresh=refresh, today=today)
+    if kind == "froze48":
+        rows = []
+        for k, rec in audit.items():
+            st, _, ds = k.partition("|")
+            f48 = (rec or {}).get("froze48") or {}
+            if st not in STATIONS or f48.get("mu") is None or not _valid_date(ds):
+                continue
+            tg = dt.date.fromisoformat(ds)
+            if not (start <= tg <= min(end, today)):
+                continue
+            rows.append(_score_row(st, tg, float(f48["mu"]),
+                                   float(f48.get("sg") or 1.5), "froze48", winners))
+        rows.sort(key=lambda r: (r["target"], r["station"]))
+        return rows
     # sigma fallback por estacion desde predictions_forward
     sig_fb, mu_fb = {}, {}
     for r in _load_csv(PREDS_FWD):
@@ -383,34 +410,39 @@ def bot_history(start=HISTORY_START, end=None, refresh=False, today=None):
                                       (fb[2] if fb else sig_med.get(st, 1.5)))
         if src == "forward-fallback" or not (mu == mu):
             continue   # sin evidencia congelada -> no entra al KPI (honestidad)
-        unit = STATIONS[st][3]
-        w = winners.get((st, tg)) or {}
-        win_lbl = w.get("lbl")
-        rec = dict(station=st, target=tg, mu=mu, sg=sg, src=src, unit=unit,
-                   win_lbl=win_lbl, max_real=w.get("max_real"),
-                   nivel=None, pwin=None, pick_lbl=None)
-        fbk = int(math.floor(mu))
-        if win_lbl:
-            buckets = _synthetic_buckets(unit, w.get("lo"), w.get("hi"), mu)
-            # colas abiertas del ganador real
-            win_b = next((b for b in buckets if resolve_bucket_open(w, b)), None)
-            pick_b = next((b for b in buckets if b[0] <= fbk <= b[1]), None)
-            probs = {b: bucket_prob(mu - 0.5, sg, b[0], b[1]) for b in buckets}
-            rank = sorted(buckets, key=lambda b: -probs[b])
-            if pick_b:   # pick-first (mismo ranking que timeline/leaderboard)
-                rank = [pick_b] + [b for b in rank if b != pick_b]
-            rw = rank.index(win_b) + 1 if win_b in rank else 99
-            exact = int(pick_b == win_b)
-            nivel = ("EXACTO" if exact else "TOP-2" if rw <= 2 else "TOP-3" if rw <= 3 else "PERDIDA")
-            rec.update(nivel=nivel, pwin=probs.get(win_b),
-                       pick_lbl=bucket_label(pick_b[0], pick_b[1], unit) if pick_b else None,
-                       win_lbl=win_lbl)
-        else:
-            pick_w = 2 if unit == "F" else 1
-            plo = fbk - (fbk % pick_w) if unit == "F" else fbk
-            rec["pick_lbl"] = bucket_label(plo, plo + pick_w - 1, unit)
-        rows.append(rec)
+        rows.append(_score_row(st, tg, mu, sg, src, winners))
     return rows
+
+
+def _score_row(st, tg, mu, sg, src, winners):
+    """Scorea UN pick congelado contra el ganador oficial (comun a froze y froze48)."""
+    unit = STATIONS[st][3]
+    w = winners.get((st, tg)) or {}
+    win_lbl = w.get("lbl")
+    rec = dict(station=st, target=tg, mu=mu, sg=sg, src=src, unit=unit,
+               win_lbl=win_lbl, max_real=w.get("max_real"),
+               nivel=None, pwin=None, pick_lbl=None)
+    fbk = int(math.floor(mu))
+    if win_lbl:
+        buckets = _synthetic_buckets(unit, w.get("lo"), w.get("hi"), mu)
+        # colas abiertas del ganador real
+        win_b = next((b for b in buckets if resolve_bucket_open(w, b)), None)
+        pick_b = next((b for b in buckets if b[0] <= fbk <= b[1]), None)
+        probs = {b: bucket_prob(mu - 0.5, sg, b[0], b[1]) for b in buckets}
+        rank = sorted(buckets, key=lambda b: -probs[b])
+        if pick_b:   # pick-first (mismo ranking que timeline/leaderboard)
+            rank = [pick_b] + [b for b in rank if b != pick_b]
+        rw = rank.index(win_b) + 1 if win_b in rank else 99
+        exact = int(pick_b == win_b)
+        nivel = ("EXACTO" if exact else "TOP-2" if rw <= 2 else "TOP-3" if rw <= 3 else "PERDIDA")
+        rec.update(nivel=nivel, pwin=probs.get(win_b),
+                   pick_lbl=bucket_label(pick_b[0], pick_b[1], unit) if pick_b else None,
+                   win_lbl=win_lbl)
+    else:
+        pick_w = 2 if unit == "F" else 1
+        plo = fbk - (fbk % pick_w) if unit == "F" else fbk
+        rec["pick_lbl"] = bucket_label(plo, plo + pick_w - 1, unit)
+    return rec
 
 
 def resolve_bucket_open(w, b):

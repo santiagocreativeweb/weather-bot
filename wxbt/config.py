@@ -99,6 +99,9 @@ STATIONS = [
     Station("WSSS", "Singapore (Changi)",   "SEA",     "C",  8, 31.0,  2.0),
     Station("WMKK", "Kuala Lumpur (Intl)",  "SEA",     "C",  8, 32.0,  2.0),
     Station("ZGSZ", "Shenzhen (Bao'an)",    "S_CHINA", "C",  8, 26.0,  9.0),
+    # [2026-07-16] HK Observatory: resolucion OFICIAL propia (CLMMAXT, 1 decimal) — a diferencia
+    # de ZGSZ aca la verdad SI es la fuente de resolucion. Clima practicamente igual a Shenzhen.
+    Station("HKO",  "Hong Kong (Observatory)", "S_CHINA", "C", 8, 26.0, 9.0),
     # --- ampliación 2026-07-13 tarde (+11; HK afuera por resolución decimal). Grupos sinópticos
     #     distintos: costa oeste US, Texas, sureste US, Toronto con el este, Mexico, Sudamerica,
     #     Helsinki con EU. clim_mean/clim_amp = APROX (solo synth).

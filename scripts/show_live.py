@@ -36,6 +36,10 @@ STATIONS = {  # = download_openmeteo.py / accumulate_ensemble.py. Coords del AER
     "CYYZ": (43.6772, -79.6306,  -5, "C"), "SBGR": (-23.4356, -46.4731, -3, "C"),
     "SAEZ": (-34.8222, -58.5358, -3, "C"), "MMMX": (19.4363, -99.0721,  -6, "C"),
     "EFHK": (60.3172, 24.9633,    2, "C"),
+    # [2026-07-16, pedido Santiago] Hong Kong: resuelve por el OBSERVATORY (no aeropuerto/WU),
+    # "Absolute Daily Max" a 1 DECIMAL (weather.gov.hk CIS). Buckets del mercado = enteros de 1°C
+    # -> la regla floor sigue exacta. Obs propias via scripts/hko_source.py (CLMMAXT + regionales).
+    "HKO": (22.3020, 114.1741,   8, "C"),
 }
 MODELS = {"gefs": "gfs_seamless", "ecmwf": "ecmwf_ifs025", "icon": "icon_seamless"}
 MIN_DAY_HOURS = 20
@@ -58,6 +62,7 @@ PEAK_HOUR = {   # todas MEDIDAS de METAR (IEM); RCSS/EDDM cruzadas ademas con ER
     # SBGR/SAEZ invierno austral; EFHK/CYYZ alta latitud. Refinar con mas METAR forward.
     "KSFO": 13.5, "KLAX": 13.0, "KDAL": 15.5, "KATL": 15.5, "KHOU": 14.0, "KAUS": 15.5,
     "CYYZ": 15.0, "SBGR": 14.5, "SAEZ": 15.0, "MMMX": 14.0, "EFHK": 16.0,
+    "HKO": 13.0,   # costero subtropical, mismo patron que ZGSZ/KMIA (medir con forward)
 }
 # DST EEUU/Canada (2do dom mar - 1er dom nov): + las 6 US nuevas y Toronto (Canada = reglas US).
 _US_DST = {"KLGA", "KORD", "KMIA", "KSFO", "KLAX", "KDAL", "KATL", "KHOU", "KAUS", "CYYZ"}
@@ -112,7 +117,9 @@ CITY_SERIES = {"nyc": 10005, "chicago": 10726, "london": 10006,
                # [2026-07-13 tarde] +11 (HK afuera). series de Gamma.
                "san-francisco": 11371, "los-angeles": 11370, "dallas": 10727,
                "atlanta": 10739, "houston": 11369, "austin": 11367, "toronto": 10743,
-               "sao-paulo": 11169, "buenos-aires": 10744, "mexico-city": 11428, "helsinki": 11508}
+               "sao-paulo": 11169, "buenos-aires": 10744, "mexico-city": 11428, "helsinki": 11508,
+               # [2026-07-16] serie verificada en Gamma (hong-kong-daily-weather)
+               "hong-kong": 11312}
 CITY_STATION = {"nyc": "KLGA", "chicago": "KORD", "london": "EGLC",
                 "paris": "LFPB", "tokyo": "RJTT", "seoul": "RKSI",
                 "shanghai": "ZSPD", "madrid": "LEMD", "beijing": "ZBAA",
@@ -122,7 +129,7 @@ CITY_STATION = {"nyc": "KLGA", "chicago": "KORD", "london": "EGLC",
                 "san-francisco": "KSFO", "los-angeles": "KLAX", "dallas": "KDAL",
                 "atlanta": "KATL", "houston": "KHOU", "austin": "KAUS", "toronto": "CYYZ",
                 "sao-paulo": "SBGR", "buenos-aires": "SAEZ", "mexico-city": "MMMX",
-                "helsinki": "EFHK"}
+                "helsinki": "EFHK", "hong-kong": "HKO"}
 CITY_RE = re.compile(r"highest-temperature-in-([a-z-]+?)-on-")   # [a-z-] + non-greedy: 'kuala-lumpur'
 
 

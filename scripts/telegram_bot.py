@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
-# scripts/telegram_bot.py — BOT DE TELEGRAM WXBT (pedido Santiago 2026-07-15): pick por ciudad,
-# rango de Polymarket con las probabilidades que PAGA el mercado, nuestra prediccion, link al
-# mercado, leaderboard de ciudades estables y VALUE BETS.
+# scripts/telegram_bot.py — BOT DE TELEGRAM WXBT v2 (rediseño 2026-07-16, pedido Santiago:
+# "mucho mas profesional, con menu y selectors, no andar consultando por comandos").
 #
-# SETUP (una sola vez):
-#   1. En Telegram hablar con @BotFather -> /newbot -> copiar el token.
-#   2. Guardarlo en data/.telegram_token (una linea) o en la env var WXBT_TG_TOKEN.
-#      (data/.telegram_token esta gitignoreado via secrets? NO: agregado a .gitignore).
-#   3. Correr:  python scripts/telegram_bot.py --poll     (loop; dejar corriendo o Task Scheduler)
-#      Extra:   python scripts/telegram_bot.py --push     (resumen diario a los chats registrados;
-#               encadenado en run_daily.ps1 — no falla si no hay token)
-#      Test:    python scripts/telegram_bot.py --dry-run "/pick milan"   (sin token, imprime)
+# UX: menus INLINE (botones) + navegacion editando el mismo mensaje:
+#   /picks  -> selector de ciudades -> PANEL por ciudad: clima actual (soleado/lloviendo...),
+#              max registrada del dia, temperatura actual, hora local, hora del pico, estado del
+#              mercado, pronostico fijado si/no, top-3 bids del mercado, posicion de estabilidad
+#              (# ranking + % exacto y top-2 en esa ciudad), picks fijados 24h/48h, y botones
+#              para HISTORIAL y ESTADISTICA de la ciudad.
+#   /top    -> ranking completo de ciudades (1 = mejor).
+#   /status -> estado del bot y de las fuentes.
+#   /estadisticas -> generales + por continente.
 #
-# COMANDOS: /picks /pick <ciudad> /value /top /modelos <ciudad> /vivo <ciudad>
-#           /historial <ciudad> /pws <ciudad> /help
-#
-# HONESTIDAD: el "edge" mostrado es BRUTO (pbot − mid, sin fees/spread/shrink) — screener, no
-# señal. Los picks mostrados son el CONGELADO del audit cuando existe (lo que se opera), si no el
-# snapshot forward. El bot es de SOLO LECTURA: jamas opera ni toca el motor.
+# SETUP: token de @BotFather en data/.telegram_token (gitignoreado) o env WXBT_TG_TOKEN.
+#   correr:  python scripts/telegram_bot.py --poll     (o scripts/run_telegram.ps1)
+#   OJO: UN solo poller a la vez (dos -> 409 Conflict y ninguno responde).
+# El bot es de SOLO LECTURA: jamas opera ni toca el motor.
 import argparse
 import html
 import json
@@ -32,18 +30,35 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import requests                                                      # noqa: E402
 import wxbt_insights as I                                            # noqa: E402
-from show_live import STATIONS, CITY_STATION                         # noqa: E402
+from show_live import STATIONS, CITY_STATION, PEAK_HOUR, local_offset, peak_utc  # noqa: E402
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
-# El token NUNCA va en el codigo (se commitea y queda expuesto en el remoto). Vive en
-# data/.telegram_token (gitignoreado) o en la env WXBT_TG_TOKEN. Ya quedo guardado ahi.
+# El token NUNCA va en el codigo (se commitea y queda expuesto). data/.telegram_token esta
+# gitignoreado; alternativa: env WXBT_TG_TOKEN.
 TOKEN_FILE = os.path.join(DATA, ".telegram_token")
 STATE_FILE = os.path.join(DATA, "telegram_chats.json")
-POLL_TIMEOUT = 50          # long-poll de getUpdates
-MK_TTL = 60                # cache de mercados (seg) para no golpear Gamma por cada mensaje
+POLL_TIMEOUT = 50
+MK_TTL = 60                 # cache mercados (Gamma)
+RANK_TTL = 600              # cache ranking de estabilidad
+WX_TTL = 300                # cache clima actual por ciudad
+START_TS = time.time()
 
-_CACHE = {"mk": (0.0, None), "preds": (0.0, None)}
+_CACHE = {"mk": (0.0, None), "preds": (0.0, None), "rank": (0.0, None), "wx": {}}
 
+# WMO weather codes (Open-Meteo current) -> (emoji, texto es)
+WMO = {0: ("☀️", "Despejado"), 1: ("🌤", "Mayormente despejado"), 2: ("⛅", "Parcialmente nublado"),
+       3: ("☁️", "Nublado"), 45: ("🌫", "Niebla"), 48: ("🌫", "Niebla escarchada"),
+       51: ("🌦", "Llovizna leve"), 53: ("🌦", "Llovizna"), 55: ("🌧", "Llovizna intensa"),
+       61: ("🌧", "Lluvia leve"), 63: ("🌧", "Lluvia"), 65: ("🌧", "Lluvia fuerte"),
+       66: ("🌧", "Lluvia helada"), 67: ("🌧", "Lluvia helada fuerte"),
+       71: ("🌨", "Nieve leve"), 73: ("🌨", "Nieve"), 75: ("❄️", "Nieve fuerte"),
+       80: ("🌦", "Chaparrones leves"), 81: ("🌧", "Chaparrones"), 82: ("⛈", "Chaparrones fuertes"),
+       95: ("⛈", "Tormenta"), 96: ("⛈", "Tormenta con granizo"), 99: ("⛈", "Tormenta fuerte")}
+STATE_ES = {"encurso": "🟢 EN CURSO", "soon": "🟠 CERCA DEL PICO", "prox": "🔵 PRÓXIMO",
+            "resol": "🟣 RESOLVIENDO", "pendrev": "🟡 PENDIENTE DE RESOLUCIÓN", "fin": "🏁 FINALIZADO"}
+
+
+# ------------------------------- infra telegram -------------------------------
 
 def get_token():
     tok = os.environ.get("WXBT_TG_TOKEN", "").strip()
@@ -57,22 +72,25 @@ def get_token():
 def api(token, method, **params):
     r = requests.post(f"https://api.telegram.org/bot{token}/{method}", json=params, timeout=70)
     j = r.json()
-    if not j.get("ok"):
+    if not j.get("ok") and method != "editMessageText":   # edit repetido = "not modified", benigno
         print(f"[WARN] telegram {method}: {j}", file=sys.stderr)
     return j
 
 
-def send(token, chat_id, text):
-    # Telegram corta a 4096 chars -> partir por bloques de linea
-    while text:
-        chunk = text[:4000]
-        if len(text) > 4000:
-            cut = chunk.rfind("\n")
-            if cut > 1000:
-                chunk = chunk[:cut]
-        api(token, "sendMessage", chat_id=chat_id, text=chunk, parse_mode="HTML",
-            disable_web_page_preview=True)
-        text = text[len(chunk):]
+def send(token, chat_id, text, kb=None):
+    params = dict(chat_id=chat_id, text=text[:4000], parse_mode="HTML",
+                  disable_web_page_preview=True)
+    if kb:
+        params["reply_markup"] = {"inline_keyboard": kb}
+    return api(token, "sendMessage", **params)
+
+
+def edit(token, chat_id, message_id, text, kb=None):
+    params = dict(chat_id=chat_id, message_id=message_id, text=text[:4000], parse_mode="HTML",
+                  disable_web_page_preview=True)
+    if kb:
+        params["reply_markup"] = {"inline_keyboard": kb}
+    return api(token, "editMessageText", **params)
 
 
 def load_state():
@@ -86,7 +104,16 @@ def save_state(st):
     json.dump(st, open(STATE_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
-# ------------------------------- resolucion de ciudad -------------------------------
+def _log(msg):
+    ts = dt.datetime.now().strftime("%H:%M:%S")
+    print(f"[{ts}] {msg}", flush=True)
+
+
+def h(s):
+    return html.escape(str(s), quote=False)
+
+
+# ------------------------------- datos (con cache) -------------------------------
 
 def _norm(s):
     s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode()
@@ -94,7 +121,6 @@ def _norm(s):
 
 
 def find_station(q):
-    """'milan' / 'sao paulo' / 'KLGA' / 'nyc' -> codigo ICAO. None si no matchea."""
     import dashboard as D
     qn = _norm(q)
     if not qn:
@@ -107,7 +133,7 @@ def find_station(q):
     for st, meta in D.STATION_META.items():
         if _norm(meta[2]) == qn:
             return st
-    for city, st in CITY_STATION.items():        # prefijo/contiene, ultimo recurso
+    for city, st in CITY_STATION.items():
         if qn in _norm(city):
             return st
     for st, meta in D.STATION_META.items():
@@ -116,9 +142,7 @@ def find_station(q):
     return None
 
 
-# ------------------------------- datos compartidos (con cache) -------------------------------
-
-def get_market(today, horizon=1):
+def get_market(today, horizon=2):
     import dashboard as D
     now = time.monotonic()
     ts, mk = _CACHE["mk"]
@@ -138,172 +162,355 @@ def get_preds(today):
     return p
 
 
-def frozen_or_snapshot(code, d, preds):
-    """(mu, sigma, frozen?) — el pick congelado manda; snapshot forward de fallback."""
-    audit = I._load_audit()
-    froze = (audit.get(f"{code}|{d.isoformat()}") or {}).get("froze") or {}
-    if froze.get("mu") is not None:
-        sg = froze.get("sg") or (preds.get((code, d)) or (None, 2.0))[1] or 2.0
-        return froze["mu"], sg, True
-    if preds.get((code, d)):
-        mu, sg = preds[(code, d)]
-        return mu, sg, False
-    return None, None, False
+def get_rank():
+    """[(pos, station, exact, top2, n, score)] ordenado 1=mejor. Cache 10 min."""
+    now = time.monotonic()
+    ts, r = _CACHE["rank"]
+    if r is None or now - ts > RANK_TTL:
+        rows = I.stability()
+        r = [(i + 1, x["station"], x["exact"], x["top2"], x["n"], x["score"])
+             for i, x in enumerate(rows)]
+        _CACHE["rank"] = (now, r)
+    return r
 
 
-# ------------------------------- formateo de respuestas -------------------------------
+def current_weather(code):
+    """(emoji, descripcion, temp_actual) — Open-Meteo current por lat/lon (para HKO ademas la
+    temp EXACTA del Observatory). Cache 5 min por ciudad."""
+    now = time.monotonic()
+    hit = _CACHE["wx"].get(code)
+    if hit and now - hit[0] < WX_TTL:
+        return hit[1]
+    lat, lon, off, unit = STATIONS[code]
+    out = ("·", "s/d", None)
+    try:
+        r = requests.get("https://api.open-meteo.com/v1/forecast",
+                         params=dict(latitude=lat, longitude=lon,
+                                     current="temperature_2m,weather_code",
+                                     temperature_unit=("fahrenheit" if unit == "F" else "celsius")),
+                         timeout=15)
+        cur = r.json().get("current", {})
+        ico, txt = WMO.get(int(cur.get("weather_code", -1)), ("🌡", "—"))
+        out = (ico, txt, cur.get("temperature_2m"))
+    except Exception:
+        pass
+    if code == "HKO":   # temperatura EXACTA de la estacion que resuelve
+        try:
+            import hko_source
+            t = hko_source.live_now()
+            if t is not None:
+                out = (out[0], out[1], t)
+        except Exception:
+            pass
+    _CACHE["wx"][code] = (now, out)
+    return out
 
-def h(s):
-    return html.escape(str(s), quote=False)
 
-
-def fmt_pick(code, d, today):
-    """Card de un mercado: nuestra prediccion + rango Polymarket con precios/pbot/edge + link."""
+def live_max_today(code, today, live=None):
+    """Max registrada HOY (dia local) en la estacion. Usa el fetch del dashboard (METAR/HKO)."""
     import dashboard as D
-    mk = get_market(today, horizon=2)
-    preds = get_preds(today)
-    info = mk.get(code, {}).get(d)
-    ciudad = D.STATION_META[code][2]
+    d_local = (dt.datetime.utcnow() + dt.timedelta(hours=local_offset(code, today))).date()
+    if code == "HKO":
+        try:
+            import hko_source
+            mm = hko_source.live_maxmin()
+            return (mm[0] if mm else None), d_local
+        except Exception:
+            return None, d_local
+    try:
+        unit = STATIONS[code][3]
+        ext = D._fresh_metar_extremes(code, today, unit)
+        if d_local in ext:
+            return ext[d_local][0], d_local
+        return (ext[max(ext)][0], max(ext)) if ext else (None, d_local)
+    except Exception:
+        return None, d_local
+
+
+# ------------------------------- vistas -------------------------------
+
+def kb_cities():
+    import dashboard as D
+    codes = sorted(STATIONS, key=lambda c: D.STATION_META[c][2])
+    kb, row = [], []
+    for c in codes:
+        row.append({"text": D.STATION_META[c][2], "callback_data": f"c|{c}"})
+        if len(row) == 3:
+            kb.append(row); row = []
+    if row:
+        kb.append(row)
+    return kb
+
+
+def kb_city(code):
+    return [
+        [{"text": "🗓 Historial", "callback_data": f"h|{code}"},
+         {"text": "📊 Estadística", "callback_data": f"e|{code}"}],
+        [{"text": "🔄 Actualizar", "callback_data": f"c|{code}"},
+         {"text": "« Ciudades", "callback_data": "menu"}],
+    ]
+
+
+def kb_back(code):
+    return [[{"text": f"« {code}", "callback_data": f"c|{code}"},
+             {"text": "« Ciudades", "callback_data": "menu"}]]
+
+
+def view_menu():
+    return "<b>🏙 Elegí una ciudad</b>\n(picks, mercado, clima en vivo, historial y estadística)", kb_cities()
+
+
+def _pick_lbl(code, mu):
+    unit = STATIONS[code][3]
+    fb = int(math.floor(mu))
+    if unit == "F":
+        lo = fb if fb % 2 == 0 else fb - 1
+        return f"{lo}-{lo + 1}°F"
+    return f"{fb}°C"
+
+
+def view_city(code, today=None):
+    """PANEL de ciudad (pedido Santiago 2026-07-16, campos textuales)."""
+    import dashboard as D
+    today = today or dt.date.today()
     unit = STATIONS[code][3]
     deg = "°F" if unit == "F" else "°C"
-    mu, sg, frozen = frozen_or_snapshot(code, d, preds)
-    lines = [f"<b>{h(ciudad)} ({code}) — {d.strftime('%d/%m/%Y')}</b>"]
-    if mu is not None:
-        tag = "🔒 congelado" if frozen else "◷ snapshot (aun recalibra)"
-        lines.append(f"Bot: <b>{mu:.1f}{deg}</b> (σ {sg:.1f}) · {tag}")
-        bm = best_model_line(code)
-        if bm:
-            lines.append(bm)
-    else:
-        lines.append("Bot: sin prediccion para esa fecha todavia.")
-    if not info or not info.get("buckets"):
-        lines.append("Mercado: sin evento vivo en Polymarket para esa fecha.")
-        return "\n".join(lines)
-    priced = [(lab, lo, hi, p) for lab, lo, hi, p in info["buckets"] if p is not None]
+    cont, pais, ciudad = D.STATION_META[code][:3]
+    now_utc = dt.datetime.now(dt.timezone.utc)
+    audit = I._load_audit()
+    mk = get_market(today, horizon=2)
+    preds = get_preds(today)
 
-    def center(lo, hi):
-        w = 2 if unit == "F" else 1
-        lo = lo if lo is not None else (hi - w if hi is not None else 0)
-        hi = hi if hi is not None else lo + w
-        return (lo + hi) / 2
-    priced.sort(key=lambda x: center(x[1], x[2]))
-    pbot = {lab: (D.pbot_floor(mu, sg, lo, hi) if mu is not None else None)
-            for lab, lo, hi, p in priced}
-    rows = ["<pre>rango        mercado   bot    Δ¢"]
-    fb = int(math.floor(mu)) if mu is not None else None
-    for lab, lo, hi, p in priced:
-        pb = pbot.get(lab)
-        star = "→" if (fb is not None and (lo is None or fb >= lo) and (hi is None or fb <= hi)) else " "
-        pbs = f"{pb:5.0%}" if pb is not None else "    -"
-        edge = f"{(pb - p) * 100:+4.0f}" if pb is not None else "   -"
-        rows.append(f"{star}{lab:<12.12} {p:6.2f}  {pbs}  {edge}")
-    rows.append("</pre>")
-    lines += rows
-    if info.get("winner"):
-        lines.append(f"🏁 RESUELTO — gano <b>{h(info['winner'])}</b>")
-    lines.append(f'<a href="{I.pm_url(code, d)}">abrir en Polymarket ↗</a>')
-    lines.append("<i>Δ¢ = pbot − precio, edge BRUTO (sin fees/spread) — screener, no señal.</i>")
-    return "\n".join(lines)
+    # dia LOCAL del mercado vigente (Asia puede ir un dia adelante de AR)
+    d_local = (now_utc + dt.timedelta(hours=local_offset(code, today))).date()
+    info = mk.get(code, {}).get(d_local) or mk.get(code, {}).get(today)
+    d_mkt = d_local if mk.get(code, {}).get(d_local) else today
+    state, _ = D.state_of(code, d_mkt, info, now_utc) if info else ("prox", "")
+
+    ico, wtxt, tnow = current_weather(code)
+    tmax, _ = live_max_today(code, today)
+    hora_local = (now_utc.replace(tzinfo=None) + dt.timedelta(hours=local_offset(code, d_mkt))).strftime("%H:%M")
+    peak_h = PEAK_HOUR[code]
+    peak_s = f"{int(peak_h):02d}:{int((peak_h % 1) * 60):02d}"
+    frozen = D.forecast_frozen(code, d_mkt, now_utc)
+    frz_local = (D.freeze_utc(code, d_mkt) + dt.timedelta(hours=local_offset(code, d_mkt))).strftime("%H:%M")
+
+    L = [f"<b>🏙 {h(ciudad).upper()} ({code})</b> · {h(pais)}",
+         f"{ico} <b>{wtxt}</b>"]
+    # temperatura: 1 sola card si actual == max registrada (pedido explicito)
+    if tnow is not None and tmax is not None and abs(float(tnow) - float(tmax)) < 0.05:
+        L.append(f"🌡 La temperatura actual (<b>{tnow:.1f}{deg}</b>) es la máxima registrada hasta el momento.")
+    else:
+        if tmax is not None:
+            L.append(f"🔺 Máxima registrada del día: <b>{tmax:.1f}{deg}</b>")
+        if tnow is not None:
+            L.append(f"🌡 Temperatura actual: <b>{float(tnow):.1f}{deg}</b>")
+    L.append(f"🕐 Hora local: <b>{hora_local}</b> · Pico: ~<b>{peak_s}</b>")
+    L.append(f"Estado: <b>{STATE_ES.get(state, state)}</b>")
+    L.append("Pronóstico fijado: " + (f"✅ sí (desde {frz_local} local)" if frozen
+                                      else f"⏳ no — se fija {frz_local} local"))
+
+    # mercado: top-3 bids
+    if info and info.get("buckets"):
+        priced = sorted([(lab, p) for lab, lo, hi, p in info["buckets"] if p is not None],
+                        key=lambda x: -x[1])[:3]
+        if priced:
+            L.append(f"\n<b>📈 Mercado {d_mkt.strftime('%d/%m')} (top-3):</b>")
+            for lab, p in priced:
+                L.append(f"   {h(lab)} — <b>{p:.2f}</b>")
+        if info.get("winner"):
+            L.append(f"🏁 ganó <b>{h(info['winner'])}</b>")
+    else:
+        L.append("\n📈 Mercado: sin evento vivo ahora.")
+
+    # estabilidad: posicion + % exacto y top-2 (solo exacto y top2, pedido explicito)
+    rank = get_rank()
+    mine = next((r for r in rank if r[1] == code), None)
+    if mine and mine[4]:
+        pos, _, ex, t2, n, _ = mine
+        L.append(f"\n🏆 Estabilidad: <b>#{pos}</b> de {len(rank)} · "
+                 f"exacto <b>{ex / n:.0%}</b> · top-2 <b>{t2 / n:.0%}</b> (n={n})")
+    else:
+        L.append(f"\n🏆 Estabilidad: sin mercados resueltos aún (ciudad nueva)")
+
+    # picks fijados para los proximos 2 dias (24h y 48h)
+    L.append("\n<b>🔒 Picks:</b>")
+    for k in range(0, 3):
+        d = d_mkt + dt.timedelta(days=k)
+        if d > today + dt.timedelta(days=2):
+            break
+        rec = audit.get(f"{code}|{d.isoformat()}") or {}
+        froze = rec.get("froze") or {}
+        f48 = rec.get("froze48") or {}
+        pr = preds.get((code, d))
+        if froze.get("mu") is not None:
+            L.append(f"   {d.strftime('%d/%m')}: <b>{_pick_lbl(code, froze['mu'])}</b> "
+                     f"(μ {froze['mu']:.1f}{deg}) 🔒 fijado")
+        elif f48.get("mu") is not None:
+            L.append(f"   {d.strftime('%d/%m')}: <b>{_pick_lbl(code, f48['mu'])}</b> "
+                     f"(μ {f48['mu']:.1f}{deg}) ⏳ fijado a 48h — el definitivo se fija {frz_local} local")
+        elif pr:
+            L.append(f"   {d.strftime('%d/%m')}: {_pick_lbl(code, pr[0])} "
+                     f"(μ {pr[0]:.1f}{deg}) ◷ preliminar")
+    bm = best_model_line(code)
+    if bm:
+        L.append("\n" + bm)
+    return "\n".join(L), kb_city(code)
 
 
 def best_model_line(code):
-    """Linea 'mejor modelo en esta ciudad' desde data/model_city_rank.csv (si existe y n>=5)."""
     path = os.path.join(DATA, "model_city_rank.csv")
     if not os.path.exists(path):
         return None
     import csv as _csv
-    best = None
     for r in _csv.DictReader(open(path, encoding="utf-8")):
-        if r["station"] == code and r["rank"] == "1":
-            best = r
-            break
-    if not best or int(best["n"]) < 5:
-        return None
-    mae = f", MAE {float(best['mae']):.2f}" if best.get("mae") else ""
-    return (f"🏅 mejor modelo aca: <b>{best['model']}</b> "
-            f"{float(best['rate']):.0%} exacto (n={best['n']}{mae}) [{best['src']}]")
+        if r["station"] == code and r["rank"] == "1" and int(r["n"]) >= 5:
+            return (f"🏅 Mejor modelo acá: <b>{r['model']}</b> {float(r['rate']):.0%} "
+                    f"exacto (n={r['n']})")
+    return None
 
 
-def fmt_picks(today):
+def view_historial(code):
     import dashboard as D
-    mk = get_market(today, horizon=1)
-    preds = get_preds(today)
-    lines = [f"<b>Picks del bot — {today.strftime('%d/%m/%Y')}</b>", "<pre>ciudad          pick     μ      edge"]
-    n = 0
-    for code in sorted(STATIONS, key=lambda c: D.STATION_META[c][2]):
-        info = mk.get(code, {}).get(today)
-        if not info or not info.get("buckets"):
-            continue
-        unit = STATIONS[code][3]
-        mu, sg, frozen = frozen_or_snapshot(code, today, preds)
-        if mu is None:
-            continue
-        priced = [(lab, lo, hi, p) for lab, lo, hi, p in info["buckets"] if p is not None]
-        if not priced:
-            continue
-        fb = int(math.floor(mu))
-        pick = next((lab for lab, lo, hi, p in priced
-                     if (lo is None or fb >= lo) and (hi is None or fb <= hi)), "—")
-        px = next((p for lab, lo, hi, p in priced if lab == pick), None)
-        pb = D.pbot_floor(mu, sg, *next(((lo, hi) for lab, lo, hi, p in priced if lab == pick),
-                                        (None, None))) if pick != "—" else None
-        edge = f"{(pb - px) * 100:+4.0f}¢" if (pb is not None and px is not None) else "   -"
-        lock = "🔒" if frozen else "◷"
-        ciudad = D.STATION_META[code][2][:14]
-        lines.append(f"{ciudad:<15.15} {pick:<8.8} {mu:5.1f}{'F' if unit == 'F' else 'C'} {edge} {lock}")
-        n += 1
-    lines.append("</pre>")
-    lines.append("Detalle: /pick &lt;ciudad&gt; · value bets: /value")
+    ciudad = D.STATION_META[code][2]
+    hist = sorted([r for r in I.bot_history() if r["station"] == code],
+                  key=lambda r: r["target"], reverse=True)
+    if not hist:
+        return f"Sin historial congelado para {h(ciudad)} aún.", kb_back(code)
+    icon = {"EXACTO": "✅", "TOP-2": "✅", "TOP-3": "🔶", "PERDIDA": "❌", None: "⏳"}
+    L = [f"<b>🗓 Historial {h(ciudad)} ({code})</b>", "<pre>fecha  pick     ganó     resultado"]
+    for r in hist[:14]:
+        L.append(f"{r['target'].strftime('%d/%m')}  {(r['pick_lbl'] or '—'):<8.8} "
+                 f"{(r['win_lbl'] or '—'):<8.8} {icon[r['nivel']]} {r['nivel'] or 'pendiente'}")
+    L.append("</pre>")
+    sc = [r for r in hist if r["nivel"]]
+    if sc:
+        ex = sum(r["nivel"] == "EXACTO" for r in sc)
+        t2 = sum(r["nivel"] in ("EXACTO", "TOP-2") for r in sc)
+        L.append(f"Total: <b>{ex}/{len(sc)}</b> exactos · <b>{t2}/{len(sc)}</b> top-2")
+    return "\n".join(L), kb_back(code)
+
+
+def view_estadistica(code):
+    import dashboard as D
+    ciudad = D.STATION_META[code][2]
+    sc = [r for r in I.bot_history() if r["station"] == code and r["nivel"]]
+    if not sc:
+        return f"Sin mercados resueltos para {h(ciudad)} aún.", kb_back(code)
+    n = len(sc)
+    ex = sum(r["nivel"] == "EXACTO" for r in sc)
+    t2 = sum(r["nivel"] in ("EXACTO", "TOP-2") for r in sc)
+    t3 = sum(r["nivel"] in ("EXACTO", "TOP-2", "TOP-3") for r in sc)
+    perd = sum(r["nivel"] == "PERDIDA" for r in sc)
+    aes = [abs(r["mu"] - r["max_real"]) for r in sc if r.get("max_real") is not None]
+    mae = sum(aes) / len(aes) if aes else None
+    rank = get_rank()
+    mine = next((r for r in rank if r[1] == code), None)
+    L = [f"<b>📊 Estadística {h(ciudad)} ({code})</b> — desde el 08/07",
+         f"Mercados resueltos: <b>{n}</b>",
+         f"✅ Exactos: <b>{ex}</b> ({ex / n:.0%})",
+         f"🟡 Top-2: <b>{t2}</b> ({t2 / n:.0%})",
+         f"🟠 Top-3: <b>{t3}</b> ({t3 / n:.0%})",
+         f"❌ Pérdidas: <b>{perd}</b>"]
+    if mae is not None:
+        L.append(f"📏 MAE del pick vs obs: <b>{mae:.2f}°</b>")
+    if mine:
+        L.append(f"🏆 Posición de estabilidad: <b>#{mine[0]}</b> de {len(rank)}")
+    bm = best_model_line(code)
+    if bm:
+        L.append(bm)
+    return "\n".join(L), kb_back(code)
+
+
+def view_top():
+    import dashboard as D
+    rank = get_rank()
+    L = ["<b>🏆 Ranking de ciudades</b> (1 = mejor · Wilson del top-2, desde 08/07)",
+         "<pre># ciudad          ex   top2   n"]
+    for pos, st, ex, t2, n, score in rank:
+        ciudad = D.STATION_META.get(st, ("?", "?", st))[2][:14]
+        L.append(f"{pos:<2} {ciudad:<15.15} {ex:>2}   {t2:>2}   {n:>2}")
+    con = [st for st in STATIONS if not any(r[1] == st for r in rank)]
+    L.append("</pre>")
+    if con:
+        L.append("Sin resueltos aún: " + ", ".join(
+            D.STATION_META.get(s, ("?", "?", s))[2] for s in con))
+    L.append("Detalle: /picks → ciudad → 📊")
+    return "\n".join(L), [[{"text": "🏙 Ver ciudades", "callback_data": "menu"}]]
+
+
+def view_estadisticas_gen():
+    import dashboard as D
+    hist = [r for r in I.bot_history() if r["nivel"]]
+    n = len(hist)
     if not n:
-        return "Sin mercados vivos con prediccion para hoy."
-    return "\n".join(lines)
+        return "Sin mercados resueltos aún.", None
+    ex = sum(r["nivel"] == "EXACTO" for r in hist)
+    t2 = sum(r["nivel"] in ("EXACTO", "TOP-2") for r in hist)
+    t3 = sum(r["nivel"] in ("EXACTO", "TOP-2", "TOP-3") for r in hist)
+    aes = [abs(r["mu"] - r["max_real"]) for r in hist if r.get("max_real") is not None]
+    L = [f"<b>📊 Estadísticas generales</b> (desde 08/07, pick congelado vs Gamma)",
+         f"Mercados: <b>{n}</b> · ✅ exacto <b>{ex / n:.0%}</b> ({ex}) · "
+         f"🟡 top-2 <b>{t2 / n:.0%}</b> ({t2}) · 🟠 top-3 <b>{t3 / n:.0%}</b>"]
+    if aes:
+        L.append(f"📏 MAE: <b>{sum(aes) / len(aes):.2f}°</b>")
+    # por continente
+    L.append("\n<b>Por continente:</b>")
+    by = {}
+    for r in hist:
+        cont = D.STATION_META.get(r["station"], ("?",))[0]
+        a = by.setdefault(cont, [0, 0, 0])
+        a[0] += 1
+        a[1] += r["nivel"] == "EXACTO"
+        a[2] += r["nivel"] in ("EXACTO", "TOP-2")
+    for cont in sorted(by):
+        n_, ex_, t2_ = by[cont]
+        L.append(f"   {cont}: exacto {ex_ / n_:.0%} · top-2 {t2_ / n_:.0%} (n={n_})")
+    L.append("\nTab 48hs (pick fijado un día antes): en la página 📊 Estadísticas — acumula desde el 16/07.")
+    return "\n".join(L), [[{"text": "🏆 Ranking", "callback_data": "top"},
+                           {"text": "🏙 Ciudades", "callback_data": "menu"}]]
 
 
-def fmt_value(today):
-    vb = I.value_bets(today=today, horizon=1, mk=get_market(today, horizon=1),
-                      preds=get_preds(today))
-    hits = [r for r in vb if r["value"]]
-    lines = [f"<b>💰 Value bets — {today.strftime('%d/%m/%Y')}</b>",
-             "<i>edge BRUTO (pbot − mid), sin fees/spread/shrink. Screener, NO señal. "
-             "Regla playbook: solo FUERTES, maker, temprano.</i>"]
-    if not hits:
-        lines.append("Sin value bets ahora (edge top-1 &lt; 10¢, par &lt; 12¢, sin longshots).")
-        # mostrar el mejor edge igual, como contexto
-        for r in vb[:3]:
-            lines.append(f"· {h(r['city'])} {r['date'].strftime('%d/%m')}: top-1 {h(r['t1'])} "
-                         f"edge {r['edge1'] * 100:+.0f}¢ ({r['tier']})")
-        return "\n".join(lines)
-    for r in hits[:12]:
-        star = {"FUERTE": "🟢", "MEDIA": "🟡", "DEBIL": "🔴"}[r["tier"]]
-        l1 = (f"{star} <b>{h(r['city'])}</b> {r['date'].strftime('%d/%m')} "
-              f"[{r['tier']}{' · 🔒' if r['frozen'] else ''}]")
-        l2 = (f"   top-1 <b>{h(r['t1'])}</b>: bot {r['pbot1']:.0%} vs mercado "
-              f"{(r['px1'] or 0):.2f} → edge <b>{r['edge1'] * 100:+.0f}¢</b>")
-        parts = [l1, l2]
-        if r["t2"] and r["pair_edge"] >= 0.12:
-            parts.append(f"   par top-2 {h(r['t1'])}+{h(r['t2'])}: edge {r['pair_edge'] * 100:+.0f}¢")
-        for lab, px, pb in r["longshots"][:2]:
-            parts.append(f"   🎯 longshot {h(lab)} @{px:.2f} (bot {pb:.0%}) — size chico")
-        parts.append(f'   <a href="{r["url"]}">Polymarket ↗</a>')
-        lines.append("\n".join(parts))
-    if any(r["tier"] == "DEBIL" for r in hits[:12]):
-        lines.append("🔴 = estacion DEBIL: el playbook dice NO operar (sin fuente local).")
-    return "\n".join(lines)
+def view_status():
+    st = load_state()
+    up = time.time() - START_TS
+    hh, mm = int(up // 3600), int(up % 3600 // 60)
+    def _mtime(f):
+        p = os.path.join(DATA, f)
+        return dt.datetime.fromtimestamp(os.path.getmtime(p)).strftime("%d/%m %H:%M") if os.path.exists(p) else "—"
+    L = ["<b>🤖 Estado del bot WXBT</b>",
+         f"Uptime: <b>{hh}h {mm}m</b> · Chats: <b>{len(st.get('chats', {}))}</b> · "
+         f"Ciudades: <b>{len(STATIONS)}</b>",
+         "\n<b>Fuentes (última actualización local):</b>",
+         f"   predicciones: {_mtime('predictions_forward.csv')}",
+         f"   modelos vivos: {_mtime('models_forward.csv')}",
+         f"   audit (freezes): {_mtime('forecast_audit.json')}",
+         f"   bias V2: {_mtime('station_bias.json')}",
+         f"   PWS refs: {_mtime('pws_reference.csv')}",
+         "\nComandos: /picks /top /estadisticas /status /pws /modelos /help"]
+    return "\n".join(L), [[{"text": "🏙 Ciudades", "callback_data": "menu"}]]
 
 
-def fmt_top():
-    rows = I.stability()
+def fmt_pws(code):
     import dashboard as D
-    lines = ["<b>🏆 Ciudades mas ESTABLES (desde 08/07, pick congelado vs Gamma)</b>",
-             "<pre>#  ciudad          ex   top2  n  score"]
-    for i, r in enumerate(rows[:15], 1):
-        ciudad = D.STATION_META.get(r["station"], ("?", "?", r["station"]))[2][:14]
-        lines.append(f"{i:<2} {ciudad:<15.15} {r['exact']:>2}   {r['top2']:>2}   {r['n']:>2}  "
-                     f"{r['score']:.2f}")
-    lines.append("</pre>")
-    lines.append("<i>score = cota inferior Wilson del TOP-2 (n chico penaliza solo — 2/2 no "
-                 "le gana a 6/7). MAE y detalle: /historial &lt;ciudad&gt;</i>")
-    return "\n".join(lines)
+    path = os.path.join(DATA, "pws_reference.csv")
+    ciudad = D.STATION_META[code][2]
+    if not os.path.exists(path):
+        return "Sin referencia PWS todavía."
+    import csv as _csv
+    rows = [r for r in _csv.DictReader(open(path, encoding="utf-8")) if r["station"] == code]
+    if not rows:
+        return f"Sin PWS de referencia para {h(ciudad)}."
+    unit = STATIONS[code][3]
+    L = [f"<b>📍 PWS de referencia — {h(ciudad)} ({code})</b>",
+         "<pre>pws            km   n    bias   σdif"]
+    for r in rows:
+        L.append(f"{r['pws_id']:<14.14} {float(r['dist_km']):4.1f} {r['n']:>3}  "
+                 f"{float(r['bias']):+5.2f}  {float(r['std']):5.2f}")
+    L.append("</pre>")
+    L.append(f"<i>bias = PWS − estación ({'°F' if unit == 'F' else '°C'}). "
+             f"Estimador vivo: mediana(PWS − bias).</i>")
+    return "\n".join(L)
 
 
 def fmt_models(code):
@@ -312,167 +519,99 @@ def fmt_models(code):
     ciudad = D.STATION_META[code][2]
     rows = [r for r in perf if r["station"] == code]
     if not rows:
-        return f"Sin datos de modelos para {h(ciudad)} todavia."
-    lines = [f"<b>🧪 Modelos en {h(ciudad)} ({code})</b>"]
+        return f"Sin datos de modelos para {h(ciudad)} todavía."
+    L = [f"<b>🧪 Modelos en {h(ciudad)} ({code})</b>"]
     for src, tag in (("vivo", "VIVO — capturas reales pre-freeze"),
-                     ("retro", "RETRO — Previous-Runs 90d (bug #5: referencia)")):
+                     ("retro", "RETRO — Previous-Runs 90d (referencia)")):
         sub = sorted([r for r in rows if r["src"] == src],
                      key=lambda r: (-(r["rate"] if r["rate"] == r["rate"] else -1),
                                     r["mae"] if r["mae"] == r["mae"] else 99))
         if not sub:
             continue
-        lines.append(f"<i>{tag}</i>")
+        L.append(f"<i>{tag}</i>")
         body = ["<pre>modelo       exactos  %     MAE"]
         for r in sub:
             mae = f"{r['mae']:.2f}" if r["mae"] == r["mae"] else "  - "
             body.append(f"{r['model']:<12.12} {r['hits']:>2}/{r['n']:<3}  {r['rate']:>4.0%}  {mae}")
         body.append("</pre>")
-        lines.append("\n".join(body))
-    lines.append("<i>% = veces que el floor del modelo cayo en el bucket que PAGO Polymarket.</i>")
-    return "\n".join(lines)
+        L.append("\n".join(body))
+    return "\n".join(L)
 
 
-def fmt_historial(code, nmax=12):
-    import dashboard as D
-    hist = [r for r in I.bot_history() if r["station"] == code]
-    hist.sort(key=lambda r: r["target"], reverse=True)
-    ciudad = D.STATION_META[code][2]
-    if not hist:
-        return f"Sin historial congelado para {h(ciudad)} aun."
-    icon = {"EXACTO": "✅", "TOP-2": "✅", "TOP-3": "🔶", "PERDIDA": "❌", None: "⏳"}
-    lines = [f"<b>🗓 Historial {h(ciudad)} ({code})</b>", "<pre>fecha  pick     gano     resultado"]
-    for r in hist[:nmax]:
-        res = r["nivel"] or "pendiente"
-        lines.append(f"{r['target'].strftime('%d/%m')}  {(r['pick_lbl'] or '—'):<8.8} "
-                     f"{(r['win_lbl'] or '—'):<8.8} {icon[r['nivel']]} {res}")
-    lines.append("</pre>")
-    sc = [r for r in hist if r["nivel"]]
-    if sc:
-        ex = sum(r["nivel"] == "EXACTO" for r in sc)
-        t2 = sum(r["nivel"] in ("EXACTO", "TOP-2") for r in sc)
-        lines.append(f"Total: {ex}/{len(sc)} exactos · {t2}/{len(sc)} top-2")
-    return "\n".join(lines)
+HELP = """<b>WXBT bot — menú</b>
+/picks — selector de ciudades (mercado, clima vivo, picks fijados, historial, estadística)
+/top — ranking de ciudades (1 = mejor)
+/estadisticas — generales + por continente
+/status — estado del bot y las fuentes
+/pws &lt;ciudad&gt; — PWS de referencia · /modelos &lt;ciudad&gt; — modelos que aciertan ahí
+Todo se navega con BOTONES: tocá /picks y elegí la ciudad."""
 
 
-def fmt_vivo(code, today):
-    """Obs en vivo (max del dia hasta ahora) + pick + top del mercado."""
-    import dashboard as D
-    unit = STATIONS[code][3]
-    deg = "°F" if unit == "F" else "°C"
-    ciudad = D.STATION_META[code][2]
-    lines = [f"<b>📡 {h(ciudad)} ({code}) EN VIVO</b>"]
-    try:
-        ext = D._fresh_metar_extremes(code, today, unit)
-        for dd in sorted(ext):
-            if dd >= today - dt.timedelta(days=1):
-                mx, mn = ext[dd]
-                lines.append(f"{dd.strftime('%d/%m')}: max {mx:.1f}{deg} · min {mn:.1f}{deg} (METAR IEM)")
-    except Exception as e:
-        lines.append(f"obs en vivo no disponible ({h(e)})")
-    lines.append("")
-    lines.append(fmt_pick(code, today, today))
-    return "\n".join(lines)
-
-
-def fmt_pws(code):
-    import dashboard as D
-    path = os.path.join(DATA, "pws_reference.csv")
-    ciudad = D.STATION_META[code][2]
-    if not os.path.exists(path):
-        return ("Sin referencia PWS todavia. Correr: "
-                "<code>python scripts/pws_setup.py --stations " + code + "</code>")
-    import csv as _csv
-    rows = [r for r in _csv.DictReader(open(path, encoding="utf-8")) if r["station"] == code]
-    if not rows:
-        return f"Sin PWS de referencia para {h(ciudad)} — correr pws_setup.py --stations {code}."
-    unit = STATIONS[code][3]
-    lines = [f"<b>📍 PWS de referencia — {h(ciudad)} ({code})</b>",
-             "<pre>pws            km   n    bias   σdif"]
-    for r in rows:
-        lines.append(f"{r['pws_id']:<14.14} {float(r['dist_km']):4.1f} {r['n']:>3}  "
-                     f"{float(r['bias']):+5.2f}  {float(r['std']):5.2f}")
-    lines.append("</pre>")
-    lines.append(f"<i>bias = PWS − estacion ({'°F' if unit == 'F' else '°C'}, mediana del rango "
-                 f"evaluado). Estimador: mediana(PWS_vivo − bias). Detalle: city_{code}.html</i>")
-    return "\n".join(lines)
-
-
-HELP = """<b>WXBT bot — comandos</b>
-/picks — picks de HOY en todas las ciudades
-/pick &lt;ciudad&gt; — prediccion + rango Polymarket con precios y edge
-/value — value bets ahora (edge bruto vs mercado)
-/top — ciudades mas estables (desde 08/07)
-/modelos &lt;ciudad&gt; — que modelo acierta en esa ciudad
-/vivo &lt;ciudad&gt; — obs en vivo + mercado
-/historial &lt;ciudad&gt; — ultimos resultados del bot ahi
-/pws &lt;ciudad&gt; — PWS de referencia y su bias vs la estacion
-Ej: /pick milan · /modelos nyc · /historial seul"""
-
+# ------------------------------- routing -------------------------------
 
 def handle(text, today=None):
-    """Comando -> respuesta (string HTML). Puro (para --dry-run y tests)."""
-    today = today or dt.date.today()
+    """Comandos de TEXTO -> (texto, keyboard|None). Compat con --dry-run."""
     t = (text or "").strip()
     if not t.startswith("/"):
-        return None
+        return None, None
     parts = t.split(maxsplit=1)
     cmd = parts[0].lower().split("@")[0]
     arg = parts[1].strip() if len(parts) > 1 else ""
     if cmd in ("/start", "/help", "/ayuda"):
-        return HELP
-    if cmd == "/picks":
-        return fmt_picks(today)
-    if cmd in ("/value", "/valuebets"):
-        return fmt_value(today)
-    if cmd in ("/top", "/leaderboard", "/estables"):
-        return fmt_top()
-    if cmd in ("/pick", "/modelos", "/models", "/vivo", "/live", "/historial",
-               "/history", "/pws"):
-        d = today
-        if arg.lower().endswith(("mañana", "manana")):
-            d = today + dt.timedelta(days=1)
-            arg = arg.rsplit(None, 1)[0] if " " in arg else ""
+        return HELP, [[{"text": "🏙 Ver ciudades", "callback_data": "menu"}]]
+    if cmd in ("/picks", "/pick", "/ciudades", "/cities"):
+        if arg:
+            code = find_station(arg)
+            if code:
+                return view_city(code)
+        return view_menu()
+    if cmd in ("/top", "/leaderboard", "/ranking"):
+        return view_top()
+    if cmd in ("/estadisticas", "/stats", "/estadistica"):
+        return view_estadisticas_gen()
+    if cmd == "/status":
+        return view_status()
+    if cmd in ("/pws", "/modelos", "/models", "/historial", "/history"):
         code = find_station(arg)
         if not code:
-            return (f"No encontre la ciudad «{h(arg)}». Proba con el nombre de Polymarket "
-                    f"(milan, nyc, sao paulo...) o el ICAO (LIMC).")
-        if cmd == "/pick":
-            return fmt_pick(code, d, today)
-        if cmd in ("/modelos", "/models"):
-            return fmt_models(code)
-        if cmd in ("/vivo", "/live"):
-            return fmt_vivo(code, today)
-        if cmd in ("/historial", "/history"):
-            return fmt_historial(code)
+            return (f"No encontré la ciudad «{h(arg)}». Probá /picks y elegila con botones.", None)
         if cmd == "/pws":
-            return fmt_pws(code)
-    return "Comando desconocido. /help para la lista."
+            return fmt_pws(code), kb_back(code)
+        if cmd in ("/modelos", "/models"):
+            return fmt_models(code), kb_back(code)
+        return view_historial(code)
+    return "Comando desconocido. /help para el menú.", None
+
+
+def handle_callback(data):
+    """callback_data -> (texto, keyboard). Rutas: menu | top | c|CODE | h|CODE | e|CODE."""
+    if data == "menu":
+        return view_menu()
+    if data == "top":
+        return view_top()
+    kind, _, code = data.partition("|")
+    if code in STATIONS:
+        if kind == "c":
+            return view_city(code)
+        if kind == "h":
+            return view_historial(code)
+        if kind == "e":
+            return view_estadistica(code)
+    return "Menú desactualizado — mandá /picks de nuevo.", None
 
 
 # ------------------------------- loop / push -------------------------------
 
-def _log(msg):
-    """Log a consola con timestamp AR, SIEMPRE flusheado (si no, --poll parece muerto)."""
-    import dashboard as D
-    ts = D.to_art(dt.datetime.now(dt.timezone.utc)).strftime("%H:%M:%S")
-    print(f"[{ts}] {msg}", flush=True)
-
-
 COMMANDS = [
-    ("picks", "picks de HOY en todas las ciudades"),
-    ("pick", "prediccion + rango Polymarket de una ciudad"),
-    ("value", "value bets ahora (edge vs mercado)"),
-    ("top", "ciudades mas estables"),
-    ("modelos", "que modelo acierta en una ciudad"),
-    ("vivo", "obs en vivo + mercado de una ciudad"),
-    ("historial", "ultimos resultados del bot en una ciudad"),
-    ("pws", "PWS de referencia de una ciudad"),
-    ("help", "lista de comandos"),
+    ("picks", "elegir ciudad (mercado, clima, picks, historial)"),
+    ("top", "ranking de ciudades (1 = mejor)"),
+    ("estadisticas", "estadisticas generales y por continente"),
+    ("status", "estado del bot y las fuentes"),
+    ("help", "ayuda"),
 ]
 
 
 def setup_commands(token):
-    """Registra el menu de comandos (la UI de Telegram muestra el / con la lista)."""
     try:
         api(token, "setMyCommands",
             commands=[{"command": c, "description": d} for c, d in COMMANDS])
@@ -482,103 +621,111 @@ def setup_commands(token):
 
 def poll(token):
     try:
-        sys.stdout.reconfigure(line_buffering=True)   # py3.7+: nada de buffering en --poll
+        sys.stdout.reconfigure(line_buffering=True)
     except Exception:
         pass
     st = load_state()
     setup_commands(token)
     me = api(token, "getMe").get("result", {})
-    _log(f"WXBT bot @{me.get('username','?')} ONLINE (long-poll). Chats registrados: {len(st['chats'])}. Ctrl+C para parar.")
-    # ping de arranque a los chats ya registrados (asi sabes que quedo vivo)
+    _log(f"WXBT bot @{me.get('username', '?')} ONLINE (long-poll). "
+         f"Chats: {len(st['chats'])}. Ctrl+C para parar.")
     for cid in st["chats"]:
         try:
-            send(token, int(cid), "🟢 <b>WXBT bot online</b> — mandá /help para ver los comandos.")
+            send(token, int(cid), "🟢 <b>WXBT bot online</b> — tocá /picks para elegir ciudad.",
+                 kb=[[{"text": "🏙 Ver ciudades", "callback_data": "menu"}]])
         except Exception:
             pass
     last_beat = time.time()
     while True:
         try:
-            j = api(token, "getUpdates", offset=st.get("offset", 0) + 1, timeout=POLL_TIMEOUT)
+            j = api(token, "getUpdates", offset=st.get("offset", 0) + 1, timeout=POLL_TIMEOUT,
+                    allowed_updates=["message", "callback_query"])
         except requests.RequestException as e:
             _log(f"[WARN] getUpdates: {e} — reintento en 5s")
             time.sleep(5)
             continue
         if not j.get("ok"):
-            ec = j.get("error_code")
-            if ec == 409:
-                _log("[ERROR] 409 Conflict: hay OTRO getUpdates corriendo o un webhook activo. "
-                     "Cerrá el otro proceso (o borra el webhook). Reintento en 10s.")
+            if j.get("error_code") == 409:
+                _log("[ERROR] 409 Conflict: hay OTRO poller corriendo (o un webhook). "
+                     "Cerrá el otro proceso. Reintento en 10s.")
             else:
-                _log(f"[WARN] getUpdates respondio not-ok: {j}")
+                _log(f"[WARN] getUpdates not-ok: {j}")
             time.sleep(10)
             continue
         for u in j.get("result", []):
             st["offset"] = max(st.get("offset", 0), u["update_id"])
-            msg = u.get("message") or u.get("edited_message")
-            if not msg or not msg.get("text"):
-                continue
-            chat = msg["chat"]
-            cid = str(chat["id"])
-            who = chat.get("username") or chat.get("first_name") or "?"
-            if cid not in st["chats"]:
-                st["chats"][cid] = {"name": who, "since": dt.date.today().isoformat()}
-                _log(f"[+] chat nuevo: {who} ({cid})")
-            txt = msg["text"]
             try:
-                resp = handle(txt)
-                _log(f"← {who}: {txt!r}  →  {'(sin respuesta)' if not resp else str(len(resp))+' chars'}")
+                # ---- CALLBACKS (botones): navegar editando el mismo mensaje ----
+                if "callback_query" in u:
+                    cq = u["callback_query"]
+                    chat = cq["message"]["chat"]
+                    api(token, "answerCallbackQuery", callback_query_id=cq["id"])
+                    text, kb = handle_callback(cq.get("data") or "")
+                    _log(f"← callback {cq.get('data')!r} de {chat.get('username') or chat['id']}")
+                    if text:
+                        edit(token, chat["id"], cq["message"]["message_id"], text, kb)
+                    continue
+                # ---- MENSAJES DE TEXTO ----
+                msg = u.get("message") or u.get("edited_message")
+                if not msg or not msg.get("text"):
+                    continue
+                chat = msg["chat"]
+                cid = str(chat["id"])
+                who = chat.get("username") or chat.get("first_name") or "?"
+                if cid not in st["chats"]:
+                    st["chats"][cid] = {"name": who, "since": dt.date.today().isoformat()}
+                    _log(f"[+] chat nuevo: {who} ({cid})")
+                text, kb = handle(msg["text"])
+                _log(f"← {who}: {msg['text']!r} → {len(text) if text else 0} chars")
+                if text:
+                    send(token, chat["id"], text, kb)
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                resp = f"⚠️ Error procesando «{h(txt)}»: {h(e)}"
-                _log(f"[ERROR] handle({txt!r}): {e}")
-            if resp:
-                try:
-                    send(token, chat["id"], resp)
-                except Exception as e:
-                    _log(f"[WARN] send a {cid}: {e}")
+                _log(f"[ERROR] update {u.get('update_id')}: {e}")
             save_state(st)
         save_state(st)
-        if time.time() - last_beat > 600:            # heartbeat cada ~10 min: sigue vivo
+        if time.time() - last_beat > 600:
             _log(f"… escuchando ({len(st['chats'])} chat/s)")
             last_beat = time.time()
 
 
 def push(token, today=None):
-    """Resumen diario (picks + value bets) a todos los chats registrados. Para run_daily.ps1."""
+    """Resumen diario a los chats registrados (encadenado en run_daily)."""
     st = load_state()
     if not st["chats"]:
-        print("push: sin chats registrados (alguien tiene que hablarle al bot primero).")
+        print("push: sin chats registrados.")
         return
     today = today or dt.date.today()
-    text = fmt_picks(today) + "\n\n" + fmt_value(today)
+    text, _ = view_top()
+    text = f"<b>☀️ Resumen WXBT {today.strftime('%d/%m')}</b>\n\n" + text
     for cid in st["chats"]:
         try:
-            send(token, int(cid), text)
+            send(token, int(cid), text, kb=[[{"text": "🏙 Ver ciudades", "callback_data": "menu"}]])
         except Exception as e:
             print(f"[WARN] push a {cid}: {e}", file=sys.stderr)
     print(f"push: resumen enviado a {len(st['chats'])} chat(s).")
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="Bot de Telegram WXBT (solo lectura).")
-    ap.add_argument("--poll", action="store_true", help="loop de long-polling (dejar corriendo)")
-    ap.add_argument("--push", action="store_true", help="mandar resumen diario y salir")
+    ap = argparse.ArgumentParser(description="Bot de Telegram WXBT v2 (solo lectura, con menus).")
+    ap.add_argument("--poll", action="store_true", help="loop long-poll (dejar corriendo)")
+    ap.add_argument("--push", action="store_true", help="resumen diario y salir")
     ap.add_argument("--dry-run", default=None, metavar="CMD",
-                    help='probar un comando sin token, ej: --dry-run "/pick milan"')
-    ap.add_argument("--date", default=None, help="fecha para --dry-run/--push (YYYY-MM-DD)")
+                    help='probar un comando sin enviar, ej: --dry-run "/picks milan"')
+    ap.add_argument("--date", default=None)
     a = ap.parse_args()
     day = dt.date.fromisoformat(a.date) if a.date else None
     if a.dry_run:
-        out = handle(a.dry_run, today=day)
-        # consola Windows cp1252: degradar a ascii para no reventar (los emojis van a Telegram)
+        out, kb = handle(a.dry_run, today=day)
         print((out or "(sin respuesta)").encode("ascii", "replace").decode())
+        if kb:
+            print("[keyboard]", json.dumps(kb, ensure_ascii=True)[:400])
         sys.exit(0)
     tok = get_token()
     if not tok:
-        print("Falta el token: crear el bot con @BotFather y guardar el token en "
-              "data/.telegram_token o en la env WXBT_TG_TOKEN.")
-        sys.exit(0 if a.push else 1)   # push encadenado en run_daily no debe romper la cadena
+        print("Falta el token: guardarlo en data/.telegram_token o WXBT_TG_TOKEN.")
+        sys.exit(0 if a.push else 1)
     if a.push:
         push(tok, today=day)
     elif a.poll:
@@ -587,6 +734,6 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print("\nbot detenido (Ctrl+C).")
     else:
-        print("Bot WXBT. Para dejarlo escuchando comandos:  python scripts/telegram_bot.py --poll\n"
-              "  (dejalo corriendo en una terminal o como tarea de Windows — run_telegram.ps1)\n"
-              "Otros: --push (resumen diario) · --dry-run '/comando' (prueba local sin enviar).")
+        print("Bot WXBT v2. Dejalo escuchando:  python scripts/telegram_bot.py --poll\n"
+              "  (o scripts/run_telegram.ps1; UN solo poller a la vez).\n"
+              "Otros: --push (resumen diario) · --dry-run '/picks milan'.")

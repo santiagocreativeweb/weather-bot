@@ -28,6 +28,8 @@ python scripts/capture_qweather.py   --date $today
 # SMN argentino (2026-07-13): pronostico oficial para SAEZ (forward-only, API interna con
 # token scrapeado de ws2). El WRF del SMN no se captura: tiene archivo S3 point-in-time.
 python scripts/capture_smn.py        --date $today
+# [2026-07-16] Hong Kong: obs oficiales del Observatory (CLMMAXT, 1 decimal) — IEM no lo cubre.
+python scripts/hko_source.py         --append-obs
 python scripts/validate_sources.py
 python scripts/score_model_shadows.py
 python scripts/score_lamp_shadow.py
@@ -36,10 +38,9 @@ python scripts/score_market_consensus.py
 python scripts/leaderboard.py
 python scripts/stats_page.py
 python scripts/export_data.py        --date $today
-# [2026-07-15] Value bets (tab propio) + vistas por ciudad (city_pages refresca de paso
-# model_city_rank.csv para el badge del dashboard) + refresh incremental del bias de PWS.
+# [2026-07-16] Vistas por ciudad (mapa CARTO + charts; refresca de paso model_city_rank.csv
+# para el badge del dashboard) + refresh incremental del bias de PWS.
 # Telegram: resumen diario (no-op silencioso si no hay token).
-python scripts/value_page.py         --refresh
 python scripts/city_pages.py
 python scripts/pws_setup.py          --update
 python scripts/telegram_bot.py       --push

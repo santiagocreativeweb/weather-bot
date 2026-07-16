@@ -45,7 +45,7 @@ CONT = {"KLGA": "America", "KORD": "America", "EGLC": "Europa", "LFPB": "Europa"
         "WMKK": "Asia", "ZGSZ": "Asia", "KSFO": "America", "KLAX": "America",
         "KDAL": "America", "KATL": "America", "KHOU": "America", "KAUS": "America",
         "CYYZ": "America", "SBGR": "America", "SAEZ": "America", "MMMX": "America",
-        "EFHK": "Europa"}
+        "EFHK": "Europa", "HKO": "Asia"}
 MODELS_OM = {"gefs": ("gfs_seamless", 5.0), "ecmwf": ("ecmwf_ifs025", 7.0), "icon": ("icon_seamless", 7.0)}
 LEAD_COL = {2: "temperature_2m_previous_day1", 3: "temperature_2m_previous_day2"}  # SIN lead1 (nowcast)
 # [2026-07-12] D1 DINAMICO (antes hardcodeado -> el refresh semanal del bias era NO-OP silencioso):

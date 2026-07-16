@@ -109,10 +109,12 @@ def scard(lbl, big, sub, cls=""):
     return f'<div class="scard {cls}"><div class="lbl">{lbl}</div><div class="big">{big}</div><div class="sub">{sub}</div></div>'
 
 
-def main():
-    today = dt.date.today()
-    print(f"Estadisticas del bot al {today} ...")
-    recs = records(today)
+def pct(a, b):
+    return f"{a/b:.0%}" if b else "—"
+
+
+def section_html(recs, empty_msg):
+    """Cards KPI + rendimiento dia-por-dia para un set de records (comun a tabs 24h y 48h)."""
     n = len(recs)
     ex = sum(r["exact"] for r in recs)
     t2 = sum(r["top2"] for r in recs)
@@ -121,10 +123,6 @@ def main():
     errs = [r["err"] for r in recs if r["err"] is not None]
     mae = sum(errs) / len(errs) if errs else float("nan")
     rmse = (sum(e * e for e in errs) / len(errs)) ** 0.5 if errs else float("nan")
-
-    def pct(a, b):
-        return f"{a/b:.0%}" if b else "—"
-
     cards = (
         scard("mercados resueltos", str(n), f"desde {ddmmyyyy(min(r['target'] for r in recs))}" if n else "—") +
         scard("acierto EXACTO", pct(ex, n), f"{ex}/{n} · bucket clavado") +
@@ -133,8 +131,6 @@ def main():
         scard("PÉRDIDAS", str(perd), f"de {n} · fuera del top-3", "bad") +
         scard("MAE / RMSE", f"{mae:.2f}°" if mae == mae else "—", f"RMSE {rmse:.2f}°" if rmse == rmse else "")
     )
-
-    # rendimiento DIA POR DIA (mas reciente primero)
     days = sorted({r["target"] for r in recs}, reverse=True)
     day_html = []
     CONT = {"Asia": 0, "Europa": 1, "America": 2}
@@ -158,22 +154,75 @@ def main():
             f'<b class="dbad">{dpe} pérdida{"s" if dpe!=1 else ""}</b></span></h3>'
             f'<table class="dtab"><thead><tr><th>estación</th><th>pick bot</th><th>ganó</th>'
             f'<th>resultado</th><th class="num">error</th></tr></thead><tbody>{"".join(trs)}</tbody></table></div>')
+    stats = dict(n=n, ex=ex, t2=t2, t3=t3, perd=perd, mae=mae, days=days)
+    return (f'<div class="sgrid">{cards}</div>'
+            + ("".join(day_html) if day_html else f'<p class="subt">{empty_msg}</p>')), stats
+
+
+def records48(today):
+    """Records del PICK 48H (froze48 del audit, fijado 24h antes del bloqueo normal — pedido
+    Santiago 2026-07-16: 'como nos iria apostando mas largo con mejor precio de entrada').
+    Acumula desde el 16/07; solo evidencia congelada explicita."""
+    import wxbt_insights as I
+    rows = I.bot_history(today=today, kind="froze48")
+    recs = []
+    for r in rows:
+        if r["nivel"] is None:
+            continue
+        recs.append(dict(station=r["station"], target=r["target"], unit=r["unit"], res="mercado",
+                         pick=r["pick_lbl"] or "—", win=r["win_lbl"] or "—", nivel=r["nivel"],
+                         exact=int(r["nivel"] == "EXACTO"),
+                         top2=int(r["nivel"] in ("EXACTO", "TOP-2")),
+                         top3=int(r["nivel"] in ("EXACTO", "TOP-2", "TOP-3")),
+                         err=(abs(r["mu"] - r["max_real"]) if r.get("max_real") is not None else None),
+                         mu=r["mu"], real=r.get("max_real"), forecast_source="froze48"))
+    return recs
+
+
+def main():
+    today = dt.date.today()
+    print(f"Estadisticas del bot al {today} ...")
+    recs = records(today)
+    sec24, s24 = section_html(recs, "Sin mercados resueltos todavía — vuelve cuando el día haya cerrado.")
+    recs48 = records48(today)
+    sec48, s48 = section_html(
+        recs48, "El pick 48h se fija 24h antes que el normal (madrugada del día anterior) y "
+                "empezó a capturarse el 16/07/2026 — los primeros resultados aparecen cuando "
+                "resuelvan los mercados del 17/07 en adelante.")
+    n, days = s24["n"], s24["days"]
+    ex, t2, t3, perd, mae = s24["ex"], s24["t2"], s24["t3"], s24["perd"], s24["mae"]
 
     body = f'''<div class="viz-root">
 <div class="topbar">{nav_html("stats")}<div class="row1"><h1>📊 ESTADÍSTICAS — rendimiento del bot</h1>
-<span class="subt">track record vivo vs ganador oficial de Polymarket · crece cada día</span></div></div>
-<div class="sgrid">{cards}</div>
-<p class="subt" style="margin:6px 0 12px">Rendimiento <b>día por día</b>: en cada mercado, el
-<b>pick</b> del bot (floor μ) contra el <b>bucket que ganó</b>, y el veredicto —
-<span class="verd n-ex">✓ EXACTO</span> (clavó) ·
-<span class="verd n-t2">✓ TOP-2</span> (ganador entre sus 2 más probables) ·
-<span class="verd n-t3">~ TOP-3</span> ·
-<span class="verd n-bad">✗ PÉRDIDA</span> (afuera). Ordenado ASIA→EUROPA→AMÉRICA.</p>
-{"".join(day_html) if day_html else '<p class="subt">Sin mercados resueltos todavía — vuelve cuando el día haya cerrado.</p>'}
+<span class="subt">track record vivo vs ganador oficial de Polymarket · crece cada día</span></div>
+<div class="vfilters" style="margin-top:10px">
+<button class="chip on" data-tab="t24">⏱ 24hs — pick fijado 04:30 local</button>
+<button class="chip" data-tab="t48">⏳ 48hs — fijado un día antes ({s48["n"]} resueltos)</button>
+</div></div>
+<p class="subt" style="margin:8px 0 12px">En cada mercado, el <b>pick</b> del bot (floor μ) contra
+el <b>bucket que ganó</b> — <span class="verd n-ex">✓ EXACTO</span> ·
+<span class="verd n-t2">✓ TOP-2</span> · <span class="verd n-t3">~ TOP-3</span> ·
+<span class="verd n-bad">✗ PÉRDIDA</span>. El tab <b>48hs</b> mide el pick fijado ~44h antes de que
+termine el día del mercado (entrada más temprana = mejor precio); acumula desde el 16/07.</p>
+<div id="t24">{sec24}</div>
+<div id="t48" style="display:none">{sec48}</div>
 <p class="subt" style="margin-top:16px">Regenerar: <code>python scripts/stats_page.py</code> o el botón
-📊 del dashboard.</p></div>'''
+📊 del dashboard.</p></div>
+<script>
+(function(){{
+  document.querySelectorAll('.chip[data-tab]').forEach(function(b){{
+    b.addEventListener('click',function(){{
+      document.querySelectorAll('.chip[data-tab]').forEach(function(x){{x.classList.remove('on');}});
+      b.classList.add('on');
+      document.getElementById('t24').style.display=(b.dataset.tab==='t24')?'':'none';
+      document.getElementById('t48').style.display=(b.dataset.tab==='t48')?'':'none';
+    }});
+  }});
+}})();
+</script>'''
 
     extra = '''
+.viz-root .vfilters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .viz-root .daysec{margin:16px 0 8px;}
 .viz-root .daysec h3{font-size:13px;color:var(--fc);margin:0 0 6px;font-family:var(--mono);
   letter-spacing:.06em;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;}

@@ -136,11 +136,19 @@ def main(a):
             pairs = mf.groupby("d").apply(
                 lambda g: g[["station", "model"]].drop_duplicates().shape[0],
                 include_groups=False)
-            expected_pairs = mf.station.nunique() * 8
-            low = pairs[pairs < expected_pairs]
+            # [FIX 2026-07-16] esperado POR DIA con las estaciones de ESE dia (con el nunique
+            # global, dar de alta una ciudad — HKO — hacia fallar todos los dias previos al alta).
+            st_day = mf.groupby("d").station.nunique()
+            low = pairs[pairs < st_day * 8]
             if len(low):
-                issues.append(f"[models_forward] {len(low)} dias incompletos: minimo "
-                              f"{int(pairs.min())}/{expected_pairs} pares estacion-modelo")
+                issues.append(f"[models_forward] {len(low)} dias incompletos (pares < estaciones*8)")
+            # una estacion que DESAPARECE (ayer estaba, hoy no) sigue siendo detectable:
+            days_sorted = sorted(st_day.index)
+            drops = [str(d) for prev, d in zip(days_sorted, days_sorted[1:])
+                     if st_day[d] < st_day[prev]]
+            if drops:
+                issues.append(f"[models_forward] estaciones cayeron en: {', '.join(drops)}")
+            expected_pairs = int(st_day.iloc[-1]) * 8
             bad = mf.tmax.dropna()
             bad = bad[(bad < -100) | (bad > 150)]
             if len(bad):

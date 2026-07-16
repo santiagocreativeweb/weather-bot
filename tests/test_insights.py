@@ -124,13 +124,19 @@ def test_stability_ranking(monkeypatch):
 
 def test_telegram_help_and_city_matching():
     import telegram_bot as T
-    out = T.handle("/help")
-    assert "/pick" in out and "/value" in out
+    out, kb = T.handle("/help")               # v2: (texto, inline_keyboard)
+    assert "/picks" in out and "/top" in out
+    assert "/value" not in out                 # value bets eliminada (2026-07-16)
+    assert kb and kb[0][0]["callback_data"] == "menu"
     assert T.find_station("milan") == "LIMC"
     assert T.find_station("sao paulo") == "SBGR"
     assert T.find_station("KLGA") == "KLGA"
     assert T.find_station("nyc") == "KLGA"
+    assert T.find_station("hong kong") == "HKO"
     assert T.find_station("xyzzy") is None
+    # callbacks: menu y rutas por ciudad
+    text, kb2 = T.handle_callback("menu")
+    assert kb2 and any(b["callback_data"].startswith("c|") for row in kb2 for b in row)
 
 
 def test_pws_rank_prefers_stable_bias(tmp_path, monkeypatch):

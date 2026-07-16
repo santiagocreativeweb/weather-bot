@@ -93,6 +93,9 @@ STATION_META = {
     "SAEZ": ("America", "Argentina", "Buenos Aires", "buenos-aires", "ar/ezeiza/SAEZ"),
     "MMMX": ("America", "Mexico", "Ciudad de Mexico", "mexico-city", "mx/mexico-city/MMMX"),
     "EFHK": ("Europa", "Finlandia", "Helsinki", "helsinki", "fi/vantaa/EFHK"),
+    # [2026-07-16] HK: resuelve por el HKO Observatory a 1 decimal (NO WU) — el 5to campo no es
+    # un path de WU; wu_url() lo special-casea al Daily Extract oficial de weather.gov.hk.
+    "HKO": ("Asia", "Hong Kong", "Hong Kong", "hong-kong", "HKO_CIS"),
 }
 STATION_NAME = {k: f"{v[2]}" for k, v in STATION_META.items()}
 MONTHS_EN = ["january", "february", "march", "april", "may", "june", "july",
@@ -113,6 +116,8 @@ def pm_slug(code, d):
 
 
 def wu_url(code, d):
+    if code == "HKO":   # HK NO resuelve por WU: la fuente oficial es el Daily Extract del HKO
+        return "https://www.weather.gov.hk/en/cis/climat.htm"
     return f"https://www.wunderground.com/history/daily/{STATION_META[code][4]}/date/{d.year}-{d.month}-{d.day}"
 
 
@@ -336,8 +341,18 @@ def fetch_obs_live(today):
     METAR horario mas reciente (mas fresco). El max del dia solo sube -> se mergea con max()."""
     out = {}
     d0, d1 = today - dt.timedelta(days=1), today + dt.timedelta(days=1)
+    # [2026-07-16] HKO no esta en IEM: max/min del dia EN CURSO desde los CSV regionales del
+    # Observatory (1 decimal, la MISMA estacion que resuelve). El dia local de HK (UTC+8).
+    try:
+        import hko_source as _hko
+        mm = _hko.live_maxmin()
+        if mm:
+            hk_day = (dt.datetime.utcnow() + dt.timedelta(hours=8)).date()
+            out[("HKO", hk_day)] = {"max": mm[0], "min": mm[1]}
+    except Exception as e:
+        print(f"[WARN] obs-live HKO: {e}", file=sys.stderr)
     for code, (lat, lon, off, unit) in STATIONS.items():
-        if unit == "F":
+        if unit == "F" or code == "HKO":
             continue  # daily.py corrupts °F buckets; the raw-ASOS pass below is authoritative.
         try:
             p = dict(network=NETWORKS[code],
@@ -366,6 +381,8 @@ def fetch_obs_live(today):
     # TOP-UP fresco: mergea el MAX/MIN del METAR horario mas reciente (asos.py) por si el resumen
     # diario de IEM va atrasado. max del dia solo sube -> max(); min -> min(). Si falla, queda el daily.
     for code, (lat, lon, off, unit) in STATIONS.items():
+        if code == "HKO":
+            continue   # sin METAR/IEM; ya cubierto arriba por los CSV regionales del HKO
         try:
             for d, (mx, mn) in _fresh_metar_extremes(code, today, unit).items():
                 cur = out.get((code, d), {})
@@ -1240,6 +1257,21 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
             audit.setdefault(key, {})["froze"] = {
                 "mu": round(mu, 2), "sg": (round(sg, 2) if sg is not None else None), "top": _rank[:3]}
             _FROZE["dirty"] = True
+    # [2026-07-16, pedido Santiago] PICK 48H: segundo freeze INMUTABLE 24h ANTES del bloqueo
+    # normal (04:30 local del dia ANTERIOR ≈ 44h antes de que termine el dia del mercado) — para
+    # medir "apostar mas largo con mejor precio de entrada". Igual que froze: la primera vez que
+    # se pasa el deadline-48 se toma la ULTIMA revision del audit ANTERIOR a ese instante (point-
+    # in-time honesto, sin contaminar con datos posteriores). Lo scorea el tab 48hs de stats.
+    if audit is not None and sg is not None and state != "fin":
+        rec48 = audit.get(key) or {}
+        f48_utc = freeze_utc(code, d) - dt.timedelta(hours=24)
+        if "froze48" not in rec48 and now_utc.replace(tzinfo=None) >= f48_utc:
+            mu48 = _last_rev_before(rec48.get("hist", []), d, f48_utc)
+            if mu48 is not None:
+                audit.setdefault(key, {})["froze48"] = {
+                    "mu": round(mu48, 2), "sg": round(sg, 2),
+                    "cap": to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m %H:%M")}
+                _FROZE["dirty"] = True
     reco = False
     if pbot and state in ("encurso", "prox", "soon"):
         # señal operativa: SOLO buckets aun posibles (recomendar un bucket muerto no tiene sentido)
@@ -2023,87 +2055,6 @@ def _load_model_rank():
     return m
 
 
-def value_bets_panel(mk, preds, live, audit, today, horizon, now_utc):
-    """💰 VALUE BETS (pedido Santiago 2026-07-15): pbot del pick (congelado si existe) vs mid del
-    mercado, sobre datos YA fetcheados por este mismo refresco (cero requests extra). Edge BRUTO
-    sin fees/spread/shrink — screener, NO señal. Excluye buckets ya imposibles por la obs viva."""
-    try:
-        from playbook import STRONG, WEAK   # lazy: playbook importa dashboard (ciclo solo en import-time)
-    except Exception:
-        STRONG, WEAK = set(), set()
-    rows = []
-    for code in STATIONS:
-        unit = STATIONS[code][3]
-        for d in [today + dt.timedelta(days=k) for k in range(horizon + 1)]:
-            info = (mk or {}).get(code, {}).get(d)
-            if not info or not info.get("buckets"):
-                continue
-            state, _ = state_of(code, d, info, now_utc)
-            if state not in ("encurso", "soon", "prox"):
-                continue
-            # pico pasado = tmax ya ocurrio, el mercado ya lo vio (nowcast): edge ilusorio.
-            if now_utc > peak_utc(code, d) + dt.timedelta(hours=1):
-                continue
-            pr = (preds or {}).get((code, d))
-            if not pr or pr[0] is None:
-                continue
-            mu, sg = pr
-            sg = sg or (2.6 if unit == "F" else 1.5)
-            priced = [(lab, lo, hi, p) for lab, lo, hi, p in info["buckets"] if p is not None]
-            if not priced:
-                continue
-            live_max = ((live or {}).get((code, d)) or {}).get("max") if state in ("encurso", "soon") else None
-            floor_live = int(math.floor(live_max)) if live_max is not None else None
-            lost = {lab for lab, lo, hi, p in priced
-                    if floor_live is not None and hi is not None and hi < floor_live}
-            pbot = {lab: pbot_floor(mu, sg, lo, hi) for lab, lo, hi, p in priced}
-            px = {lab: p for lab, lo, hi, p in priced}
-            rank = [l for l, _ in sorted(pbot.items(), key=lambda kv: -kv[1]) if l not in lost]
-            if not rank:
-                continue
-            t1 = rank[0]
-            t2 = rank[1] if len(rank) > 1 else None
-            edge1 = (pbot[t1] - px.get(t1, 1.0)) * 100
-            pair = ((pbot[t1] + (pbot.get(t2, 0) if t2 else 0)) -
-                    (px.get(t1, 1.0) + (px.get(t2, 1.0) if t2 else 1.0))) * 100
-            longs = [(lab, px[lab], pbot[lab]) for lab, lo, hi, p in priced
-                     if lab not in lost and 0.005 <= p <= 0.10
-                     and pbot.get(lab, 0) >= max(0.15, 3 * p)]
-            frozen = forecast_frozen(code, d, now_utc)
-            tier = "FUERTE" if code in STRONG else ("DEBIL" if code in WEAK else "MEDIA")
-            jug = None
-            if edge1 >= RECO_EDGE_MIN and pbot[t1] >= 0.35:
-                jug = (f'comprar top-1 <b>{t1}</b> (bot {pbot[t1]:.0%} vs {px.get(t1, 0):.2f})', edge1)
-            elif t2 and pair >= 12:
-                jug = (f'par top-2 <b>{t1}+{t2}</b> (bot {pbot[t1] + pbot.get(t2, 0):.0%} vs '
-                       f'{px.get(t1, 0) + px.get(t2, 0):.2f})', pair)
-            elif longs:
-                lab, p, pb = longs[0]
-                jug = (f'🎯 longshot <b>{lab}</b> @{p:.2f} (bot {pb:.0%}) — size chico', (pb - p) * 100)
-            if jug:
-                rows.append((jug[1], code, d, tier, frozen, jug[0]))
-    rows.sort(key=lambda r: -r[0])
-    if not rows:
-        body = ('<p class="empty">sin value bets ahora — ningún top-1 con Δ¢ ≥ +10, par ≥ +12 ni '
-                'longshot vivo.</p>')
-    else:
-        tcol = {"FUERTE": "var(--fin)", "MEDIA": "#ffd23e", "DEBIL": "#d03b3b"}
-        items = []
-        for edge, code, d, tier, frozen, txt in rows[:12]:
-            items.append(
-                f'<div class="vbrow"><span class="vbe">{edge:+.0f}¢</span>'
-                f'<span class="vbst"><a href="https://polymarket.com/event/{pm_slug(code, d)}" '
-                f'target="_blank">{STATION_META[code][2]} · {ddmmyyyy(d)}</a></span>'
-                f'<span class="vbtier" style="color:{tcol[tier]}">{tier}</span>'
-                f'<span class="vbtxt">{txt}{" · 🔒" if frozen else " · ◷"}</span></div>')
-        body = "".join(items)
-    return (f'<div class="timing" id="value-panel"><h4>💰 Value bets — bot vs mercado</h4>'
-            f'<p style="color:var(--mut);font-size:10.5px;margin:0 0 6px">Δ¢ BRUTO (pbot − mid), '
-            f'sin fees/spread/shrink — screener, NO señal. Reglas playbook: solo FUERTES, maker, '
-            f'entrar temprano; DÉBIL = no operar. Buckets ya imposibles por la obs viva quedan '
-            f'afuera.</p>{body}</div>')
-
-
 def botlive_panel(fc, preds, audit, today, horizon):
     """🤖 Predicciones del bot vs EN VIVO (pedido Santiago 2026-07-15): por mercado vigente, el
     pick CONGELADO (lo que se opera/mide) al lado de lo que los modelos dicen AHORA — para ver de
@@ -2224,10 +2175,9 @@ def render(today, horizon, fc, mk, interval=None, preds=None, timing=None, live=
                     sec.append(f'<div class="cont-lbl">{cont.upper()}</div>'
                                f'<div class="grid">' + "".join(by_cont[cont]) + '</div>')
             parts.append("".join(sec))
-    # [2026-07-15] panel de VALUE BETS + panel bot-congelado-vs-vivo, arriba de las cards
-    # (datos ya fetcheados por este refresco: cero requests extra).
+    # [2026-07-16] panel bot-congelado-vs-vivo arriba de las cards (value bets ELIMINADA
+    # "de momento", pedido Santiago — la funcion de insights queda como infra).
     parts.insert(1, botlive_panel(fc, preds, audit, today, horizon))
-    parts.insert(1, value_bets_panel(mk, preds, live, audit, today, horizon, now_utc))
     # panel de alertas: se arma DESPUES del loop (las cards llenan alerts_ctx["new"]) pero se
     # inserta arriba de todo (posicion 1, bajo la topbar) — hijo estable para el morph.
     if alerts_ctx is not None:
@@ -2403,16 +2353,13 @@ def _make_action_runner(today_s, horizon, interval):
                         outs.append(scr.split(".")[0] + f" fallo ({e})")
                 return True, "modelos: " + ", ".join(outs)
             if do == "pages":
-                # [2026-07-15] regenera value bets + vistas por ciudad (con PWS; city_pages
-                # refresca de paso model_city_rank.csv). Por URL: POST /action?do=pages
-                outs = []
-                for scr in ("value_page.py", "city_pages.py"):
-                    try:
-                        ok, m = run_py(scr, [] if scr == "value_page.py" else [], timeout=420)
-                        outs.append(scr.split("_")[0] + ("✓" if ok else "·"))
-                    except Exception:
-                        outs.append(scr.split("_")[0] + "✗")
-                return True, "páginas regeneradas: " + " ".join(outs)
+                # [2026-07-16] regenera las vistas por ciudad (mapa/charts/PWS; refresca de paso
+                # model_city_rank.csv). Por URL: POST /action?do=pages
+                try:
+                    ok, m = run_py("city_pages.py", timeout=600)
+                    return ok, "páginas por ciudad: " + m
+                except Exception as e:
+                    return False, f"city_pages: {e}"
             if do == "leaderboard":
                 ok, m = run_py("leaderboard.py"); return ok, "leaderboard: " + m
             if do == "stats":

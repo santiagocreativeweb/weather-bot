@@ -14,12 +14,12 @@ NAV_ITEMS = [
      "pronostico vs mercado en vivo, ventana 48h"),
     ("cities",      "cities.html",         "🏙", "Ciudades",
      "dashboard por ciudad: mercado + modelos que mejor aciertan + PWS"),
-    ("value",       "value.html",          "💰", "Value bets",
-     "donde el bot ve mas ventaja contra lo que paga el mercado"),
+    # [2026-07-16] Value bets ELIMINADA "de momento" (pedido Santiago). La funcion
+    # wxbt_insights.value_bets() queda como infra por si vuelve.
     ("leaderboard", "leaderboard.html",    "🏆", "Leaderboard",
      "ranking de estaciones por track record vivo (exactos/top-2)"),
     ("stats",       "stats.html",          "📊", "Estadisticas",
-     "estadisticas generales + rendimiento dia por dia (gano/perdio)"),
+     "estadisticas generales + rendimiento dia por dia (gano/perdio) — tabs 24hs y 48hs"),
 ]
 
 NAV_CSS = """

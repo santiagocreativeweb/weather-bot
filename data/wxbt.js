@@ -237,7 +237,7 @@
         qbtns.forEach(function(x){x.classList.add('busy')});
         if(qmsg){qmsg.className='qmsg';qmsg.textContent='⏳ '+b.textContent.trim()+'…';}
         fetch('/action?do='+encodeURIComponent(did),{method:'POST'})
-          .then(function(r){return r.json()})
+          .then(wxJSON)
           .then(function(j){
             if(qmsg){qmsg.className='qmsg '+(j.ok?'ok':'err');qmsg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||did);}
             // acciones que cambian el HTML: refrescar la vista al toque
@@ -245,7 +245,7 @@
               setTimeout(function(){ if(window.__wxbtReload)window.__wxbtReload(); },400);
             }
           })
-          .catch(function(e){ if(qmsg){qmsg.className='qmsg err';qmsg.textContent='✗ '+e;} })
+          .catch(function(e){ if(qmsg){qmsg.className='qmsg err';qmsg.textContent='✗ '+((e&&e.message)||e);} })
           .then(function(){ qbtns.forEach(function(x){x.classList.remove('busy')}); });
       });
     });
