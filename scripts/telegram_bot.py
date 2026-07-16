@@ -154,6 +154,62 @@ def get_market(today, horizon=2):
     return mk
 
 
+def fetch_city_market(code, dates):
+    """{date: parsed_event} SOLO para esta ciudad (1 request por slug, concurrente) — reemplaza el
+    fetch global de 30 ciudades: el callback del boton respondia lento porque bajaba TODO el
+    mercado. Cache 60s por ciudad."""
+    import dashboard as D
+    now = time.monotonic()
+    hit = _CACHE.setdefault("citymk", {}).get(code)
+    if hit and now - hit[0] < MK_TTL:
+        return hit[1]
+
+    def one(d):
+        try:
+            r = requests.get(f"{D.GAMMA}/events", params={"slug": D.pm_slug(code, d)}, timeout=12)
+            evs = r.json() if r.status_code == 200 else []
+            return d, (D._parse_event(evs[0]) if evs else None)
+        except Exception:
+            return d, None
+    out = {}
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=5) as tp:
+        for d, ev in tp.map(one, dates):
+            if ev:
+                out[d] = ev
+    _CACHE["citymk"][code] = (now, out)
+    return out
+
+
+PICK_ICON = ["🎯", "🥈", "🥉"]   # top-1 exacto · top-2 · top-3
+
+
+def top3_labels(code, mu, sg, info, stored_top=None):
+    """[(emoji, label)] top-1/2/3. Prefiere el top-3 GUARDADO del freeze (froze['top']); si no,
+    rankea los buckets del mercado pick-first; si no hay mercado, buckets sinteticos."""
+    import dashboard as D
+    if stored_top:
+        return [(PICK_ICON[i], lab) for i, lab in enumerate(stored_top[:3])]
+    unit = STATIONS[code][3]
+    if info and info.get("buckets"):
+        priced = [(lab, lo, hi) for lab, lo, hi, p in info["buckets"]]
+        fb = int(math.floor(mu))
+        pick = next((lab for lab, lo, hi in priced
+                     if (lo is None or fb >= lo) and (hi is None or fb <= hi)), None)
+        pb = {lab: D.pbot_floor(mu, sg or 1.5, lo, hi) for lab, lo, hi in priced}
+        rest = [l for l, _ in sorted(pb.items(), key=lambda kv: -kv[1]) if l != pick]
+        top = ([pick] if pick else []) + rest
+        return [(PICK_ICON[i], lab) for i, lab in enumerate(top[:3])]
+    fb = int(math.floor(mu))
+
+    def lbl(k):
+        if unit == "F":
+            lo = k if k % 2 == 0 else k - 1
+            return f"{lo}-{lo + 1}°F"
+        return f"{k}°C"
+    return [(PICK_ICON[0], lbl(fb)), (PICK_ICON[1], lbl(fb + 1)), (PICK_ICON[2], lbl(fb - 1))]
+
+
 def get_preds(today):
     import dashboard as D
     now = time.monotonic()
@@ -190,7 +246,7 @@ def current_weather(code):
                          params=dict(latitude=lat, longitude=lon,
                                      current="temperature_2m,weather_code",
                                      temperature_unit=("fahrenheit" if unit == "F" else "celsius")),
-                         timeout=15)
+                         timeout=8)
         cur = r.json().get("current", {})
         ico, txt = WMO.get(int(cur.get("weather_code", -1)), ("🌡", "—"))
         out = (ico, txt, cur.get("temperature_2m"))
@@ -211,7 +267,7 @@ def current_weather(code):
 def live_max_today(code, today, live=None):
     """Max registrada HOY (dia local) en la estacion. Usa el fetch del dashboard (METAR/HKO)."""
     import dashboard as D
-    d_local = (dt.datetime.utcnow() + dt.timedelta(hours=local_offset(code, today))).date()
+    d_local = (dt.datetime.now(dt.timezone.utc).replace(tzinfo=None) + dt.timedelta(hours=local_offset(code, today))).date()
     if code == "HKO":
         try:
             import hko_source
@@ -244,8 +300,15 @@ def kb_cities():
     return kb
 
 
-def kb_city(code):
+def kb_city(code, mkt_date=None):
+    """Teclado del panel: botones DIRECTOS a Polymarket y a la fuente de resolucion (WU o HKO)
+    del dia del mercado vigente (pedido Santiago 2026-07-16), + historial/estadistica/refresh."""
+    import dashboard as D
+    d = mkt_date or (dt.datetime.now(dt.timezone.utc).replace(tzinfo=None) + dt.timedelta(hours=local_offset(code, dt.date.today()))).date()
+    wu_txt = "🇭🇰 HKO" if code == "HKO" else "🌡 WU"
     return [
+        [{"text": "📈 Polymarket", "url": f"https://polymarket.com/event/{D.pm_slug(code, d)}"},
+         {"text": wu_txt, "url": D.wu_url(code, d)}],
         [{"text": "🗓 Historial", "callback_data": f"h|{code}"},
          {"text": "📊 Estadística", "callback_data": f"e|{code}"}],
         [{"text": "🔄 Actualizar", "callback_data": f"c|{code}"},
@@ -280,13 +343,16 @@ def view_city(code, today=None):
     cont, pais, ciudad = D.STATION_META[code][:3]
     now_utc = dt.datetime.now(dt.timezone.utc)
     audit = I._load_audit()
-    mk = get_market(today, horizon=2)
     preds = get_preds(today)
 
     # dia LOCAL del mercado vigente (Asia puede ir un dia adelante de AR)
     d_local = (now_utc + dt.timedelta(hours=local_offset(code, today))).date()
-    info = mk.get(code, {}).get(d_local) or mk.get(code, {}).get(today)
-    d_mkt = d_local if mk.get(code, {}).get(d_local) else today
+    # LATENCIA: bajar SOLO el mercado de esta ciudad (2-3 slugs) en vez de las 30 (fetch_market_full)
+    cand = sorted({today + dt.timedelta(days=k) for k in range(0, 3)}
+                  | {d_local + dt.timedelta(days=k) for k in range(0, 2)})
+    cm = fetch_city_market(code, cand)
+    info = cm.get(d_local) or cm.get(today)
+    d_mkt = d_local if cm.get(d_local) else today
     state, _ = D.state_of(code, d_mkt, info, now_utc) if info else ("prox", "")
 
     ico, wtxt, tnow = current_weather(code)
@@ -335,8 +401,9 @@ def view_city(code, today=None):
     else:
         L.append(f"\n🏆 Estabilidad: sin mercados resueltos aún (ciudad nueva)")
 
-    # picks fijados para los proximos 2 dias (24h y 48h)
-    L.append("\n<b>🔒 Picks:</b>")
+    # picks fijados para los proximos 2 dias (24h y 48h) — con TOP-1/2/3 (pedido Santiago):
+    # 🎯 exacto (top-1) · 🥈 top-2 · 🥉 top-3.
+    L.append("\n<b>🔒 Picks — 🎯 exacto · 🥈 top-2 · 🥉 top-3:</b>")
     for k in range(0, 3):
         d = d_mkt + dt.timedelta(days=k)
         if d > today + dt.timedelta(days=2):
@@ -345,19 +412,24 @@ def view_city(code, today=None):
         froze = rec.get("froze") or {}
         f48 = rec.get("froze48") or {}
         pr = preds.get((code, d))
+        info_d = cm.get(d)
         if froze.get("mu") is not None:
-            L.append(f"   {d.strftime('%d/%m')}: <b>{_pick_lbl(code, froze['mu'])}</b> "
-                     f"(μ {froze['mu']:.1f}{deg}) 🔒 fijado")
+            top = top3_labels(code, froze["mu"], froze.get("sg"), info_d, froze.get("top"))
+            tag = f"🔒 fijado · μ {froze['mu']:.1f}{deg}"
         elif f48.get("mu") is not None:
-            L.append(f"   {d.strftime('%d/%m')}: <b>{_pick_lbl(code, f48['mu'])}</b> "
-                     f"(μ {f48['mu']:.1f}{deg}) ⏳ fijado a 48h — el definitivo se fija {frz_local} local")
+            top = top3_labels(code, f48["mu"], f48.get("sg"), info_d, f48.get("top"))
+            tag = f"⏳ fijado 48h (el de 24h se fija {frz_local} local) · μ {f48['mu']:.1f}{deg}"
         elif pr:
-            L.append(f"   {d.strftime('%d/%m')}: {_pick_lbl(code, pr[0])} "
-                     f"(μ {pr[0]:.1f}{deg}) ◷ preliminar")
+            top = top3_labels(code, pr[0], pr[1], info_d)
+            tag = f"◷ preliminar · μ {pr[0]:.1f}{deg}"
+        else:
+            continue
+        picks_txt = "  ".join(f"{emo}<b>{h(lab)}</b>" for emo, lab in top)
+        L.append(f"   <u>{d.strftime('%d/%m')}</u> {tag}\n      {picks_txt}")
     bm = best_model_line(code)
     if bm:
         L.append("\n" + bm)
-    return "\n".join(L), kb_city(code)
+    return "\n".join(L), kb_city(code, d_mkt)
 
 
 def best_model_line(code):

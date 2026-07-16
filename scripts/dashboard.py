@@ -1268,8 +1268,18 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
         if "froze48" not in rec48 and now_utc.replace(tzinfo=None) >= f48_utc:
             mu48 = _last_rev_before(rec48.get("hist", []), d, f48_utc)
             if mu48 is not None:
+                # top-1/2/3 del pick 48h con el MISMO ranking pick-first del timeline (los rangos
+                # de los buckets del mercado son estables; sirven aunque el precio haya cambiado).
+                top48 = []
+                if priced:
+                    fb48 = int(math.floor(mu48))
+                    pick48 = next((lab for lab, lo, hi, _p in priced
+                                   if (lo is None or fb48 >= lo) and (hi is None or fb48 <= hi)), None)
+                    pb48 = {lab: pbot_floor(mu48, sg, lo, hi) for lab, lo, hi, _p in priced}
+                    rest48 = [l for l, _ in sorted(pb48.items(), key=lambda kv: -kv[1]) if l != pick48]
+                    top48 = ([pick48] if pick48 else []) + rest48
                 audit.setdefault(key, {})["froze48"] = {
-                    "mu": round(mu48, 2), "sg": round(sg, 2),
+                    "mu": round(mu48, 2), "sg": round(sg, 2), "top": top48[:3],
                     "cap": to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m %H:%M")}
                 _FROZE["dirty"] = True
     reco = False
@@ -1311,8 +1321,8 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
              f'<a class="badge wu" target="_blank" href="{wu_url(code, d)}" '
              f'data-tip="WU es la fuente que RESUELVE este mercado — abrir la pagina oficial de la '
              f'estacion para esta fecha">WU ↗</a>'
-             f'<a class="badge wu" href="city_{code}.html" '
-             f'data-tip="vista ciudad: mercado + modelos + PWS + historial">🏙</a>'
+             f'<a class="badge wu" href="city.html?city={code}" '
+             f'data-tip="vista ciudad: mercado + timeline + modelos + PWS + historial">🏙</a>'
              f'<span class="badge tlb" data-tlst="{code}" data-tlfe="{d.isoformat()}" '
              f'data-tip="TIMELINE: como se movieron las cuotas del mercado y la prediccion del bot '
              f'en las ultimas 24h — slider de 30 min, hora UTC-3">⏱ 24h</span></span></div>')

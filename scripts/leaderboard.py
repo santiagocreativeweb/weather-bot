@@ -269,6 +269,9 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
       .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},600); })
       .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent=(e&&e.message)||(''+e); });
   });
+  // auto-refresh: recarga cada 3 min (toma la ultima regeneracion del server/run_daily) si la
+  // pestaña esta visible.
+  setInterval(function(){ if(!document.hidden) location.reload(); }, 180000);
 })();
 </script>'''
     html = (f"<!doctype html><html><head><meta charset='utf-8'>"

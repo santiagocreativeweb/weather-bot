@@ -952,6 +952,29 @@ forecasts (Previous Runs) cubren años sin problema; el límite es el mercado.
   (encadenado en run_daily.ps1, data/smn_forward.csv). (c) Obs abiertas regtemp (TMAX diaria
   1 decimal, 365d) como verificación cruzada. METAR SAEZ: AWOS, horario, °C enteros (PDF SMN).
 
+### City pages CONSOLIDADAS + timeline v2 + bot v2.1 (2026-07-16 tarde, pedidos de Santiago)
+
+- **UN solo dashboard por ciudad** (antes 30 `city_<ICAO>.html`, "estupido y caro en tokens"):
+  `city_pages.py` ahora vuelca TODO a `data/cities_data.js` (`window.__CITIES_DATA={cities,index,
+  generated}`) y genera UN template `data/city.html` que lee `?city=CODE` y renderiza desde esa
+  variable + `data/cities.html` (indice). El JS de cliente vive en `scripts/city_js.py`
+  (CITY_JS/INDEX_JS; separado para no pelear con heredocs). `city.html?city=X` tiene selector de
+  ciudad (cambia sin recargar). `--station X` regenera SOLO esa ciudad preservando el resto del
+  data file. Los `city_*.html` viejos se borran. Link del dashboard: `city.html?city=CODE`.
+- **Timeline v2**: precios en **%** (0.365→36.5); **lineas punteadas amarillas** en el freeze
+  24h (solida) y 48h (tenue) via plugin Chart.js inline (mapeo pixel manual, `x.offset:false`);
+  colores CLAROS = 🎯 top-1 verde / 🥈 top-2 amarillo / 🥉 top-3 naranja (del `froze.top`
+  guardado) / resto gris; toggle **📊 Gráfico / 📋 Tabla**; **⚙ gear** para elegir buckets;
+  **slider-cursor** sobre el eje X con readout (hora AR + valores top-1/2/3 + μ). froze48 ahora
+  guarda tambien `top` (top-1/2/3 del pick 48h).
+- **Cards del indice**: muestran los picks 24h/48h con **top-1/2/3** coloreados.
+- **Auto-refresh**: city.html/cities.html re-bajan `cities_data.js` y re-renderizan sin recargar
+  (90/120s); leaderboard/stats hacen `location.reload` cada 3 min (toman la ultima regeneracion).
+- **Bot v2.1**: botones URL directos a **Polymarket** y a la fuente de resolucion (**WU** o
+  **HKO**); los picks muestran **top-1/2/3** (🎯/🥈/🥉) por dia, no un solo bucket; latencia
+  arreglada (fetch de mercado SOLO de esa ciudad — 3 slugs concurrentes — en vez de las 30 via
+  fetch_market_full); log ascii-safe (un emoji crasheaba el update).
+
 ### Hong Kong + city pages v2 + pick 48h + bot v2 (2026-07-16, pedidos de Santiago)
 
 - **HONG KONG (HKO) INTEGRADA** — la vieja razon del NO_GO (resuelve por HK Observatory a 1

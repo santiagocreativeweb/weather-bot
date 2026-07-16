@@ -216,8 +216,12 @@ termine el día del mercado (entrada más temprana = mejor precio); acumula desd
       b.classList.add('on');
       document.getElementById('t24').style.display=(b.dataset.tab==='t24')?'':'none';
       document.getElementById('t48').style.display=(b.dataset.tab==='t48')?'':'none';
+      try{{sessionStorage.setItem('wxbt-stab',b.dataset.tab);}}catch(e){{}}
     }});
   }});
+  // restaurar tab tras auto-refresh + recargar cada 3 min si visible
+  try{{var t=sessionStorage.getItem('wxbt-stab');if(t==='t48'){{var b=document.querySelector('.chip[data-tab="t48"]');if(b)b.click();}}}}catch(e){{}}
+  setInterval(function(){{ if(!document.hidden) location.reload(); }}, 180000);
 }})();
 </script>'''
 
