@@ -11,7 +11,8 @@ echo "== repo: $REPO  · user: $USER_NAME =="
 
 echo "== 1/6 deps del sistema =="
 sudo apt-get update -y
-sudo apt-get install -y python3 python3-venv python3-pip nginx
+# build-essential + python3-dev por si algun wheel de pandas/numpy tiene que compilar (Python nuevo)
+sudo apt-get install -y python3 python3-venv python3-pip python3-dev build-essential nginx curl
 
 echo "== 2/6 venv + pip =="
 [ -d .venv ] || python3 -m venv .venv
