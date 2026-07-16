@@ -105,8 +105,10 @@ def save_state(st):
 
 
 def _log(msg):
+    # consola Windows (cp1252): degradar a ascii — un emoji en el log NO puede matar el update
+    # (crasheaba el _log ANTES del edit() y el boton parecia muerto).
     ts = dt.datetime.now().strftime("%H:%M:%S")
-    print(f"[{ts}] {msg}", flush=True)
+    print(f"[{ts}] {msg}".encode("ascii", "replace").decode(), flush=True)
 
 
 def h(s):
