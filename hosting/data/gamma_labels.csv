@@ -1,0 +1,1516 @@
+target,station,city,unit,win_mkt,event_slug,event_id,rules_station_mentioned
+2026-04-13,CYYZ,toronto,C,21°C,highest-temperature-in-toronto-on-april-13-2026,359529,1
+2026-04-13,EFHK,helsinki,C,12°C or higher,highest-temperature-in-helsinki-on-april-13-2026,359585,1
+2026-04-13,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-april-13-2026,359533,1
+2026-04-13,KAUS,austin,F,84°F or higher,highest-temperature-in-austin-on-april-13-2026,359575,1
+2026-04-13,KDAL,dallas,F,82°F or higher,highest-temperature-in-dallas-on-april-13-2026,359532,1
+2026-04-13,KHOU,houston,F,80°F or higher,highest-temperature-in-houston-on-april-13-2026,359577,1
+2026-04-13,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-april-13-2026,359578,1
+2026-04-13,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-april-13-2026,359534,1
+2026-04-13,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-april-13-2026,359579,1
+2026-04-13,LTAC,ankara,C,12°C,highest-temperature-in-ankara-on-april-13-2026,359536,1
+2026-04-13,MMMX,mexico-city,C,25°C or higher,highest-temperature-in-mexico-city-on-april-13-2026,359582,1
+2026-04-13,NZWN,wellington,C,19°C,highest-temperature-in-wellington-on-april-13-2026,359537,1
+2026-04-13,SAEZ,buenos-aires,C,25°C,highest-temperature-in-buenos-aires-on-april-13-2026,359527,1
+2026-04-13,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-april-13-2026,359526,1
+2026-04-13,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-april-13-2026,359587,1
+2026-04-13,WSSS,singapore,C,34°C,highest-temperature-in-singapore-on-april-13-2026,359565,1
+2026-04-13,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-april-13-2026,359574,1
+2026-04-14,CYYZ,toronto,C,23°C,highest-temperature-in-toronto-on-april-14-2026,369874,1
+2026-04-14,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-april-14-2026,369909,1
+2026-04-14,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-april-14-2026,369878,1
+2026-04-14,KAUS,austin,F,84°F or higher,highest-temperature-in-austin-on-april-14-2026,369899,1
+2026-04-14,KDAL,dallas,F,80-81°F,highest-temperature-in-dallas-on-april-14-2026,369877,1
+2026-04-14,KHOU,houston,F,82-83°F,highest-temperature-in-houston-on-april-14-2026,369901,1
+2026-04-14,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-april-14-2026,369902,1
+2026-04-14,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-april-14-2026,369879,1
+2026-04-14,KSFO,san-francisco,F,60-61°F,highest-temperature-in-san-francisco-on-april-14-2026,369903,1
+2026-04-14,LTAC,ankara,C,17°C,highest-temperature-in-ankara-on-april-14-2026,369881,1
+2026-04-14,MMMX,mexico-city,C,22°C or higher,highest-temperature-in-mexico-city-on-april-14-2026,369906,1
+2026-04-14,NZWN,wellington,C,19°C,highest-temperature-in-wellington-on-april-14-2026,369882,1
+2026-04-14,SAEZ,buenos-aires,C,25°C,highest-temperature-in-buenos-aires-on-april-14-2026,369872,1
+2026-04-14,SBGR,sao-paulo,C,25°C,highest-temperature-in-sao-paulo-on-april-14-2026,369871,1
+2026-04-14,WMKK,kuala-lumpur,C,31°C,highest-temperature-in-kuala-lumpur-on-april-14-2026,369911,1
+2026-04-14,WSSS,singapore,C,33°C or higher,highest-temperature-in-singapore-on-april-14-2026,369889,1
+2026-04-14,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-april-14-2026,369898,1
+2026-04-15,CYYZ,toronto,C,19°C,highest-temperature-in-toronto-on-april-15-2026,373585,1
+2026-04-15,EFHK,helsinki,C,15°C or higher,highest-temperature-in-helsinki-on-april-15-2026,373620,1
+2026-04-15,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-april-15-2026,373589,1
+2026-04-15,KAUS,austin,F,80°F or higher,highest-temperature-in-austin-on-april-15-2026,373610,1
+2026-04-15,KDAL,dallas,F,78-79°F,highest-temperature-in-dallas-on-april-15-2026,373588,1
+2026-04-15,KHOU,houston,F,82-83°F,highest-temperature-in-houston-on-april-15-2026,373612,1
+2026-04-15,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-april-15-2026,373613,1
+2026-04-15,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-april-15-2026,373590,1
+2026-04-15,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-april-15-2026,373614,1
+2026-04-15,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-april-15-2026,373592,1
+2026-04-15,MMMX,mexico-city,C,19°C or higher,highest-temperature-in-mexico-city-on-april-15-2026,373617,1
+2026-04-15,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-april-15-2026,373593,1
+2026-04-15,SAEZ,buenos-aires,C,23°C,highest-temperature-in-buenos-aires-on-april-15-2026,373583,1
+2026-04-15,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-april-15-2026,373582,1
+2026-04-15,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-april-15-2026,373622,1
+2026-04-15,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-april-15-2026,373600,1
+2026-04-15,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-april-15-2026,373609,1
+2026-04-16,CYYZ,toronto,C,21°C,highest-temperature-in-toronto-on-april-16-2026,379789,1
+2026-04-16,EFHK,helsinki,C,12°C,highest-temperature-in-helsinki-on-april-16-2026,379824,1
+2026-04-16,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-april-16-2026,379793,1
+2026-04-16,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-april-16-2026,379814,1
+2026-04-16,KDAL,dallas,F,84-85°F,highest-temperature-in-dallas-on-april-16-2026,379792,1
+2026-04-16,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-april-16-2026,379816,1
+2026-04-16,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-april-16-2026,379817,1
+2026-04-16,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-april-16-2026,379794,1
+2026-04-16,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-april-16-2026,379818,1
+2026-04-16,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-april-16-2026,379796,1
+2026-04-16,MMMX,mexico-city,C,28°C,highest-temperature-in-mexico-city-on-april-16-2026,379821,1
+2026-04-16,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-april-16-2026,379797,1
+2026-04-16,SAEZ,buenos-aires,C,24°C,highest-temperature-in-buenos-aires-on-april-16-2026,379787,1
+2026-04-16,SBGR,sao-paulo,C,28°C,highest-temperature-in-sao-paulo-on-april-16-2026,379786,1
+2026-04-16,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-april-16-2026,379826,1
+2026-04-16,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-april-16-2026,379804,1
+2026-04-16,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-april-16-2026,379813,1
+2026-04-17,CYYZ,toronto,C,16°C,highest-temperature-in-toronto-on-april-17-2026,380626,1
+2026-04-17,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-april-17-2026,380652,1
+2026-04-17,KATL,atlanta,F,88-89°F,highest-temperature-in-atlanta-on-april-17-2026,380628,1
+2026-04-17,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-april-17-2026,381510,1
+2026-04-17,KDAL,dallas,F,82-83°F,highest-temperature-in-dallas-on-april-17-2026,381508,1
+2026-04-17,KHOU,houston,F,82-83°F,highest-temperature-in-houston-on-april-17-2026,381512,1
+2026-04-17,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-april-17-2026,381513,1
+2026-04-17,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-april-17-2026,380629,1
+2026-04-17,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-april-17-2026,381514,1
+2026-04-17,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-april-17-2026,380630,1
+2026-04-17,MMMX,mexico-city,C,29°C,highest-temperature-in-mexico-city-on-april-17-2026,381515,1
+2026-04-17,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-april-17-2026,380631,1
+2026-04-17,SAEZ,buenos-aires,C,25°C,highest-temperature-in-buenos-aires-on-april-17-2026,380624,1
+2026-04-17,SBGR,sao-paulo,C,30°C,highest-temperature-in-sao-paulo-on-april-17-2026,380623,1
+2026-04-17,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-april-17-2026,380653,1
+2026-04-17,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-april-17-2026,380638,1
+2026-04-17,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-april-17-2026,380647,1
+2026-04-18,CYYZ,toronto,C,20°C,highest-temperature-in-toronto-on-april-18-2026,384017,1
+2026-04-18,EFHK,helsinki,C,12°C,highest-temperature-in-helsinki-on-april-18-2026,384052,1
+2026-04-18,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-april-18-2026,384021,1
+2026-04-18,KAUS,austin,F,72-73°F,highest-temperature-in-austin-on-april-18-2026,384042,1
+2026-04-18,KDAL,dallas,F,74-75°F,highest-temperature-in-dallas-on-april-18-2026,384020,1
+2026-04-18,KHOU,houston,F,84°F or higher,highest-temperature-in-houston-on-april-18-2026,384044,1
+2026-04-18,KLAX,los-angeles,F,72°F or higher,highest-temperature-in-los-angeles-on-april-18-2026,384045,1
+2026-04-18,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-april-18-2026,384022,1
+2026-04-18,KSFO,san-francisco,F,68°F or higher,highest-temperature-in-san-francisco-on-april-18-2026,384046,1
+2026-04-18,LTAC,ankara,C,14°C,highest-temperature-in-ankara-on-april-18-2026,384024,1
+2026-04-18,MMMX,mexico-city,C,26°C or higher,highest-temperature-in-mexico-city-on-april-18-2026,384049,1
+2026-04-18,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-april-18-2026,384025,1
+2026-04-18,SAEZ,buenos-aires,C,28°C,highest-temperature-in-buenos-aires-on-april-18-2026,384015,1
+2026-04-18,SBGR,sao-paulo,C,30°C,highest-temperature-in-sao-paulo-on-april-18-2026,384014,1
+2026-04-18,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-april-18-2026,384054,1
+2026-04-18,WSSS,singapore,C,34°C,highest-temperature-in-singapore-on-april-18-2026,384032,1
+2026-04-18,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-april-18-2026,384041,1
+2026-04-19,CYYZ,toronto,C,6°C,highest-temperature-in-toronto-on-april-19-2026,387423,1
+2026-04-19,EFHK,helsinki,C,10°C,highest-temperature-in-helsinki-on-april-19-2026,387458,1
+2026-04-19,KATL,atlanta,F,70-71°F,highest-temperature-in-atlanta-on-april-19-2026,387427,1
+2026-04-19,KAUS,austin,F,70-71°F,highest-temperature-in-austin-on-april-19-2026,387448,1
+2026-04-19,KDAL,dallas,F,72-73°F,highest-temperature-in-dallas-on-april-19-2026,387426,1
+2026-04-19,KHOU,houston,F,70-71°F,highest-temperature-in-houston-on-april-19-2026,387450,1
+2026-04-19,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-april-19-2026,387451,1
+2026-04-19,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-april-19-2026,387428,1
+2026-04-19,KSFO,san-francisco,F,70°F or higher,highest-temperature-in-san-francisco-on-april-19-2026,387452,1
+2026-04-19,LTAC,ankara,C,10°C,highest-temperature-in-ankara-on-april-19-2026,387430,1
+2026-04-19,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-april-19-2026,387455,1
+2026-04-19,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-april-19-2026,387431,1
+2026-04-19,SAEZ,buenos-aires,C,26°C,highest-temperature-in-buenos-aires-on-april-19-2026,387421,1
+2026-04-19,SBGR,sao-paulo,C,28°C,highest-temperature-in-sao-paulo-on-april-19-2026,387420,1
+2026-04-19,WMKK,kuala-lumpur,C,30°C,highest-temperature-in-kuala-lumpur-on-april-19-2026,387460,1
+2026-04-19,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-april-19-2026,387438,1
+2026-04-19,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-april-19-2026,387447,1
+2026-04-20,CYYZ,toronto,C,5°C,highest-temperature-in-toronto-on-april-20-2026,390812,1
+2026-04-20,EFHK,helsinki,C,13°C,highest-temperature-in-helsinki-on-april-20-2026,390847,1
+2026-04-20,KATL,atlanta,F,76-77°F,highest-temperature-in-atlanta-on-april-20-2026,390816,1
+2026-04-20,KAUS,austin,F,69°F or below,highest-temperature-in-austin-on-april-20-2026,390837,1
+2026-04-20,KDAL,dallas,F,71°F or below,highest-temperature-in-dallas-on-april-20-2026,390815,1
+2026-04-20,KHOU,houston,F,70-71°F,highest-temperature-in-houston-on-april-20-2026,390839,1
+2026-04-20,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-april-20-2026,390840,1
+2026-04-20,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-april-20-2026,390817,1
+2026-04-20,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-april-20-2026,390841,1
+2026-04-20,LTAC,ankara,C,14°C,highest-temperature-in-ankara-on-april-20-2026,390819,1
+2026-04-20,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-april-20-2026,390844,1
+2026-04-20,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-april-20-2026,390820,1
+2026-04-20,SAEZ,buenos-aires,C,19°C,highest-temperature-in-buenos-aires-on-april-20-2026,390810,1
+2026-04-20,SBGR,sao-paulo,C,26°C,highest-temperature-in-sao-paulo-on-april-20-2026,390809,1
+2026-04-20,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-april-20-2026,390849,1
+2026-04-20,WSSS,singapore,C,32°C or higher,highest-temperature-in-singapore-on-april-20-2026,390827,1
+2026-04-20,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-april-20-2026,390836,1
+2026-04-21,CYYZ,toronto,C,11°C,highest-temperature-in-toronto-on-april-21-2026,394284,1
+2026-04-21,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-april-21-2026,394319,1
+2026-04-21,KATL,atlanta,F,78-79°F,highest-temperature-in-atlanta-on-april-21-2026,394288,1
+2026-04-21,KAUS,austin,F,62°F or higher,highest-temperature-in-austin-on-april-21-2026,394309,1
+2026-04-21,KDAL,dallas,F,62-63°F,highest-temperature-in-dallas-on-april-21-2026,394287,1
+2026-04-21,KHOU,houston,F,68-69°F,highest-temperature-in-houston-on-april-21-2026,394311,1
+2026-04-21,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-april-21-2026,394312,1
+2026-04-21,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-april-21-2026,394289,1
+2026-04-21,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-april-21-2026,394313,1
+2026-04-21,LTAC,ankara,C,17°C,highest-temperature-in-ankara-on-april-21-2026,394291,1
+2026-04-21,MMMX,mexico-city,C,27°C or higher,highest-temperature-in-mexico-city-on-april-21-2026,394316,1
+2026-04-21,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-april-21-2026,394292,1
+2026-04-21,SAEZ,buenos-aires,C,23°C or higher,highest-temperature-in-buenos-aires-on-april-21-2026,394282,1
+2026-04-21,SBGR,sao-paulo,C,26°C,highest-temperature-in-sao-paulo-on-april-21-2026,394281,1
+2026-04-21,WMKK,kuala-lumpur,C,29°C,highest-temperature-in-kuala-lumpur-on-april-21-2026,394321,1
+2026-04-21,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-april-21-2026,394299,1
+2026-04-21,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-april-21-2026,394308,1
+2026-04-22,CYYZ,toronto,C,18°C,highest-temperature-in-toronto-on-april-22-2026,397977,1
+2026-04-22,EFHK,helsinki,C,11°C,highest-temperature-in-helsinki-on-april-22-2026,398012,1
+2026-04-22,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-april-22-2026,397981,1
+2026-04-22,KAUS,austin,F,74°F or higher,highest-temperature-in-austin-on-april-22-2026,398002,1
+2026-04-22,KDAL,dallas,F,72°F or higher,highest-temperature-in-dallas-on-april-22-2026,397980,1
+2026-04-22,KHOU,houston,F,76°F or higher,highest-temperature-in-houston-on-april-22-2026,398004,1
+2026-04-22,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-april-22-2026,398005,1
+2026-04-22,KMIA,miami,F,78-79°F,highest-temperature-in-miami-on-april-22-2026,397982,1
+2026-04-22,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-april-22-2026,398006,1
+2026-04-22,LTAC,ankara,C,17°C,highest-temperature-in-ankara-on-april-22-2026,397984,1
+2026-04-22,MMMX,mexico-city,C,23°C or higher,highest-temperature-in-mexico-city-on-april-22-2026,398009,1
+2026-04-22,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-april-22-2026,397985,1
+2026-04-22,SAEZ,buenos-aires,C,20°C,highest-temperature-in-buenos-aires-on-april-22-2026,397975,1
+2026-04-22,SBGR,sao-paulo,C,26°C,highest-temperature-in-sao-paulo-on-april-22-2026,397974,1
+2026-04-22,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-april-22-2026,398014,1
+2026-04-22,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-april-22-2026,397992,1
+2026-04-22,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-april-22-2026,398001,1
+2026-04-23,CYYZ,toronto,C,18°C,highest-temperature-in-toronto-on-april-23-2026,401672,1
+2026-04-23,EFHK,helsinki,C,9°C,highest-temperature-in-helsinki-on-april-23-2026,401707,1
+2026-04-23,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-april-23-2026,401676,1
+2026-04-23,KAUS,austin,F,70°F or higher,highest-temperature-in-austin-on-april-23-2026,401697,1
+2026-04-23,KDAL,dallas,F,76°F or higher,highest-temperature-in-dallas-on-april-23-2026,401675,1
+2026-04-23,KHOU,houston,F,76°F or higher,highest-temperature-in-houston-on-april-23-2026,401699,1
+2026-04-23,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-april-23-2026,401700,1
+2026-04-23,KMIA,miami,F,78-79°F,highest-temperature-in-miami-on-april-23-2026,401677,1
+2026-04-23,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-april-23-2026,401701,1
+2026-04-23,LTAC,ankara,C,8°C,highest-temperature-in-ankara-on-april-23-2026,401679,1
+2026-04-23,MMMX,mexico-city,C,24°C or higher,highest-temperature-in-mexico-city-on-april-23-2026,401704,1
+2026-04-23,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-april-23-2026,401680,1
+2026-04-23,SAEZ,buenos-aires,C,25°C,highest-temperature-in-buenos-aires-on-april-23-2026,401670,1
+2026-04-23,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-april-23-2026,401669,1
+2026-04-23,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-april-23-2026,401709,1
+2026-04-23,WSSS,singapore,C,34°C or higher,highest-temperature-in-singapore-on-april-23-2026,401687,1
+2026-04-23,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-april-23-2026,401696,1
+2026-04-24,CYYZ,toronto,C,11°C,highest-temperature-in-toronto-on-april-24-2026,405192,1
+2026-04-24,EFHK,helsinki,C,12°C,highest-temperature-in-helsinki-on-april-24-2026,405227,1
+2026-04-24,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-april-24-2026,405196,1
+2026-04-24,KAUS,austin,F,74°F or higher,highest-temperature-in-austin-on-april-24-2026,405217,1
+2026-04-24,KDAL,dallas,F,74°F or higher,highest-temperature-in-dallas-on-april-24-2026,405195,1
+2026-04-24,KHOU,houston,F,76°F or higher,highest-temperature-in-houston-on-april-24-2026,405219,1
+2026-04-24,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-april-24-2026,405220,1
+2026-04-24,KMIA,miami,F,82-83°F,highest-temperature-in-miami-on-april-24-2026,405197,1
+2026-04-24,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-april-24-2026,405221,1
+2026-04-24,LTAC,ankara,C,14°C,highest-temperature-in-ankara-on-april-24-2026,405199,1
+2026-04-24,MMMX,mexico-city,C,21°C or higher,highest-temperature-in-mexico-city-on-april-24-2026,405224,1
+2026-04-24,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-april-24-2026,405200,1
+2026-04-24,SAEZ,buenos-aires,C,24°C,highest-temperature-in-buenos-aires-on-april-24-2026,405190,1
+2026-04-24,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-april-24-2026,405189,1
+2026-04-24,WMKK,kuala-lumpur,C,35°C,highest-temperature-in-kuala-lumpur-on-april-24-2026,405229,1
+2026-04-24,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-april-24-2026,405207,1
+2026-04-24,ZGSZ,shenzhen,C,21°C,highest-temperature-in-shenzhen-on-april-24-2026,405216,1
+2026-04-25,CYYZ,toronto,C,10°C,highest-temperature-in-toronto-on-april-25-2026,408579,1
+2026-04-25,EFHK,helsinki,C,9°C,highest-temperature-in-helsinki-on-april-25-2026,408614,1
+2026-04-25,KATL,atlanta,F,74-75°F,highest-temperature-in-atlanta-on-april-25-2026,408583,1
+2026-04-25,KAUS,austin,F,82°F or higher,highest-temperature-in-austin-on-april-25-2026,408604,1
+2026-04-25,KDAL,dallas,F,84°F or higher,highest-temperature-in-dallas-on-april-25-2026,408582,1
+2026-04-25,KHOU,houston,F,82°F or higher,highest-temperature-in-houston-on-april-25-2026,408606,1
+2026-04-25,KLAX,los-angeles,F,64-65°F,highest-temperature-in-los-angeles-on-april-25-2026,408607,1
+2026-04-25,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-april-25-2026,408584,1
+2026-04-25,KSFO,san-francisco,F,58-59°F,highest-temperature-in-san-francisco-on-april-25-2026,408608,1
+2026-04-25,LTAC,ankara,C,18°C,highest-temperature-in-ankara-on-april-25-2026,408586,1
+2026-04-25,MMMX,mexico-city,C,20°C or higher,highest-temperature-in-mexico-city-on-april-25-2026,408611,1
+2026-04-25,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-april-25-2026,408587,1
+2026-04-25,SAEZ,buenos-aires,C,24°C,highest-temperature-in-buenos-aires-on-april-25-2026,408577,1
+2026-04-25,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-april-25-2026,408576,1
+2026-04-25,WMKK,kuala-lumpur,C,36°C,highest-temperature-in-kuala-lumpur-on-april-25-2026,408616,1
+2026-04-25,WSSS,singapore,C,34°C,highest-temperature-in-singapore-on-april-25-2026,408594,1
+2026-04-25,ZGSZ,shenzhen,C,27°C,highest-temperature-in-shenzhen-on-april-25-2026,408603,1
+2026-04-26,CYYZ,toronto,C,14°C,highest-temperature-in-toronto-on-april-26-2026,411977,1
+2026-04-26,EFHK,helsinki,C,7°C,highest-temperature-in-helsinki-on-april-26-2026,412012,1
+2026-04-26,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-april-26-2026,411981,1
+2026-04-26,KAUS,austin,F,86°F or higher,highest-temperature-in-austin-on-april-26-2026,412002,1
+2026-04-26,KDAL,dallas,F,84-85°F,highest-temperature-in-dallas-on-april-26-2026,411980,1
+2026-04-26,KHOU,houston,F,84°F or higher,highest-temperature-in-houston-on-april-26-2026,412004,1
+2026-04-26,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-april-26-2026,412005,1
+2026-04-26,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-april-26-2026,411982,1
+2026-04-26,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-april-26-2026,412006,1
+2026-04-26,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-april-26-2026,411984,1
+2026-04-26,MMMX,mexico-city,C,26°C or higher,highest-temperature-in-mexico-city-on-april-26-2026,412009,1
+2026-04-26,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-april-26-2026,411985,1
+2026-04-26,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-april-26-2026,411975,1
+2026-04-26,SBGR,sao-paulo,C,31°C,highest-temperature-in-sao-paulo-on-april-26-2026,411974,1
+2026-04-26,WMKK,kuala-lumpur,C,36°C,highest-temperature-in-kuala-lumpur-on-april-26-2026,412014,1
+2026-04-26,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-april-26-2026,411992,1
+2026-04-26,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-april-26-2026,412001,1
+2026-04-27,CYYZ,toronto,C,18°C,highest-temperature-in-toronto-on-april-27-2026,415450,1
+2026-04-27,EFHK,helsinki,C,10°C,highest-temperature-in-helsinki-on-april-27-2026,415485,1
+2026-04-27,KATL,atlanta,F,74-75°F,highest-temperature-in-atlanta-on-april-27-2026,415454,1
+2026-04-27,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-april-27-2026,415475,1
+2026-04-27,KDAL,dallas,F,88°F or higher,highest-temperature-in-dallas-on-april-27-2026,415453,1
+2026-04-27,KHOU,houston,F,86°F or higher,highest-temperature-in-houston-on-april-27-2026,415477,1
+2026-04-27,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-april-27-2026,415478,1
+2026-04-27,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-april-27-2026,415455,1
+2026-04-27,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-april-27-2026,415479,1
+2026-04-27,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-april-27-2026,415457,1
+2026-04-27,MMMX,mexico-city,C,23°C or higher,highest-temperature-in-mexico-city-on-april-27-2026,415482,1
+2026-04-27,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-april-27-2026,415458,1
+2026-04-27,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-april-27-2026,415448,1
+2026-04-27,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-april-27-2026,415447,1
+2026-04-27,WMKK,kuala-lumpur,C,35°C,highest-temperature-in-kuala-lumpur-on-april-27-2026,415487,1
+2026-04-27,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-april-27-2026,415465,1
+2026-04-27,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-april-27-2026,415474,1
+2026-04-28,CYYZ,toronto,C,17°C,highest-temperature-in-toronto-on-april-28-2026,418825,1
+2026-04-28,EFHK,helsinki,C,6°C,highest-temperature-in-helsinki-on-april-28-2026,418860,1
+2026-04-28,KATL,atlanta,F,71°F or below,highest-temperature-in-atlanta-on-april-28-2026,418829,1
+2026-04-28,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-april-28-2026,418850,1
+2026-04-28,KDAL,dallas,F,82-83°F,highest-temperature-in-dallas-on-april-28-2026,418828,1
+2026-04-28,KHOU,houston,F,86°F or higher,highest-temperature-in-houston-on-april-28-2026,418852,1
+2026-04-28,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-april-28-2026,418853,1
+2026-04-28,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-april-28-2026,418830,1
+2026-04-28,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-april-28-2026,418854,1
+2026-04-28,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-april-28-2026,418832,1
+2026-04-28,MMMX,mexico-city,C,27°C or higher,highest-temperature-in-mexico-city-on-april-28-2026,418857,1
+2026-04-28,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-april-28-2026,418833,1
+2026-04-28,SAEZ,buenos-aires,C,20°C,highest-temperature-in-buenos-aires-on-april-28-2026,418823,1
+2026-04-28,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-april-28-2026,418822,1
+2026-04-28,WMKK,kuala-lumpur,C,36°C,highest-temperature-in-kuala-lumpur-on-april-28-2026,418862,1
+2026-04-28,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-april-28-2026,418840,1
+2026-04-28,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-april-28-2026,418849,1
+2026-04-29,CYYZ,toronto,C,13°C,highest-temperature-in-toronto-on-april-29-2026,422453,1
+2026-04-29,EFHK,helsinki,C,10°C,highest-temperature-in-helsinki-on-april-29-2026,422488,1
+2026-04-29,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-april-29-2026,422457,1
+2026-04-29,KAUS,austin,F,80-81°F,highest-temperature-in-austin-on-april-29-2026,422478,1
+2026-04-29,KDAL,dallas,F,74-75°F,highest-temperature-in-dallas-on-april-29-2026,422456,1
+2026-04-29,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-april-29-2026,422480,1
+2026-04-29,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-april-29-2026,422481,1
+2026-04-29,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-april-29-2026,422458,1
+2026-04-29,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-april-29-2026,422482,1
+2026-04-29,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-april-29-2026,422460,1
+2026-04-29,MMMX,mexico-city,C,25°C or higher,highest-temperature-in-mexico-city-on-april-29-2026,422485,1
+2026-04-29,NZWN,wellington,C,19°C,highest-temperature-in-wellington-on-april-29-2026,422461,1
+2026-04-29,SAEZ,buenos-aires,C,23°C,highest-temperature-in-buenos-aires-on-april-29-2026,422451,1
+2026-04-29,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-april-29-2026,422450,1
+2026-04-29,WMKK,kuala-lumpur,C,36°C,highest-temperature-in-kuala-lumpur-on-april-29-2026,422490,1
+2026-04-29,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-april-29-2026,422468,1
+2026-04-29,ZGSZ,shenzhen,C,27°C,highest-temperature-in-shenzhen-on-april-29-2026,422477,1
+2026-04-30,CYYZ,toronto,C,12°C,highest-temperature-in-toronto-on-april-30-2026,426231,1
+2026-04-30,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-april-30-2026,426266,1
+2026-04-30,KATL,atlanta,F,74-75°F,highest-temperature-in-atlanta-on-april-30-2026,426235,1
+2026-04-30,KAUS,austin,F,73°F or below,highest-temperature-in-austin-on-april-30-2026,426256,1
+2026-04-30,KDAL,dallas,F,69°F or below,highest-temperature-in-dallas-on-april-30-2026,426234,1
+2026-04-30,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-april-30-2026,426258,1
+2026-04-30,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-april-30-2026,426259,1
+2026-04-30,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-april-30-2026,426236,1
+2026-04-30,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-april-30-2026,426260,1
+2026-04-30,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-april-30-2026,426238,1
+2026-04-30,MMMX,mexico-city,C,26°C or higher,highest-temperature-in-mexico-city-on-april-30-2026,426263,1
+2026-04-30,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-april-30-2026,426239,1
+2026-04-30,SAEZ,buenos-aires,C,24°C,highest-temperature-in-buenos-aires-on-april-30-2026,426229,1
+2026-04-30,SBGR,sao-paulo,C,28°C,highest-temperature-in-sao-paulo-on-april-30-2026,426228,1
+2026-04-30,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-april-30-2026,426268,1
+2026-04-30,WSSS,singapore,C,34°C,highest-temperature-in-singapore-on-april-30-2026,426246,1
+2026-04-30,ZGSZ,shenzhen,C,25°C or higher,highest-temperature-in-shenzhen-on-april-30-2026,426255,1
+2026-05-01,CYYZ,toronto,C,10°C,highest-temperature-in-toronto-on-may-1-2026,429702,1
+2026-05-01,EFHK,helsinki,C,21°C,highest-temperature-in-helsinki-on-may-1-2026,429737,1
+2026-05-01,KATL,atlanta,F,64-65°F,highest-temperature-in-atlanta-on-may-1-2026,429706,1
+2026-05-01,KAUS,austin,F,73°F or below,highest-temperature-in-austin-on-may-1-2026,429727,1
+2026-05-01,KDAL,dallas,F,67°F or below,highest-temperature-in-dallas-on-may-1-2026,429705,1
+2026-05-01,KHOU,houston,F,71°F or below,highest-temperature-in-houston-on-may-1-2026,429729,1
+2026-05-01,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-1-2026,429730,1
+2026-05-01,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-may-1-2026,429707,1
+2026-05-01,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-1-2026,429731,1
+2026-05-01,LTAC,ankara,C,15°C,highest-temperature-in-ankara-on-may-1-2026,429709,1
+2026-05-01,MMMX,mexico-city,C,28°C or higher,highest-temperature-in-mexico-city-on-may-1-2026,429734,1
+2026-05-01,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-1-2026,429710,1
+2026-05-01,SAEZ,buenos-aires,C,24°C,highest-temperature-in-buenos-aires-on-may-1-2026,429700,1
+2026-05-01,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-may-1-2026,429699,1
+2026-05-01,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-1-2026,429739,1
+2026-05-01,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-may-1-2026,429717,1
+2026-05-01,ZGSZ,shenzhen,C,27°C,highest-temperature-in-shenzhen-on-may-1-2026,429726,1
+2026-05-02,CYYZ,toronto,C,8°C,highest-temperature-in-toronto-on-may-2-2026,433173,1
+2026-05-02,EFHK,helsinki,C,21°C,highest-temperature-in-helsinki-on-may-2-2026,433208,1
+2026-05-02,KATL,atlanta,F,72-73°F,highest-temperature-in-atlanta-on-may-2-2026,433177,1
+2026-05-02,KAUS,austin,F,74°F or higher,highest-temperature-in-austin-on-may-2-2026,433198,1
+2026-05-02,KDAL,dallas,F,74°F or higher,highest-temperature-in-dallas-on-may-2-2026,433176,1
+2026-05-02,KHOU,houston,F,76-77°F,highest-temperature-in-houston-on-may-2-2026,433200,1
+2026-05-02,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-2-2026,433201,1
+2026-05-02,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-may-2-2026,433178,1
+2026-05-02,KSFO,san-francisco,F,60-61°F,highest-temperature-in-san-francisco-on-may-2-2026,433202,1
+2026-05-02,LTAC,ankara,C,8°C,highest-temperature-in-ankara-on-may-2-2026,433180,1
+2026-05-02,MMMX,mexico-city,C,29°C or higher,highest-temperature-in-mexico-city-on-may-2-2026,433205,1
+2026-05-02,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-2-2026,433181,1
+2026-05-02,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-may-2-2026,433171,1
+2026-05-02,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-may-2-2026,433170,1
+2026-05-02,WMKK,kuala-lumpur,C,35°C,highest-temperature-in-kuala-lumpur-on-may-2-2026,433210,1
+2026-05-02,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-2-2026,433188,1
+2026-05-02,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-may-2-2026,433197,1
+2026-05-03,CYYZ,toronto,C,15°C or higher,highest-temperature-in-toronto-on-may-3-2026,436609,1
+2026-05-03,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-may-3-2026,436644,1
+2026-05-03,KATL,atlanta,F,72-73°F,highest-temperature-in-atlanta-on-may-3-2026,436613,1
+2026-05-03,KAUS,austin,F,76°F or higher,highest-temperature-in-austin-on-may-3-2026,436634,1
+2026-05-03,KDAL,dallas,F,74°F or higher,highest-temperature-in-dallas-on-may-3-2026,436612,1
+2026-05-03,KHOU,houston,F,78-79°F,highest-temperature-in-houston-on-may-3-2026,436636,1
+2026-05-03,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-3-2026,436637,1
+2026-05-03,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-may-3-2026,436614,1
+2026-05-03,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-3-2026,436638,1
+2026-05-03,LTAC,ankara,C,9°C or higher,highest-temperature-in-ankara-on-may-3-2026,436616,1
+2026-05-03,MMMX,mexico-city,C,27°C,highest-temperature-in-mexico-city-on-may-3-2026,436641,1
+2026-05-03,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-3-2026,436617,1
+2026-05-03,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-may-3-2026,436607,1
+2026-05-03,SBGR,sao-paulo,C,19°C,highest-temperature-in-sao-paulo-on-may-3-2026,436606,1
+2026-05-03,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-3-2026,436646,1
+2026-05-03,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-3-2026,436624,1
+2026-05-03,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-may-3-2026,436633,1
+2026-05-04,CYYZ,toronto,C,23°C or higher,highest-temperature-in-toronto-on-may-4-2026,439945,1
+2026-05-04,EFHK,helsinki,C,13°C or higher,highest-temperature-in-helsinki-on-may-4-2026,439980,1
+2026-05-04,KATL,atlanta,F,76-77°F,highest-temperature-in-atlanta-on-may-4-2026,439949,1
+2026-05-04,KAUS,austin,F,66°F or higher,highest-temperature-in-austin-on-may-4-2026,439970,1
+2026-05-04,KDAL,dallas,F,72°F or higher,highest-temperature-in-dallas-on-may-4-2026,439948,1
+2026-05-04,KHOU,houston,F,68°F or higher,highest-temperature-in-houston-on-may-4-2026,439972,1
+2026-05-04,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-4-2026,439973,1
+2026-05-04,KMIA,miami,F,80-81°F,highest-temperature-in-miami-on-may-4-2026,439950,1
+2026-05-04,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-4-2026,439974,1
+2026-05-04,LTAC,ankara,C,8°C,highest-temperature-in-ankara-on-may-4-2026,439952,1
+2026-05-04,MMMX,mexico-city,C,26°C or higher,highest-temperature-in-mexico-city-on-may-4-2026,439977,1
+2026-05-04,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-4-2026,439953,1
+2026-05-04,SAEZ,buenos-aires,C,22°C,highest-temperature-in-buenos-aires-on-may-4-2026,439943,1
+2026-05-04,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-may-4-2026,439942,1
+2026-05-04,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-may-4-2026,439982,1
+2026-05-04,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-may-4-2026,439960,1
+2026-05-04,ZGSZ,shenzhen,C,26°C,highest-temperature-in-shenzhen-on-may-4-2026,439969,1
+2026-05-05,CYYZ,toronto,C,17°C or higher,highest-temperature-in-toronto-on-may-5-2026,443303,1
+2026-05-05,EFHK,helsinki,C,12°C,highest-temperature-in-helsinki-on-may-5-2026,443338,1
+2026-05-05,KATL,atlanta,F,80-81°F,highest-temperature-in-atlanta-on-may-5-2026,443307,1
+2026-05-05,KAUS,austin,F,68°F or higher,highest-temperature-in-austin-on-may-5-2026,443328,1
+2026-05-05,KDAL,dallas,F,78°F or higher,highest-temperature-in-dallas-on-may-5-2026,443306,1
+2026-05-05,KHOU,houston,F,78°F or higher,highest-temperature-in-houston-on-may-5-2026,443330,1
+2026-05-05,KLAX,los-angeles,F,64-65°F,highest-temperature-in-los-angeles-on-may-5-2026,443331,1
+2026-05-05,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-5-2026,443308,1
+2026-05-05,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-may-5-2026,443332,1
+2026-05-05,LTAC,ankara,C,13°C or higher,highest-temperature-in-ankara-on-may-5-2026,443310,1
+2026-05-05,MMMX,mexico-city,C,27°C or higher,highest-temperature-in-mexico-city-on-may-5-2026,443335,1
+2026-05-05,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-5-2026,443311,1
+2026-05-05,SAEZ,buenos-aires,C,24°C,highest-temperature-in-buenos-aires-on-may-5-2026,443301,1
+2026-05-05,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-may-5-2026,443300,1
+2026-05-05,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-may-5-2026,443340,1
+2026-05-05,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-5-2026,443318,1
+2026-05-05,ZGSZ,shenzhen,C,22°C,highest-temperature-in-shenzhen-on-may-5-2026,443327,1
+2026-05-06,CYYZ,toronto,C,9°C or below,highest-temperature-in-toronto-on-may-6-2026,448450,1
+2026-05-06,EFHK,helsinki,C,12°C,highest-temperature-in-helsinki-on-may-6-2026,448489,1
+2026-05-06,KATL,atlanta,F,80-81°F,highest-temperature-in-atlanta-on-may-6-2026,448454,1
+2026-05-06,KAUS,austin,F,81°F or below,highest-temperature-in-austin-on-may-6-2026,448479,1
+2026-05-06,KDAL,dallas,F,75°F or below,highest-temperature-in-dallas-on-may-6-2026,448453,1
+2026-05-06,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-may-6-2026,448481,1
+2026-05-06,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-6-2026,448482,1
+2026-05-06,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-6-2026,448455,1
+2026-05-06,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-may-6-2026,448483,1
+2026-05-06,LTAC,ankara,C,15°C,highest-temperature-in-ankara-on-may-6-2026,448457,1
+2026-05-06,MMMX,mexico-city,C,30°C,highest-temperature-in-mexico-city-on-may-6-2026,448486,1
+2026-05-06,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-may-6-2026,448458,1
+2026-05-06,SAEZ,buenos-aires,C,27°C or higher,highest-temperature-in-buenos-aires-on-may-6-2026,448448,1
+2026-05-06,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-may-6-2026,448447,1
+2026-05-06,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-may-6-2026,448491,1
+2026-05-06,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-may-6-2026,448469,1
+2026-05-06,ZGSZ,shenzhen,C,26°C,highest-temperature-in-shenzhen-on-may-6-2026,448478,1
+2026-05-07,CYYZ,toronto,C,12°C,highest-temperature-in-toronto-on-may-7-2026,450184,1
+2026-05-07,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-may-7-2026,450219,1
+2026-05-07,KATL,atlanta,F,72-73°F,highest-temperature-in-atlanta-on-may-7-2026,450188,1
+2026-05-07,KAUS,austin,F,68-69°F,highest-temperature-in-austin-on-may-7-2026,450209,1
+2026-05-07,KDAL,dallas,F,74-75°F,highest-temperature-in-dallas-on-may-7-2026,450187,1
+2026-05-07,KHOU,houston,F,78-79°F,highest-temperature-in-houston-on-may-7-2026,450211,1
+2026-05-07,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-7-2026,450212,1
+2026-05-07,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-may-7-2026,450189,1
+2026-05-07,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-7-2026,450213,1
+2026-05-07,LTAC,ankara,C,19°C,highest-temperature-in-ankara-on-may-7-2026,450191,1
+2026-05-07,MMMX,mexico-city,C,28°C or higher,highest-temperature-in-mexico-city-on-may-7-2026,450216,1
+2026-05-07,NZWN,wellington,C,19°C,highest-temperature-in-wellington-on-may-7-2026,450192,1
+2026-05-07,SAEZ,buenos-aires,C,21°C,highest-temperature-in-buenos-aires-on-may-7-2026,450182,1
+2026-05-07,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-may-7-2026,450181,1
+2026-05-07,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-may-7-2026,450221,1
+2026-05-07,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-7-2026,450199,1
+2026-05-07,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-may-7-2026,450208,1
+2026-05-08,CYYZ,toronto,C,12°C,highest-temperature-in-toronto-on-may-8-2026,453806,1
+2026-05-08,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-may-8-2026,453845,1
+2026-05-08,KATL,atlanta,F,72-73°F,highest-temperature-in-atlanta-on-may-8-2026,453810,1
+2026-05-08,KAUS,austin,F,80-81°F,highest-temperature-in-austin-on-may-8-2026,453835,1
+2026-05-08,KDAL,dallas,F,76-77°F,highest-temperature-in-dallas-on-may-8-2026,453809,1
+2026-05-08,KHOU,houston,F,74-75°F,highest-temperature-in-houston-on-may-8-2026,453837,1
+2026-05-08,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-8-2026,453838,1
+2026-05-08,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-may-8-2026,453811,1
+2026-05-08,KSFO,san-francisco,F,58-59°F,highest-temperature-in-san-francisco-on-may-8-2026,453839,1
+2026-05-08,LTAC,ankara,C,22°C,highest-temperature-in-ankara-on-may-8-2026,453813,1
+2026-05-08,MMMX,mexico-city,C,27°C or higher,highest-temperature-in-mexico-city-on-may-8-2026,453842,1
+2026-05-08,NZWN,wellington,C,19°C,highest-temperature-in-wellington-on-may-8-2026,453814,1
+2026-05-08,SAEZ,buenos-aires,C,13°C,highest-temperature-in-buenos-aires-on-may-8-2026,453804,1
+2026-05-08,SBGR,sao-paulo,C,29°C,highest-temperature-in-sao-paulo-on-may-8-2026,453803,1
+2026-05-08,WMKK,kuala-lumpur,C,29°C,highest-temperature-in-kuala-lumpur-on-may-8-2026,453847,1
+2026-05-08,WSSS,singapore,C,30°C,highest-temperature-in-singapore-on-may-8-2026,453821,1
+2026-05-08,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-may-8-2026,453834,1
+2026-05-09,CYYZ,toronto,C,16°C,highest-temperature-in-toronto-on-may-9-2026,457224,1
+2026-05-09,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-may-9-2026,457259,1
+2026-05-09,KATL,atlanta,F,70-71°F,highest-temperature-in-atlanta-on-may-9-2026,457228,1
+2026-05-09,KAUS,austin,F,74°F or higher,highest-temperature-in-austin-on-may-9-2026,457249,1
+2026-05-09,KDAL,dallas,F,72°F or higher,highest-temperature-in-dallas-on-may-9-2026,457227,1
+2026-05-09,KHOU,houston,F,90°F or higher,highest-temperature-in-houston-on-may-9-2026,457251,1
+2026-05-09,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-9-2026,457252,1
+2026-05-09,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-may-9-2026,457229,1
+2026-05-09,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-9-2026,457253,1
+2026-05-09,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-may-9-2026,457231,1
+2026-05-09,MMMX,mexico-city,C,24°C or higher,highest-temperature-in-mexico-city-on-may-9-2026,457256,1
+2026-05-09,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-may-9-2026,457232,1
+2026-05-09,SAEZ,buenos-aires,C,13°C,highest-temperature-in-buenos-aires-on-may-9-2026,457222,1
+2026-05-09,SBGR,sao-paulo,C,28°C,highest-temperature-in-sao-paulo-on-may-9-2026,457221,1
+2026-05-09,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-may-9-2026,457261,1
+2026-05-09,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-may-9-2026,457239,1
+2026-05-09,ZGSZ,shenzhen,C,25°C,highest-temperature-in-shenzhen-on-may-9-2026,457248,1
+2026-05-10,CYYZ,toronto,C,13°C,highest-temperature-in-toronto-on-may-10-2026,460653,1
+2026-05-10,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-may-10-2026,460713,1
+2026-05-10,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-may-10-2026,460657,1
+2026-05-10,KAUS,austin,F,74°F or higher,highest-temperature-in-austin-on-may-10-2026,460682,1
+2026-05-10,KDAL,dallas,F,76°F or higher,highest-temperature-in-dallas-on-may-10-2026,460656,1
+2026-05-10,KHOU,houston,F,86°F or higher,highest-temperature-in-houston-on-may-10-2026,460684,1
+2026-05-10,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-10-2026,460685,1
+2026-05-10,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-may-10-2026,460658,1
+2026-05-10,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-may-10-2026,460706,1
+2026-05-10,LTAC,ankara,C,23°C,highest-temperature-in-ankara-on-may-10-2026,460660,1
+2026-05-10,MMMX,mexico-city,C,25°C or higher,highest-temperature-in-mexico-city-on-may-10-2026,460710,1
+2026-05-10,NZWN,wellington,C,19°C,highest-temperature-in-wellington-on-may-10-2026,460661,1
+2026-05-10,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-may-10-2026,460651,1
+2026-05-10,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-may-10-2026,460650,1
+2026-05-10,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-10-2026,460715,1
+2026-05-10,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-10-2026,460668,1
+2026-05-10,ZGSZ,shenzhen,C,27°C,highest-temperature-in-shenzhen-on-may-10-2026,460681,1
+2026-05-11,CYYZ,toronto,C,12°C,highest-temperature-in-toronto-on-may-11-2026,465263,1
+2026-05-11,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-may-11-2026,465298,1
+2026-05-11,KATL,atlanta,F,76°F or higher,highest-temperature-in-atlanta-on-may-11-2026,465267,1
+2026-05-11,KAUS,austin,F,80-81°F,highest-temperature-in-austin-on-may-11-2026,465288,1
+2026-05-11,KDAL,dallas,F,78-79°F,highest-temperature-in-dallas-on-may-11-2026,465266,1
+2026-05-11,KHOU,houston,F,80-81°F,highest-temperature-in-houston-on-may-11-2026,465290,1
+2026-05-11,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-11-2026,465291,1
+2026-05-11,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-11-2026,465268,1
+2026-05-11,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-may-11-2026,465292,1
+2026-05-11,LTAC,ankara,C,22°C,highest-temperature-in-ankara-on-may-11-2026,465270,1
+2026-05-11,MMMX,mexico-city,C,22°C or higher,highest-temperature-in-mexico-city-on-may-11-2026,465295,1
+2026-05-11,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-may-11-2026,465271,1
+2026-05-11,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-may-11-2026,465261,1
+2026-05-11,SBGR,sao-paulo,C,17°C,highest-temperature-in-sao-paulo-on-may-11-2026,465260,1
+2026-05-11,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-may-11-2026,465300,1
+2026-05-11,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-11-2026,465278,1
+2026-05-11,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-may-11-2026,465287,1
+2026-05-12,CYYZ,toronto,C,12°C,highest-temperature-in-toronto-on-may-12-2026,469192,1
+2026-05-12,EFHK,helsinki,C,16°C,highest-temperature-in-helsinki-on-may-12-2026,469227,1
+2026-05-12,KATL,atlanta,F,72-73°F,highest-temperature-in-atlanta-on-may-12-2026,469196,1
+2026-05-12,KAUS,austin,F,84°F or higher,highest-temperature-in-austin-on-may-12-2026,469217,1
+2026-05-12,KDAL,dallas,F,86-87°F,highest-temperature-in-dallas-on-may-12-2026,469195,1
+2026-05-12,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-may-12-2026,469219,1
+2026-05-12,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-12-2026,469220,1
+2026-05-12,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-may-12-2026,469197,1
+2026-05-12,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-12-2026,469221,1
+2026-05-12,LTAC,ankara,C,24°C,highest-temperature-in-ankara-on-may-12-2026,469199,1
+2026-05-12,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-may-12-2026,469224,1
+2026-05-12,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-12-2026,469200,1
+2026-05-12,SAEZ,buenos-aires,C,22°C,highest-temperature-in-buenos-aires-on-may-12-2026,469190,1
+2026-05-12,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-may-12-2026,469189,1
+2026-05-12,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-may-12-2026,469229,1
+2026-05-12,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-12-2026,469207,1
+2026-05-12,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-may-12-2026,469216,1
+2026-05-13,CYYZ,toronto,C,16°C,highest-temperature-in-toronto-on-may-13-2026,472560,1
+2026-05-13,EFHK,helsinki,C,18°C,highest-temperature-in-helsinki-on-may-13-2026,472599,1
+2026-05-13,KATL,atlanta,F,80-81°F,highest-temperature-in-atlanta-on-may-13-2026,472564,1
+2026-05-13,KAUS,austin,F,78°F or higher,highest-temperature-in-austin-on-may-13-2026,472589,1
+2026-05-13,KDAL,dallas,F,74°F or higher,highest-temperature-in-dallas-on-may-13-2026,472563,1
+2026-05-13,KHOU,houston,F,90°F or higher,highest-temperature-in-houston-on-may-13-2026,472591,1
+2026-05-13,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-13-2026,472592,1
+2026-05-13,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-may-13-2026,472565,1
+2026-05-13,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-may-13-2026,472593,1
+2026-05-13,LTAC,ankara,C,22°C,highest-temperature-in-ankara-on-may-13-2026,472567,1
+2026-05-13,MMMX,mexico-city,C,22°C or higher,highest-temperature-in-mexico-city-on-may-13-2026,472596,1
+2026-05-13,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-may-13-2026,472568,1
+2026-05-13,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-may-13-2026,472558,1
+2026-05-13,SBGR,sao-paulo,C,25°C,highest-temperature-in-sao-paulo-on-may-13-2026,472557,1
+2026-05-13,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-may-13-2026,472601,1
+2026-05-13,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-may-13-2026,472579,1
+2026-05-13,ZGSZ,shenzhen,C,33°C or higher,highest-temperature-in-shenzhen-on-may-13-2026,472588,1
+2026-05-14,CYYZ,toronto,C,11°C,highest-temperature-in-toronto-on-may-14-2026,476097,1
+2026-05-14,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-may-14-2026,476136,1
+2026-05-14,KATL,atlanta,F,76-77°F,highest-temperature-in-atlanta-on-may-14-2026,476101,1
+2026-05-14,KAUS,austin,F,82°F or higher,highest-temperature-in-austin-on-may-14-2026,476126,1
+2026-05-14,KDAL,dallas,F,80°F or higher,highest-temperature-in-dallas-on-may-14-2026,476100,1
+2026-05-14,KHOU,houston,F,86°F or higher,highest-temperature-in-houston-on-may-14-2026,476128,1
+2026-05-14,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-14-2026,476129,1
+2026-05-14,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-may-14-2026,476102,1
+2026-05-14,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-may-14-2026,476130,1
+2026-05-14,LTAC,ankara,C,22°C,highest-temperature-in-ankara-on-may-14-2026,476104,1
+2026-05-14,MMMX,mexico-city,C,21°C or higher,highest-temperature-in-mexico-city-on-may-14-2026,476133,1
+2026-05-14,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-14-2026,476105,1
+2026-05-14,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-may-14-2026,476095,1
+2026-05-14,SBGR,sao-paulo,C,26°C,highest-temperature-in-sao-paulo-on-may-14-2026,476094,1
+2026-05-14,WMKK,kuala-lumpur,C,35°C,highest-temperature-in-kuala-lumpur-on-may-14-2026,476138,1
+2026-05-14,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-14-2026,476116,1
+2026-05-14,ZGSZ,shenzhen,C,31°C or higher,highest-temperature-in-shenzhen-on-may-14-2026,476125,1
+2026-05-15,CYYZ,toronto,C,20°C,highest-temperature-in-toronto-on-may-15-2026,479714,1
+2026-05-15,EFHK,helsinki,C,16°C,highest-temperature-in-helsinki-on-may-15-2026,479749,1
+2026-05-15,KAUS,austin,F,86°F or higher,highest-temperature-in-austin-on-may-15-2026,479739,1
+2026-05-15,KDAL,dallas,F,86°F or higher,highest-temperature-in-dallas-on-may-15-2026,479717,1
+2026-05-15,KHOU,houston,F,86°F or higher,highest-temperature-in-houston-on-may-15-2026,479741,1
+2026-05-15,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-15-2026,479742,1
+2026-05-15,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-may-15-2026,479719,1
+2026-05-15,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-may-15-2026,479743,1
+2026-05-15,LTAC,ankara,C,17°C,highest-temperature-in-ankara-on-may-15-2026,479721,1
+2026-05-15,MMMX,mexico-city,C,19°C or higher,highest-temperature-in-mexico-city-on-may-15-2026,479746,1
+2026-05-15,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-may-15-2026,479722,1
+2026-05-15,SAEZ,buenos-aires,C,18°C,highest-temperature-in-buenos-aires-on-may-15-2026,479712,1
+2026-05-15,SBGR,sao-paulo,C,20°C or below,highest-temperature-in-sao-paulo-on-may-15-2026,479711,1
+2026-05-15,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-may-15-2026,479751,1
+2026-05-15,WSSS,singapore,C,29°C,highest-temperature-in-singapore-on-may-15-2026,479729,1
+2026-05-15,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-may-15-2026,479738,1
+2026-05-16,CYYZ,toronto,C,21°C,highest-temperature-in-toronto-on-may-16-2026,483447,1
+2026-05-16,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-may-16-2026,483486,1
+2026-05-16,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-may-16-2026,483451,1
+2026-05-16,KAUS,austin,F,90°F or higher,highest-temperature-in-austin-on-may-16-2026,483476,1
+2026-05-16,KDAL,dallas,F,86-87°F,highest-temperature-in-dallas-on-may-16-2026,483450,1
+2026-05-16,KHOU,houston,F,88°F or higher,highest-temperature-in-houston-on-may-16-2026,483478,1
+2026-05-16,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-16-2026,483479,1
+2026-05-16,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-16-2026,483452,1
+2026-05-16,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-may-16-2026,483480,1
+2026-05-16,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-may-16-2026,483454,1
+2026-05-16,MMMX,mexico-city,C,24°C or higher,highest-temperature-in-mexico-city-on-may-16-2026,483483,1
+2026-05-16,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-may-16-2026,483455,1
+2026-05-16,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-may-16-2026,483445,1
+2026-05-16,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-may-16-2026,483444,1
+2026-05-16,WMKK,kuala-lumpur,C,31°C,highest-temperature-in-kuala-lumpur-on-may-16-2026,483488,1
+2026-05-16,WSSS,singapore,C,28°C,highest-temperature-in-singapore-on-may-16-2026,483462,1
+2026-05-16,ZGSZ,shenzhen,C,26°C,highest-temperature-in-shenzhen-on-may-16-2026,483475,1
+2026-05-17,CYYZ,toronto,C,26°C,arch-highest-temperature-in-toronto-on-may-17-2026,486825,1
+2026-05-17,EFHK,helsinki,C,16°C,arch-highest-temperature-in-helsinki-on-may-17-2026,486860,1
+2026-05-17,KATL,atlanta,F,88-89°F,arch-highest-temperature-in-atlanta-on-may-17-2026,486829,1
+2026-05-17,KAUS,austin,F,86-87°F,arch-highest-temperature-in-austin-on-may-17-2026,486850,1
+2026-05-17,KDAL,dallas,F,86-87°F,arch-highest-temperature-in-dallas-on-may-17-2026,486828,1
+2026-05-17,KHOU,houston,F,84-85°F,arch-highest-temperature-in-houston-on-may-17-2026,486852,1
+2026-05-17,KLAX,los-angeles,F,68-69°F,arch-highest-temperature-in-los-angeles-on-may-17-2026,486853,1
+2026-05-17,KMIA,miami,F,90-91°F,arch-highest-temperature-in-miami-on-may-17-2026,486830,1
+2026-05-17,KSFO,san-francisco,F,68°F or higher,arch-highest-temperature-in-san-francisco-on-may-17-2026,486854,1
+2026-05-17,LTAC,ankara,C,18°C,arch-highest-temperature-in-ankara-on-may-17-2026,486832,1
+2026-05-17,MMMX,mexico-city,C,21°C,arch-highest-temperature-in-mexico-city-on-may-17-2026,486857,1
+2026-05-17,NZWN,wellington,C,14°C,arch-highest-temperature-in-wellington-on-may-17-2026,486833,1
+2026-05-17,SAEZ,buenos-aires,C,14°C,arch-highest-temperature-in-buenos-aires-on-may-17-2026,486823,1
+2026-05-17,SBGR,sao-paulo,C,22°C,arch-highest-temperature-in-sao-paulo-on-may-17-2026,486822,1
+2026-05-17,WMKK,kuala-lumpur,C,33°C,arch-highest-temperature-in-kuala-lumpur-on-may-17-2026,486862,1
+2026-05-17,WSSS,singapore,C,32°C,arch-highest-temperature-in-singapore-on-may-17-2026,486840,1
+2026-05-17,ZGSZ,shenzhen,C,27°C,arch-highest-temperature-in-shenzhen-on-may-17-2026,486849,1
+2026-05-18,CYYZ,toronto,C,30°C,arch-highest-temperature-in-toronto-on-may-18-2026,490232,1
+2026-05-18,EFHK,helsinki,C,20°C,arch-highest-temperature-in-helsinki-on-may-18-2026,490267,1
+2026-05-18,KATL,atlanta,F,88-89°F,arch-highest-temperature-in-atlanta-on-may-18-2026,490236,1
+2026-05-18,KAUS,austin,F,90°F or higher,arch-highest-temperature-in-austin-on-may-18-2026,490257,1
+2026-05-18,KDAL,dallas,F,90-91°F,arch-highest-temperature-in-dallas-on-may-18-2026,490235,1
+2026-05-18,KHOU,houston,F,86-87°F,arch-highest-temperature-in-houston-on-may-18-2026,490259,1
+2026-05-18,KLAX,los-angeles,F,70-71°F,arch-highest-temperature-in-los-angeles-on-may-18-2026,490260,1
+2026-05-18,KMIA,miami,F,86-87°F,arch-highest-temperature-in-miami-on-may-18-2026,490237,1
+2026-05-18,KSFO,san-francisco,F,68°F or higher,arch-highest-temperature-in-san-francisco-on-may-18-2026,490261,1
+2026-05-18,LTAC,ankara,C,16°C,arch-highest-temperature-in-ankara-on-may-18-2026,490239,1
+2026-05-18,MMMX,mexico-city,C,27°C or higher,arch-highest-temperature-in-mexico-city-on-may-18-2026,490264,1
+2026-05-18,NZWN,wellington,C,13°C,arch-highest-temperature-in-wellington-on-may-18-2026,490240,1
+2026-05-18,SAEZ,buenos-aires,C,16°C,arch-highest-temperature-in-buenos-aires-on-may-18-2026,490230,1
+2026-05-18,SBGR,sao-paulo,C,21°C,arch-highest-temperature-in-sao-paulo-on-may-18-2026,490229,1
+2026-05-18,WMKK,kuala-lumpur,C,34°C,arch-highest-temperature-in-kuala-lumpur-on-may-18-2026,490269,1
+2026-05-18,WSSS,singapore,C,32°C,arch-highest-temperature-in-singapore-on-may-18-2026,490247,1
+2026-05-18,ZGSZ,shenzhen,C,30°C,arch-highest-temperature-in-shenzhen-on-may-18-2026,490256,1
+2026-05-19,CYYZ,toronto,C,30°C,highest-temperature-in-toronto-on-may-19-2026,503569,1
+2026-05-19,EFHK,helsinki,C,15°C or higher,highest-temperature-in-helsinki-on-may-19-2026,503666,1
+2026-05-19,KATL,atlanta,F,89°F or below,highest-temperature-in-atlanta-on-may-19-2026,503612,1
+2026-05-19,KAUS,austin,F,90-91°F,highest-temperature-in-austin-on-may-19-2026,503656,1
+2026-05-19,KDAL,dallas,F,84-85°F,highest-temperature-in-dallas-on-may-19-2026,503602,1
+2026-05-19,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-may-19-2026,503658,1
+2026-05-19,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-may-19-2026,503659,1
+2026-05-19,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-may-19-2026,503624,1
+2026-05-19,KSFO,san-francisco,F,80-81°F,highest-temperature-in-san-francisco-on-may-19-2026,503660,1
+2026-05-19,LTAC,ankara,C,15°C or higher,highest-temperature-in-ankara-on-may-19-2026,503631,1
+2026-05-19,MMMX,mexico-city,C,29°C,highest-temperature-in-mexico-city-on-may-19-2026,503663,1
+2026-05-19,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-19-2026,503632,1
+2026-05-19,SAEZ,buenos-aires,C,18°C,highest-temperature-in-buenos-aires-on-may-19-2026,503547,1
+2026-05-19,SBGR,sao-paulo,C,12°C,arch-highest-temperature-in-sao-paulo-on-may-19-2026,493653,1
+2026-05-19,WMKK,kuala-lumpur,C,29°C or higher,highest-temperature-in-kuala-lumpur-on-may-19-2026,503668,1
+2026-05-19,WSSS,singapore,C,33°C or higher,highest-temperature-in-singapore-on-may-19-2026,503639,1
+2026-05-19,ZGSZ,shenzhen,C,26°C,highest-temperature-in-shenzhen-on-may-19-2026,503655,1
+2026-05-20,CYYZ,toronto,C,20°C or higher,highest-temperature-in-toronto-on-may-20-2026,496992,1
+2026-05-20,EFHK,helsinki,C,16°C,highest-temperature-in-helsinki-on-may-20-2026,497027,1
+2026-05-20,KATL,atlanta,F,88-89°F,highest-temperature-in-atlanta-on-may-20-2026,496996,1
+2026-05-20,KAUS,austin,F,84-85°F,highest-temperature-in-austin-on-may-20-2026,497017,1
+2026-05-20,KDAL,dallas,F,80-81°F,highest-temperature-in-dallas-on-may-20-2026,496995,1
+2026-05-20,KHOU,houston,F,80-81°F,highest-temperature-in-houston-on-may-20-2026,497019,1
+2026-05-20,KLAX,los-angeles,F,72°F or higher,highest-temperature-in-los-angeles-on-may-20-2026,497020,1
+2026-05-20,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-20-2026,496997,1
+2026-05-20,KSFO,san-francisco,F,72-73°F,highest-temperature-in-san-francisco-on-may-20-2026,497021,1
+2026-05-20,LTAC,ankara,C,18°C,highest-temperature-in-ankara-on-may-20-2026,496999,1
+2026-05-20,MMMX,mexico-city,C,25°C or higher,highest-temperature-in-mexico-city-on-may-20-2026,497024,1
+2026-05-20,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-20-2026,497000,1
+2026-05-20,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-may-20-2026,496990,1
+2026-05-20,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-may-20-2026,496989,1
+2026-05-20,WMKK,kuala-lumpur,C,32°C or higher,highest-temperature-in-kuala-lumpur-on-may-20-2026,497029,1
+2026-05-20,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-20-2026,497007,1
+2026-05-20,ZGSZ,shenzhen,C,31°C or higher,highest-temperature-in-shenzhen-on-may-20-2026,497016,1
+2026-05-21,CYYZ,toronto,C,15°C,highest-temperature-in-toronto-on-may-21-2026,500671,1
+2026-05-21,EFHK,helsinki,C,18°C,highest-temperature-in-helsinki-on-may-21-2026,500706,1
+2026-05-21,KATL,atlanta,F,87°F or below,highest-temperature-in-atlanta-on-may-21-2026,500675,1
+2026-05-21,KAUS,austin,F,80-81°F,highest-temperature-in-austin-on-may-21-2026,500696,1
+2026-05-21,KDAL,dallas,F,76-77°F,highest-temperature-in-dallas-on-may-21-2026,500674,1
+2026-05-21,KHOU,houston,F,80-81°F,highest-temperature-in-houston-on-may-21-2026,500698,1
+2026-05-21,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-may-21-2026,500699,1
+2026-05-21,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-21-2026,500676,1
+2026-05-21,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-may-21-2026,500700,1
+2026-05-21,LTAC,ankara,C,18°C,highest-temperature-in-ankara-on-may-21-2026,500678,1
+2026-05-21,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-may-21-2026,500703,1
+2026-05-21,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-may-21-2026,500679,1
+2026-05-21,SAEZ,buenos-aires,C,12°C,highest-temperature-in-buenos-aires-on-may-21-2026,500669,1
+2026-05-21,SBGR,sao-paulo,C,17°C,highest-temperature-in-sao-paulo-on-may-21-2026,500668,1
+2026-05-21,WMKK,kuala-lumpur,C,35°C,highest-temperature-in-kuala-lumpur-on-may-21-2026,500708,1
+2026-05-21,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-may-21-2026,500686,1
+2026-05-21,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-may-21-2026,500695,1
+2026-05-22,CYYZ,toronto,C,16°C,highest-temperature-in-toronto-on-may-22-2026,504525,1
+2026-05-22,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-may-22-2026,504560,1
+2026-05-22,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-may-22-2026,504529,1
+2026-05-22,KAUS,austin,F,86°F or higher,highest-temperature-in-austin-on-may-22-2026,504550,1
+2026-05-22,KDAL,dallas,F,80°F or higher,highest-temperature-in-dallas-on-may-22-2026,504528,1
+2026-05-22,KHOU,houston,F,90°F or higher,highest-temperature-in-houston-on-may-22-2026,504552,1
+2026-05-22,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-22-2026,504553,1
+2026-05-22,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-22-2026,504530,1
+2026-05-22,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-may-22-2026,504554,1
+2026-05-22,LTAC,ankara,C,20°C,highest-temperature-in-ankara-on-may-22-2026,504532,1
+2026-05-22,MMMX,mexico-city,C,24°C or higher,highest-temperature-in-mexico-city-on-may-22-2026,504557,1
+2026-05-22,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-22-2026,504533,1
+2026-05-22,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-may-22-2026,504523,1
+2026-05-22,SBGR,sao-paulo,C,17°C,highest-temperature-in-sao-paulo-on-may-22-2026,504522,1
+2026-05-22,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-22-2026,504562,1
+2026-05-22,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-22-2026,504540,1
+2026-05-22,ZGSZ,shenzhen,C,32°C or higher,highest-temperature-in-shenzhen-on-may-22-2026,504549,1
+2026-05-23,CYYZ,toronto,C,14°C,highest-temperature-in-toronto-on-may-23-2026,509205,1
+2026-05-23,EFHK,helsinki,C,25°C,highest-temperature-in-helsinki-on-may-23-2026,509240,1
+2026-05-23,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-may-23-2026,509209,1
+2026-05-23,KAUS,austin,F,82-83°F,highest-temperature-in-austin-on-may-23-2026,509230,1
+2026-05-23,KDAL,dallas,F,84-85°F,highest-temperature-in-dallas-on-may-23-2026,509208,1
+2026-05-23,KHOU,houston,F,80-81°F,highest-temperature-in-houston-on-may-23-2026,509232,1
+2026-05-23,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-23-2026,509233,1
+2026-05-23,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-23-2026,509210,1
+2026-05-23,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-may-23-2026,509234,1
+2026-05-23,LTAC,ankara,C,19°C,highest-temperature-in-ankara-on-may-23-2026,509212,1
+2026-05-23,MMMX,mexico-city,C,27°C,highest-temperature-in-mexico-city-on-may-23-2026,509237,1
+2026-05-23,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-23-2026,509213,1
+2026-05-23,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-may-23-2026,509203,1
+2026-05-23,SBGR,sao-paulo,C,18°C,highest-temperature-in-sao-paulo-on-may-23-2026,509202,1
+2026-05-23,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-23-2026,509242,1
+2026-05-23,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-23-2026,509220,1
+2026-05-23,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-may-23-2026,509229,1
+2026-05-24,CYYZ,toronto,C,14°C,highest-temperature-in-toronto-on-may-24-2026,512217,1
+2026-05-24,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-may-24-2026,512252,1
+2026-05-24,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-may-24-2026,512221,1
+2026-05-24,KAUS,austin,F,76°F or higher,highest-temperature-in-austin-on-may-24-2026,512242,1
+2026-05-24,KDAL,dallas,F,82°F or higher,highest-temperature-in-dallas-on-may-24-2026,512220,1
+2026-05-24,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-may-24-2026,512244,1
+2026-05-24,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-24-2026,512245,1
+2026-05-24,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-24-2026,512222,1
+2026-05-24,KSFO,san-francisco,F,64°F or higher,highest-temperature-in-san-francisco-on-may-24-2026,512246,1
+2026-05-24,LTAC,ankara,C,18°C,highest-temperature-in-ankara-on-may-24-2026,512224,1
+2026-05-24,MMMX,mexico-city,C,23°C or higher,highest-temperature-in-mexico-city-on-may-24-2026,512249,1
+2026-05-24,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-24-2026,512225,1
+2026-05-24,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-may-24-2026,512215,1
+2026-05-24,SBGR,sao-paulo,C,25°C or higher,highest-temperature-in-sao-paulo-on-may-24-2026,512214,1
+2026-05-24,WMKK,kuala-lumpur,C,34°C or higher,highest-temperature-in-kuala-lumpur-on-may-24-2026,512274,1
+2026-05-24,WSSS,singapore,C,34°C,highest-temperature-in-singapore-on-may-24-2026,512232,1
+2026-05-24,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-may-24-2026,512241,1
+2026-05-25,CYYZ,toronto,C,23°C,highest-temperature-in-toronto-on-may-25-2026,515632,1
+2026-05-25,EFHK,helsinki,C,18°C,highest-temperature-in-helsinki-on-may-25-2026,515711,1
+2026-05-25,KATL,atlanta,F,78-79°F,highest-temperature-in-atlanta-on-may-25-2026,515636,1
+2026-05-25,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-may-25-2026,515701,1
+2026-05-25,KDAL,dallas,F,86-87°F,highest-temperature-in-dallas-on-may-25-2026,515635,1
+2026-05-25,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-may-25-2026,515703,1
+2026-05-25,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-25-2026,515704,1
+2026-05-25,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-may-25-2026,515637,1
+2026-05-25,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-may-25-2026,515705,1
+2026-05-25,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-may-25-2026,515639,1
+2026-05-25,MMMX,mexico-city,C,22°C or higher,highest-temperature-in-mexico-city-on-may-25-2026,515708,1
+2026-05-25,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-25-2026,515640,1
+2026-05-25,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-may-25-2026,515630,1
+2026-05-25,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-may-25-2026,515629,1
+2026-05-25,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-may-25-2026,515713,1
+2026-05-25,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-25-2026,515647,1
+2026-05-25,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-may-25-2026,515700,1
+2026-05-26,CYYZ,toronto,C,28°C,highest-temperature-in-toronto-on-may-26-2026,519062,1
+2026-05-26,EFHK,helsinki,C,18°C,highest-temperature-in-helsinki-on-may-26-2026,519097,1
+2026-05-26,KATL,atlanta,F,80-81°F,highest-temperature-in-atlanta-on-may-26-2026,519066,1
+2026-05-26,KAUS,austin,F,86°F or higher,highest-temperature-in-austin-on-may-26-2026,519087,1
+2026-05-26,KDAL,dallas,F,86-87°F,highest-temperature-in-dallas-on-may-26-2026,519065,1
+2026-05-26,KHOU,houston,F,82°F or higher,highest-temperature-in-houston-on-may-26-2026,519089,1
+2026-05-26,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-26-2026,519090,1
+2026-05-26,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-may-26-2026,519067,1
+2026-05-26,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-may-26-2026,519091,1
+2026-05-26,LTAC,ankara,C,22°C,highest-temperature-in-ankara-on-may-26-2026,519069,1
+2026-05-26,MMMX,mexico-city,C,21°C or higher,highest-temperature-in-mexico-city-on-may-26-2026,519094,1
+2026-05-26,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-26-2026,519070,1
+2026-05-26,SAEZ,buenos-aires,C,14°C or below,highest-temperature-in-buenos-aires-on-may-26-2026,519060,1
+2026-05-26,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-may-26-2026,519059,1
+2026-05-26,WMKK,kuala-lumpur,C,32°C or higher,highest-temperature-in-kuala-lumpur-on-may-26-2026,519099,1
+2026-05-26,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-26-2026,519077,1
+2026-05-26,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-may-26-2026,519086,1
+2026-05-27,CYYZ,toronto,C,25°C,highest-temperature-in-toronto-on-may-27-2026,522308,1
+2026-05-27,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-may-27-2026,522343,1
+2026-05-27,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-may-27-2026,522312,1
+2026-05-27,KAUS,austin,F,76-77°F,highest-temperature-in-austin-on-may-27-2026,522333,1
+2026-05-27,KDAL,dallas,F,82°F or higher,highest-temperature-in-dallas-on-may-27-2026,522311,1
+2026-05-27,KHOU,houston,F,78-79°F,highest-temperature-in-houston-on-may-27-2026,522335,1
+2026-05-27,KLAX,los-angeles,F,64-65°F,highest-temperature-in-los-angeles-on-may-27-2026,522336,1
+2026-05-27,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-may-27-2026,522313,1
+2026-05-27,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-may-27-2026,522337,1
+2026-05-27,LTAC,ankara,C,24°C,highest-temperature-in-ankara-on-may-27-2026,522315,1
+2026-05-27,MMMX,mexico-city,C,25°C or higher,highest-temperature-in-mexico-city-on-may-27-2026,522340,1
+2026-05-27,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-27-2026,522316,1
+2026-05-27,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-may-27-2026,522306,1
+2026-05-27,SBGR,sao-paulo,C,23°C,highest-temperature-in-sao-paulo-on-may-27-2026,522305,1
+2026-05-27,WMKK,kuala-lumpur,C,36°C or higher,highest-temperature-in-kuala-lumpur-on-may-27-2026,522345,1
+2026-05-27,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-27-2026,522323,1
+2026-05-27,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-may-27-2026,522332,1
+2026-05-28,CYYZ,toronto,C,20°C,highest-temperature-in-toronto-on-may-28-2026,525754,1
+2026-05-28,EFHK,helsinki,C,16°C,highest-temperature-in-helsinki-on-may-28-2026,525789,1
+2026-05-28,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-may-28-2026,525758,1
+2026-05-28,KAUS,austin,F,82°F or higher,highest-temperature-in-austin-on-may-28-2026,525779,1
+2026-05-28,KDAL,dallas,F,84°F or higher,highest-temperature-in-dallas-on-may-28-2026,525757,1
+2026-05-28,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-may-28-2026,525781,1
+2026-05-28,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-28-2026,525782,1
+2026-05-28,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-may-28-2026,525759,1
+2026-05-28,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-may-28-2026,525783,1
+2026-05-28,LTAC,ankara,C,23°C,highest-temperature-in-ankara-on-may-28-2026,525761,1
+2026-05-28,MMMX,mexico-city,C,23°C or higher,highest-temperature-in-mexico-city-on-may-28-2026,525786,1
+2026-05-28,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-may-28-2026,525762,1
+2026-05-28,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-may-28-2026,525751,1
+2026-05-28,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-may-28-2026,525750,1
+2026-05-28,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-28-2026,525791,1
+2026-05-28,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-28-2026,525769,1
+2026-05-28,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-may-28-2026,525778,1
+2026-05-29,CYYZ,toronto,C,25°C or higher,highest-temperature-in-toronto-on-may-29-2026,529433,1
+2026-05-29,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-may-29-2026,529468,1
+2026-05-29,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-may-29-2026,529437,1
+2026-05-29,KAUS,austin,F,82°F or higher,highest-temperature-in-austin-on-may-29-2026,529458,1
+2026-05-29,KDAL,dallas,F,88°F or higher,highest-temperature-in-dallas-on-may-29-2026,529436,1
+2026-05-29,KHOU,houston,F,90°F or higher,highest-temperature-in-houston-on-may-29-2026,529460,1
+2026-05-29,KLAX,los-angeles,F,66-67°F,highest-temperature-in-los-angeles-on-may-29-2026,529461,1
+2026-05-29,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-may-29-2026,529438,1
+2026-05-29,KSFO,san-francisco,F,60-61°F,highest-temperature-in-san-francisco-on-may-29-2026,529462,1
+2026-05-29,LTAC,ankara,C,17°C,highest-temperature-in-ankara-on-may-29-2026,529440,1
+2026-05-29,MMMX,mexico-city,C,22°C or higher,highest-temperature-in-mexico-city-on-may-29-2026,529465,1
+2026-05-29,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-may-29-2026,529441,1
+2026-05-29,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-may-29-2026,529431,1
+2026-05-29,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-may-29-2026,529430,1
+2026-05-29,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-29-2026,529470,1
+2026-05-29,WSSS,singapore,C,30°C,highest-temperature-in-singapore-on-may-29-2026,529448,1
+2026-05-29,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-may-29-2026,529457,1
+2026-05-30,CYYZ,toronto,C,20°C,highest-temperature-in-toronto-on-may-30-2026,533145,1
+2026-05-30,EFHK,helsinki,C,23°C,highest-temperature-in-helsinki-on-may-30-2026,533180,1
+2026-05-30,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-may-30-2026,533149,1
+2026-05-30,KAUS,austin,F,80°F or higher,highest-temperature-in-austin-on-may-30-2026,533170,1
+2026-05-30,KDAL,dallas,F,88°F or higher,highest-temperature-in-dallas-on-may-30-2026,533148,1
+2026-05-30,KHOU,houston,F,82°F or higher,highest-temperature-in-houston-on-may-30-2026,533172,1
+2026-05-30,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-may-30-2026,533173,1
+2026-05-30,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-may-30-2026,533150,1
+2026-05-30,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-may-30-2026,533174,1
+2026-05-30,LTAC,ankara,C,18°C,highest-temperature-in-ankara-on-may-30-2026,533152,1
+2026-05-30,MMMX,mexico-city,C,21°C or higher,highest-temperature-in-mexico-city-on-may-30-2026,533177,1
+2026-05-30,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-may-30-2026,533153,1
+2026-05-30,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-may-30-2026,533143,1
+2026-05-30,SBGR,sao-paulo,C,23°C,highest-temperature-in-sao-paulo-on-may-30-2026,533142,1
+2026-05-30,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-30-2026,533182,1
+2026-05-30,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-may-30-2026,533160,1
+2026-05-30,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-may-30-2026,533169,1
+2026-05-31,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-may-31-2026,536686,1
+2026-05-31,EFHK,helsinki,C,14°C,highest-temperature-in-helsinki-on-may-31-2026,536721,1
+2026-05-31,KATL,atlanta,F,74-75°F,highest-temperature-in-atlanta-on-may-31-2026,536690,1
+2026-05-31,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-may-31-2026,536711,1
+2026-05-31,KDAL,dallas,F,92°F or higher,highest-temperature-in-dallas-on-may-31-2026,536689,1
+2026-05-31,KHOU,houston,F,90°F or higher,highest-temperature-in-houston-on-may-31-2026,536713,1
+2026-05-31,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-may-31-2026,536714,1
+2026-05-31,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-may-31-2026,536691,1
+2026-05-31,KSFO,san-francisco,F,70°F or higher,highest-temperature-in-san-francisco-on-may-31-2026,536715,1
+2026-05-31,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-may-31-2026,536693,1
+2026-05-31,MMMX,mexico-city,C,24°C or higher,highest-temperature-in-mexico-city-on-may-31-2026,536718,1
+2026-05-31,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-may-31-2026,536694,1
+2026-05-31,SAEZ,buenos-aires,C,18°C,highest-temperature-in-buenos-aires-on-may-31-2026,536684,1
+2026-05-31,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-may-31-2026,536683,1
+2026-05-31,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-may-31-2026,536723,1
+2026-05-31,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-may-31-2026,536701,1
+2026-05-31,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-may-31-2026,536710,1
+2026-06-01,CYYZ,toronto,C,19°C,highest-temperature-in-toronto-on-june-1-2026,540076,1
+2026-06-01,EFHK,helsinki,C,16°C,highest-temperature-in-helsinki-on-june-1-2026,540111,1
+2026-06-01,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-june-1-2026,540080,1
+2026-06-01,KAUS,austin,F,92°F or higher,highest-temperature-in-austin-on-june-1-2026,540101,1
+2026-06-01,KDAL,dallas,F,94°F or higher,highest-temperature-in-dallas-on-june-1-2026,540079,1
+2026-06-01,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-1-2026,540103,1
+2026-06-01,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-1-2026,540104,1
+2026-06-01,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-1-2026,540081,1
+2026-06-01,KSFO,san-francisco,F,68°F or higher,highest-temperature-in-san-francisco-on-june-1-2026,540105,1
+2026-06-01,LTAC,ankara,C,23°C,highest-temperature-in-ankara-on-june-1-2026,540083,1
+2026-06-01,MMMX,mexico-city,C,26°C or higher,highest-temperature-in-mexico-city-on-june-1-2026,540108,1
+2026-06-01,NZWN,wellington,C,20°C,highest-temperature-in-wellington-on-june-1-2026,540084,1
+2026-06-01,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-june-1-2026,540074,1
+2026-06-01,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-june-1-2026,540073,1
+2026-06-01,WMKK,kuala-lumpur,C,35°C,highest-temperature-in-kuala-lumpur-on-june-1-2026,540113,1
+2026-06-01,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-1-2026,540091,1
+2026-06-01,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-june-1-2026,540100,1
+2026-06-02,CYYZ,toronto,C,25°C,highest-temperature-in-toronto-on-june-2-2026,543469,1
+2026-06-02,EFHK,helsinki,C,21°C,highest-temperature-in-helsinki-on-june-2-2026,543504,1
+2026-06-02,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-june-2-2026,543473,1
+2026-06-02,KAUS,austin,F,90°F or higher,highest-temperature-in-austin-on-june-2-2026,543494,1
+2026-06-02,KDAL,dallas,F,92°F or higher,highest-temperature-in-dallas-on-june-2-2026,543472,1
+2026-06-02,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-2-2026,543496,1
+2026-06-02,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-june-2-2026,543497,1
+2026-06-02,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-2-2026,543474,1
+2026-06-02,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-june-2-2026,543498,1
+2026-06-02,LTAC,ankara,C,25°C,highest-temperature-in-ankara-on-june-2-2026,543476,1
+2026-06-02,MMMX,mexico-city,C,27°C or higher,highest-temperature-in-mexico-city-on-june-2-2026,543501,1
+2026-06-02,NZWN,wellington,C,20°C or higher,highest-temperature-in-wellington-on-june-2-2026,543477,1
+2026-06-02,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-june-2-2026,543467,1
+2026-06-02,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-june-2-2026,543466,1
+2026-06-02,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-2-2026,543506,1
+2026-06-02,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-june-2-2026,543484,1
+2026-06-02,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-june-2-2026,543493,1
+2026-06-03,CYYZ,toronto,C,28°C or higher,highest-temperature-in-toronto-on-june-3-2026,546762,1
+2026-06-03,EFHK,helsinki,C,22°C,highest-temperature-in-helsinki-on-june-3-2026,546797,1
+2026-06-03,KATL,atlanta,F,78-79°F,highest-temperature-in-atlanta-on-june-3-2026,546766,1
+2026-06-03,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-june-3-2026,546787,1
+2026-06-03,KDAL,dallas,F,88-89°F,highest-temperature-in-dallas-on-june-3-2026,546765,1
+2026-06-03,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-june-3-2026,546789,1
+2026-06-03,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-june-3-2026,546790,1
+2026-06-03,KMIA,miami,F,85°F or below,highest-temperature-in-miami-on-june-3-2026,546767,1
+2026-06-03,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-june-3-2026,546791,1
+2026-06-03,LTAC,ankara,C,26°C,highest-temperature-in-ankara-on-june-3-2026,546769,1
+2026-06-03,MMMX,mexico-city,C,26°C or higher,highest-temperature-in-mexico-city-on-june-3-2026,546794,1
+2026-06-03,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-june-3-2026,546770,1
+2026-06-03,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-june-3-2026,546760,1
+2026-06-03,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-june-3-2026,546759,1
+2026-06-03,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-june-3-2026,546799,1
+2026-06-03,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-june-3-2026,546777,1
+2026-06-03,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-june-3-2026,546786,1
+2026-06-04,CYYZ,toronto,C,30°C or higher,highest-temperature-in-toronto-on-june-4-2026,550232,1
+2026-06-04,EFHK,helsinki,C,24°C,highest-temperature-in-helsinki-on-june-4-2026,550267,1
+2026-06-04,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-june-4-2026,550236,1
+2026-06-04,KAUS,austin,F,86-87°F,highest-temperature-in-austin-on-june-4-2026,550257,1
+2026-06-04,KDAL,dallas,F,86-87°F,highest-temperature-in-dallas-on-june-4-2026,550235,1
+2026-06-04,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-june-4-2026,550259,1
+2026-06-04,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-4-2026,550260,1
+2026-06-04,KMIA,miami,F,82-83°F,highest-temperature-in-miami-on-june-4-2026,550237,1
+2026-06-04,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-june-4-2026,550261,1
+2026-06-04,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-4-2026,550239,1
+2026-06-04,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-4-2026,550264,1
+2026-06-04,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-june-4-2026,550240,1
+2026-06-04,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-june-4-2026,550230,1
+2026-06-04,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-june-4-2026,550229,1
+2026-06-04,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-june-4-2026,550269,1
+2026-06-04,WSSS,singapore,C,34°C,highest-temperature-in-singapore-on-june-4-2026,550247,1
+2026-06-04,ZGSZ,shenzhen,C,36°C or higher,highest-temperature-in-shenzhen-on-june-4-2026,550256,1
+2026-06-05,CYYZ,toronto,C,30°C or higher,highest-temperature-in-toronto-on-june-5-2026,553897,1
+2026-06-05,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-june-5-2026,553932,1
+2026-06-05,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-june-5-2026,553901,1
+2026-06-05,KAUS,austin,F,86-87°F,highest-temperature-in-austin-on-june-5-2026,553922,1
+2026-06-05,KDAL,dallas,F,82-83°F,highest-temperature-in-dallas-on-june-5-2026,553900,1
+2026-06-05,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-june-5-2026,553924,1
+2026-06-05,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-5-2026,553925,1
+2026-06-05,KMIA,miami,F,84-85°F,highest-temperature-in-miami-on-june-5-2026,553902,1
+2026-06-05,KSFO,san-francisco,F,66°F or higher,highest-temperature-in-san-francisco-on-june-5-2026,553926,1
+2026-06-05,LTAC,ankara,C,26°C,highest-temperature-in-ankara-on-june-5-2026,553904,1
+2026-06-05,MMMX,mexico-city,C,21°C,highest-temperature-in-mexico-city-on-june-5-2026,553929,1
+2026-06-05,NZWN,wellington,C,18°C,highest-temperature-in-wellington-on-june-5-2026,553905,1
+2026-06-05,SAEZ,buenos-aires,C,19°C,highest-temperature-in-buenos-aires-on-june-5-2026,553895,1
+2026-06-05,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-june-5-2026,553894,1
+2026-06-05,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-5-2026,553934,1
+2026-06-05,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-june-5-2026,553912,1
+2026-06-05,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-june-5-2026,553921,1
+2026-06-06,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-june-6-2026,560828,1
+2026-06-06,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-june-6-2026,560863,1
+2026-06-06,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-june-6-2026,560832,1
+2026-06-06,KAUS,austin,F,90-91°F,highest-temperature-in-austin-on-june-6-2026,560853,1
+2026-06-06,KDAL,dallas,F,88-89°F,highest-temperature-in-dallas-on-june-6-2026,560831,1
+2026-06-06,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-june-6-2026,560855,1
+2026-06-06,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-6-2026,560856,1
+2026-06-06,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-june-6-2026,560833,1
+2026-06-06,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-june-6-2026,560857,1
+2026-06-06,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-6-2026,560835,1
+2026-06-06,MMMX,mexico-city,C,22°C,highest-temperature-in-mexico-city-on-june-6-2026,560860,1
+2026-06-06,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-june-6-2026,560836,1
+2026-06-06,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-june-6-2026,560826,1
+2026-06-06,SBGR,sao-paulo,C,23°C,highest-temperature-in-sao-paulo-on-june-6-2026,560825,1
+2026-06-06,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-june-6-2026,560865,1
+2026-06-06,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-june-6-2026,560843,1
+2026-06-06,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-6-2026,560852,1
+2026-06-07,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-7-2026,564393,1
+2026-06-07,EFHK,helsinki,C,20°C,highest-temperature-in-helsinki-on-june-7-2026,564449,1
+2026-06-07,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-june-7-2026,564397,1
+2026-06-07,KAUS,austin,F,90-91°F,highest-temperature-in-austin-on-june-7-2026,564418,1
+2026-06-07,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-7-2026,564396,1
+2026-06-07,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-june-7-2026,564420,1
+2026-06-07,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-7-2026,564439,1
+2026-06-07,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-june-7-2026,564398,1
+2026-06-07,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-june-7-2026,564443,1
+2026-06-07,LTAC,ankara,C,28°C,highest-temperature-in-ankara-on-june-7-2026,564400,1
+2026-06-07,MMMX,mexico-city,C,23°C,highest-temperature-in-mexico-city-on-june-7-2026,564446,1
+2026-06-07,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-7-2026,564401,1
+2026-06-07,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-june-7-2026,564391,1
+2026-06-07,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-june-7-2026,564390,1
+2026-06-07,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-7-2026,564451,1
+2026-06-07,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-7-2026,564408,1
+2026-06-07,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-june-7-2026,564417,1
+2026-06-08,CYYZ,toronto,C,23°C,highest-temperature-in-toronto-on-june-8-2026,567581,1
+2026-06-08,EFHK,helsinki,C,23°C,highest-temperature-in-helsinki-on-june-8-2026,566692,1
+2026-06-08,KATL,atlanta,F,80-81°F,highest-temperature-in-atlanta-on-june-8-2026,567585,1
+2026-06-08,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-june-8-2026,567588,1
+2026-06-08,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-june-8-2026,567584,1
+2026-06-08,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-8-2026,567590,1
+2026-06-08,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-8-2026,567591,1
+2026-06-08,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-8-2026,567586,1
+2026-06-08,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-june-8-2026,567592,1
+2026-06-08,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-8-2026,566656,1
+2026-06-08,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-june-8-2026,567593,1
+2026-06-08,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-june-8-2026,566657,1
+2026-06-08,SAEZ,buenos-aires,C,13°C,highest-temperature-in-buenos-aires-on-june-8-2026,567580,1
+2026-06-08,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-june-8-2026,567579,1
+2026-06-08,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-8-2026,566693,1
+2026-06-08,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-june-8-2026,566664,1
+2026-06-08,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-june-8-2026,566673,1
+2026-06-09,CYYZ,toronto,C,24°C or below,highest-temperature-in-toronto-on-june-9-2026,571024,1
+2026-06-09,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-june-9-2026,568081,1
+2026-06-09,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-june-9-2026,571027,1
+2026-06-09,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-9-2026,571030,1
+2026-06-09,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-9-2026,571026,1
+2026-06-09,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-9-2026,571032,1
+2026-06-09,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-9-2026,571033,1
+2026-06-09,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-june-9-2026,571028,1
+2026-06-09,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-june-9-2026,571034,1
+2026-06-09,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-9-2026,568038,1
+2026-06-09,MMMX,mexico-city,C,20°C,highest-temperature-in-mexico-city-on-june-9-2026,571035,1
+2026-06-09,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-june-9-2026,568039,1
+2026-06-09,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-9-2026,571023,1
+2026-06-09,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-june-9-2026,571022,1
+2026-06-09,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-9-2026,568082,1
+2026-06-09,WSSS,singapore,C,30°C,highest-temperature-in-singapore-on-june-9-2026,568046,1
+2026-06-09,ZGSZ,shenzhen,C,27°C,highest-temperature-in-shenzhen-on-june-9-2026,568055,1
+2026-06-10,CYYZ,toronto,C,29°C,highest-temperature-in-toronto-on-june-10-2026,574667,1
+2026-06-10,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-june-10-2026,571450,1
+2026-06-10,KATL,atlanta,F,88-89°F,highest-temperature-in-atlanta-on-june-10-2026,574670,1
+2026-06-10,KAUS,austin,F,90-91°F,highest-temperature-in-austin-on-june-10-2026,574673,1
+2026-06-10,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-10-2026,574669,1
+2026-06-10,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-10-2026,574675,1
+2026-06-10,KLAX,los-angeles,F,75°F or below,highest-temperature-in-los-angeles-on-june-10-2026,574676,1
+2026-06-10,KMIA,miami,F,86-87°F,highest-temperature-in-miami-on-june-10-2026,574671,1
+2026-06-10,KSFO,san-francisco,F,78-79°F,highest-temperature-in-san-francisco-on-june-10-2026,574677,1
+2026-06-10,LTAC,ankara,C,22°C or below,highest-temperature-in-ankara-on-june-10-2026,571429,1
+2026-06-10,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-10-2026,574678,1
+2026-06-10,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-10-2026,571430,1
+2026-06-10,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-10-2026,574666,1
+2026-06-10,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-june-10-2026,574665,1
+2026-06-10,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-10-2026,571451,1
+2026-06-10,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-10-2026,571436,1
+2026-06-10,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-june-10-2026,571445,1
+2026-06-11,CYYZ,toronto,C,31°C,highest-temperature-in-toronto-on-june-11-2026,578264,1
+2026-06-11,EFHK,helsinki,C,18°C,highest-temperature-in-helsinki-on-june-11-2026,575227,1
+2026-06-11,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-june-11-2026,578267,1
+2026-06-11,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-11-2026,578270,1
+2026-06-11,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-11-2026,578266,1
+2026-06-11,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-11-2026,578272,1
+2026-06-11,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-june-11-2026,578273,1
+2026-06-11,KMIA,miami,F,88-89°F,highest-temperature-in-miami-on-june-11-2026,578268,1
+2026-06-11,KSFO,san-francisco,F,90-91°F,highest-temperature-in-san-francisco-on-june-11-2026,578274,1
+2026-06-11,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-11-2026,575217,1
+2026-06-11,MMMX,mexico-city,C,26°C,highest-temperature-in-mexico-city-on-june-11-2026,578275,1
+2026-06-11,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-11-2026,575047,1
+2026-06-11,SAEZ,buenos-aires,C,18°C,highest-temperature-in-buenos-aires-on-june-11-2026,578263,1
+2026-06-11,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-june-11-2026,578262,1
+2026-06-11,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-11-2026,575059,1
+2026-06-11,WSSS,singapore,C,30°C,highest-temperature-in-singapore-on-june-11-2026,575051,1
+2026-06-11,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-june-11-2026,575057,1
+2026-06-12,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-june-12-2026,581981,1
+2026-06-12,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-june-12-2026,578866,1
+2026-06-12,KATL,atlanta,F,90-91°F,highest-temperature-in-atlanta-on-june-12-2026,581992,1
+2026-06-12,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-june-12-2026,581995,1
+2026-06-12,KDAL,dallas,F,88-89°F,highest-temperature-in-dallas-on-june-12-2026,581991,1
+2026-06-12,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-12-2026,581997,1
+2026-06-12,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-12-2026,581998,1
+2026-06-12,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-12-2026,581993,1
+2026-06-12,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-june-12-2026,581999,1
+2026-06-12,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-june-12-2026,578856,1
+2026-06-12,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-12-2026,582000,1
+2026-06-12,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-12-2026,578704,1
+2026-06-12,SAEZ,buenos-aires,C,17°C,highest-temperature-in-buenos-aires-on-june-12-2026,581980,1
+2026-06-12,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-june-12-2026,581979,1
+2026-06-12,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-12-2026,578716,1
+2026-06-12,WSSS,singapore,C,30°C,highest-temperature-in-singapore-on-june-12-2026,578708,1
+2026-06-12,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-12-2026,578714,1
+2026-06-13,CYYZ,toronto,C,29°C,highest-temperature-in-toronto-on-june-13-2026,585538,1
+2026-06-13,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-june-13-2026,582449,1
+2026-06-13,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-june-13-2026,585542,1
+2026-06-13,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-13-2026,585545,1
+2026-06-13,KDAL,dallas,F,90-91°F,highest-temperature-in-dallas-on-june-13-2026,585541,1
+2026-06-13,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-13-2026,585547,1
+2026-06-13,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-13-2026,585548,1
+2026-06-13,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-13-2026,585543,1
+2026-06-13,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-june-13-2026,585549,1
+2026-06-13,LTAC,ankara,C,23°C,highest-temperature-in-ankara-on-june-13-2026,582428,1
+2026-06-13,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-13-2026,585550,1
+2026-06-13,NZWN,wellington,C,15°C,highest-temperature-in-wellington-on-june-13-2026,582429,1
+2026-06-13,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-13-2026,585537,1
+2026-06-13,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-june-13-2026,585536,1
+2026-06-13,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-june-13-2026,582450,1
+2026-06-13,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-13-2026,582436,1
+2026-06-13,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-13-2026,582445,1
+2026-06-14,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-14-2026,589040,1
+2026-06-14,EFHK,helsinki,C,15°C,highest-temperature-in-helsinki-on-june-14-2026,585997,1
+2026-06-14,KATL,atlanta,F,90-91°F,highest-temperature-in-atlanta-on-june-14-2026,589051,1
+2026-06-14,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-14-2026,589054,1
+2026-06-14,KDAL,dallas,F,84-85°F,highest-temperature-in-dallas-on-june-14-2026,589050,1
+2026-06-14,KHOU,houston,F,90-91°F,highest-temperature-in-houston-on-june-14-2026,589056,1
+2026-06-14,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-14-2026,589057,1
+2026-06-14,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-14-2026,589052,1
+2026-06-14,KSFO,san-francisco,F,74-75°F,highest-temperature-in-san-francisco-on-june-14-2026,589058,1
+2026-06-14,LTAC,ankara,C,21°C,highest-temperature-in-ankara-on-june-14-2026,585969,1
+2026-06-14,MMMX,mexico-city,C,26°C,highest-temperature-in-mexico-city-on-june-14-2026,589059,1
+2026-06-14,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-june-14-2026,585970,1
+2026-06-14,SAEZ,buenos-aires,C,10°C,highest-temperature-in-buenos-aires-on-june-14-2026,589039,1
+2026-06-14,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-june-14-2026,589038,1
+2026-06-14,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-14-2026,585998,1
+2026-06-14,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-14-2026,585976,1
+2026-06-14,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-14-2026,585992,1
+2026-06-15,CYYZ,toronto,C,20°C,highest-temperature-in-toronto-on-june-15-2026,592501,1
+2026-06-15,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-june-15-2026,589490,1
+2026-06-15,KATL,atlanta,F,80-81°F,highest-temperature-in-atlanta-on-june-15-2026,592505,1
+2026-06-15,KAUS,austin,F,82-83°F,highest-temperature-in-austin-on-june-15-2026,592508,1
+2026-06-15,KDAL,dallas,F,86-87°F,highest-temperature-in-dallas-on-june-15-2026,592504,1
+2026-06-15,KHOU,houston,F,82-83°F,highest-temperature-in-houston-on-june-15-2026,592510,1
+2026-06-15,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-15-2026,592511,1
+2026-06-15,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-june-15-2026,592506,1
+2026-06-15,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-june-15-2026,592512,1
+2026-06-15,LTAC,ankara,C,26°C,highest-temperature-in-ankara-on-june-15-2026,589462,1
+2026-06-15,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-15-2026,592513,1
+2026-06-15,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-june-15-2026,589463,1
+2026-06-15,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-june-15-2026,592500,1
+2026-06-15,SBGR,sao-paulo,C,19°C,highest-temperature-in-sao-paulo-on-june-15-2026,592499,1
+2026-06-15,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-15-2026,589491,1
+2026-06-15,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-15-2026,589469,1
+2026-06-15,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-15-2026,589485,1
+2026-06-16,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-16-2026,595913,1
+2026-06-16,EFHK,helsinki,C,21°C or higher,highest-temperature-in-helsinki-on-june-16-2026,593042,1
+2026-06-16,KATL,atlanta,F,72-73°F,highest-temperature-in-atlanta-on-june-16-2026,595917,1
+2026-06-16,KAUS,austin,F,90-91°F,highest-temperature-in-austin-on-june-16-2026,595920,1
+2026-06-16,KDAL,dallas,F,88-89°F,highest-temperature-in-dallas-on-june-16-2026,595916,1
+2026-06-16,KHOU,houston,F,82-83°F,highest-temperature-in-houston-on-june-16-2026,595922,1
+2026-06-16,KLAX,los-angeles,F,68-69°F,highest-temperature-in-los-angeles-on-june-16-2026,595923,1
+2026-06-16,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-june-16-2026,595918,1
+2026-06-16,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-june-16-2026,595924,1
+2026-06-16,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-june-16-2026,593021,1
+2026-06-16,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-june-16-2026,595925,1
+2026-06-16,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-june-16-2026,593022,1
+2026-06-16,SAEZ,buenos-aires,C,19°C,highest-temperature-in-buenos-aires-on-june-16-2026,595912,1
+2026-06-16,SBGR,sao-paulo,C,19°C,highest-temperature-in-sao-paulo-on-june-16-2026,595911,1
+2026-06-16,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-16-2026,593043,1
+2026-06-16,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-16-2026,593028,1
+2026-06-16,ZGSZ,shenzhen,C,26°C,highest-temperature-in-shenzhen-on-june-16-2026,593037,1
+2026-06-17,CYYZ,toronto,C,22°C,highest-temperature-in-toronto-on-june-17-2026,599381,1
+2026-06-17,EFHK,helsinki,C,16°C,highest-temperature-in-helsinki-on-june-17-2026,596367,1
+2026-06-17,KATL,atlanta,F,84-85°F,highest-temperature-in-atlanta-on-june-17-2026,599385,1
+2026-06-17,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-june-17-2026,599388,1
+2026-06-17,KDAL,dallas,F,90-91°F,highest-temperature-in-dallas-on-june-17-2026,599384,1
+2026-06-17,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-june-17-2026,599390,1
+2026-06-17,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-17-2026,599518,1
+2026-06-17,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-17-2026,599386,1
+2026-06-17,KSFO,san-francisco,F,72-73°F,highest-temperature-in-san-francisco-on-june-17-2026,599391,1
+2026-06-17,LTAC,ankara,C,30°C,highest-temperature-in-ankara-on-june-17-2026,596346,1
+2026-06-17,MMMX,mexico-city,C,23°C,highest-temperature-in-mexico-city-on-june-17-2026,599392,1
+2026-06-17,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-june-17-2026,596347,1
+2026-06-17,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-17-2026,599380,1
+2026-06-17,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-june-17-2026,599379,1
+2026-06-17,WMKK,kuala-lumpur,C,29°C,highest-temperature-in-kuala-lumpur-on-june-17-2026,596368,1
+2026-06-17,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-17-2026,596353,1
+2026-06-17,ZGSZ,shenzhen,C,27°C,highest-temperature-in-shenzhen-on-june-17-2026,596362,1
+2026-06-18,EFHK,helsinki,C,22°C,highest-temperature-in-helsinki-on-june-18-2026,599994,1
+2026-06-18,LTAC,ankara,C,30°C,highest-temperature-in-ankara-on-june-18-2026,599984,1
+2026-06-18,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-18-2026,599813,1
+2026-06-18,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-18-2026,599832,1
+2026-06-18,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-18-2026,599817,1
+2026-06-18,ZGSZ,shenzhen,C,26°C,highest-temperature-in-shenzhen-on-june-18-2026,599830,1
+2026-06-19,CYYZ,toronto,C,22°C,highest-temperature-in-toronto-on-june-19-2026,606675,1
+2026-06-19,EFHK,helsinki,C,24°C,highest-temperature-in-helsinki-on-june-19-2026,603725,1
+2026-06-19,KATL,atlanta,F,88-89°F,highest-temperature-in-atlanta-on-june-19-2026,606679,1
+2026-06-19,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-june-19-2026,606689,1
+2026-06-19,KDAL,dallas,F,84-85°F,highest-temperature-in-dallas-on-june-19-2026,606678,1
+2026-06-19,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-19-2026,606691,1
+2026-06-19,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-19-2026,606692,1
+2026-06-19,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-19-2026,606680,1
+2026-06-19,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-june-19-2026,606693,1
+2026-06-19,LTAC,ankara,C,21°C or below,highest-temperature-in-ankara-on-june-19-2026,603715,1
+2026-06-19,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-june-19-2026,606694,1
+2026-06-19,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-19-2026,603544,1
+2026-06-19,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-19-2026,606674,1
+2026-06-19,SBGR,sao-paulo,C,25°C,highest-temperature-in-sao-paulo-on-june-19-2026,606673,1
+2026-06-19,WMKK,kuala-lumpur,C,31°C,highest-temperature-in-kuala-lumpur-on-june-19-2026,603556,1
+2026-06-19,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-19-2026,603548,1
+2026-06-19,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-19-2026,603554,1
+2026-06-20,CYYZ,toronto,C,23°C,highest-temperature-in-toronto-on-june-20-2026,610228,1
+2026-06-20,EFHK,helsinki,C,24°C,highest-temperature-in-helsinki-on-june-20-2026,607156,1
+2026-06-20,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-june-20-2026,610232,1
+2026-06-20,KAUS,austin,F,88-89°F,highest-temperature-in-austin-on-june-20-2026,610235,1
+2026-06-20,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-20-2026,610231,1
+2026-06-20,KHOU,houston,F,84-85°F,highest-temperature-in-houston-on-june-20-2026,610237,1
+2026-06-20,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-20-2026,610238,1
+2026-06-20,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-20-2026,610233,1
+2026-06-20,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-june-20-2026,610239,1
+2026-06-20,LTAC,ankara,C,24°C,highest-temperature-in-ankara-on-june-20-2026,607135,1
+2026-06-20,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-20-2026,610240,1
+2026-06-20,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-june-20-2026,607136,1
+2026-06-20,SAEZ,buenos-aires,C,16°C,highest-temperature-in-buenos-aires-on-june-20-2026,610219,1
+2026-06-20,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-june-20-2026,610218,1
+2026-06-20,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-20-2026,607157,1
+2026-06-20,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-20-2026,607142,1
+2026-06-20,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-june-20-2026,607151,1
+2026-06-21,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-21-2026,613650,1
+2026-06-21,EFHK,helsinki,C,27°C,highest-temperature-in-helsinki-on-june-21-2026,610681,1
+2026-06-21,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-june-21-2026,613654,1
+2026-06-21,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-21-2026,613657,1
+2026-06-21,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-21-2026,613653,1
+2026-06-21,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-june-21-2026,613659,1
+2026-06-21,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-21-2026,613660,1
+2026-06-21,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-june-21-2026,613655,1
+2026-06-21,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-june-21-2026,613661,1
+2026-06-21,LTAC,ankara,C,26°C,highest-temperature-in-ankara-on-june-21-2026,610660,1
+2026-06-21,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-21-2026,613662,1
+2026-06-21,NZWN,wellington,C,17°C,highest-temperature-in-wellington-on-june-21-2026,610661,1
+2026-06-21,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-21-2026,613649,1
+2026-06-21,SBGR,sao-paulo,C,23°C,highest-temperature-in-sao-paulo-on-june-21-2026,613648,1
+2026-06-21,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-21-2026,610682,1
+2026-06-21,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-21-2026,610667,1
+2026-06-21,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-june-21-2026,610676,1
+2026-06-22,CYYZ,toronto,C,20°C or below,highest-temperature-in-toronto-on-june-22-2026,617098,1
+2026-06-22,EFHK,helsinki,C,23°C,highest-temperature-in-helsinki-on-june-22-2026,614116,1
+2026-06-22,KATL,atlanta,F,88-89°F,highest-temperature-in-atlanta-on-june-22-2026,617102,1
+2026-06-22,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-june-22-2026,617105,1
+2026-06-22,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-june-22-2026,617101,1
+2026-06-22,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-22-2026,617107,1
+2026-06-22,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-22-2026,617108,1
+2026-06-22,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-22-2026,617103,1
+2026-06-22,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-june-22-2026,617109,1
+2026-06-22,LTAC,ankara,C,26°C,highest-temperature-in-ankara-on-june-22-2026,614095,1
+2026-06-22,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-22-2026,617110,1
+2026-06-22,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-22-2026,614096,1
+2026-06-22,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-22-2026,614117,1
+2026-06-22,WSSS,singapore,C,28°C,highest-temperature-in-singapore-on-june-22-2026,614102,1
+2026-06-22,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-june-22-2026,614111,1
+2026-06-23,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-23-2026,620479,1
+2026-06-23,EFHK,helsinki,C,20°C,highest-temperature-in-helsinki-on-june-23-2026,617581,1
+2026-06-23,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-june-23-2026,620483,1
+2026-06-23,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-23-2026,620493,1
+2026-06-23,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-23-2026,620482,1
+2026-06-23,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-23-2026,620495,1
+2026-06-23,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-23-2026,620496,1
+2026-06-23,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-23-2026,620484,1
+2026-06-23,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-june-23-2026,620497,1
+2026-06-23,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-23-2026,617560,1
+2026-06-23,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-june-23-2026,620498,1
+2026-06-23,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-june-23-2026,617561,1
+2026-06-23,SAEZ,buenos-aires,C,12°C,highest-temperature-in-buenos-aires-on-june-23-2026,620478,1
+2026-06-23,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-june-23-2026,620477,1
+2026-06-23,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-june-23-2026,617582,1
+2026-06-23,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-23-2026,617567,1
+2026-06-23,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-june-23-2026,617576,1
+2026-06-24,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-24-2026,624139,1
+2026-06-24,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-june-24-2026,620953,1
+2026-06-24,KATL,atlanta,F,86-87°F,highest-temperature-in-atlanta-on-june-24-2026,624143,1
+2026-06-24,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-24-2026,624153,1
+2026-06-24,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-june-24-2026,624142,1
+2026-06-24,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-24-2026,624155,1
+2026-06-24,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-24-2026,624156,1
+2026-06-24,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-24-2026,624144,1
+2026-06-24,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-june-24-2026,624157,1
+2026-06-24,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-june-24-2026,620932,1
+2026-06-24,MMMX,mexico-city,C,21°C,highest-temperature-in-mexico-city-on-june-24-2026,624158,1
+2026-06-24,NZWN,wellington,C,16°C,highest-temperature-in-wellington-on-june-24-2026,620933,1
+2026-06-24,SAEZ,buenos-aires,C,11°C,highest-temperature-in-buenos-aires-on-june-24-2026,624138,1
+2026-06-24,SBGR,sao-paulo,C,14°C,highest-temperature-in-sao-paulo-on-june-24-2026,624137,1
+2026-06-24,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-24-2026,620954,1
+2026-06-24,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-24-2026,620939,1
+2026-06-24,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-june-24-2026,620948,1
+2026-06-25,CYYZ,toronto,C,20°C,highest-temperature-in-toronto-on-june-25-2026,627739,1
+2026-06-25,EFHK,helsinki,C,21°C,highest-temperature-in-helsinki-on-june-25-2026,624653,1
+2026-06-25,KATL,atlanta,F,82-83°F,highest-temperature-in-atlanta-on-june-25-2026,627743,1
+2026-06-25,KAUS,austin,F,92-93°F,highest-temperature-in-austin-on-june-25-2026,627746,1
+2026-06-25,KDAL,dallas,F,92-93°F,highest-temperature-in-dallas-on-june-25-2026,627742,1
+2026-06-25,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-25-2026,627748,1
+2026-06-25,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-25-2026,627749,1
+2026-06-25,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-25-2026,627744,1
+2026-06-25,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-june-25-2026,627750,1
+2026-06-25,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-june-25-2026,624636,1
+2026-06-25,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-june-25-2026,627751,1
+2026-06-25,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-june-25-2026,624483,1
+2026-06-25,SAEZ,buenos-aires,C,12°C,highest-temperature-in-buenos-aires-on-june-25-2026,627738,1
+2026-06-25,SBGR,sao-paulo,C,14°C,highest-temperature-in-sao-paulo-on-june-25-2026,627737,1
+2026-06-25,WMKK,kuala-lumpur,C,31°C,highest-temperature-in-kuala-lumpur-on-june-25-2026,624495,1
+2026-06-25,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-june-25-2026,624487,1
+2026-06-25,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-june-25-2026,624493,1
+2026-06-26,CYYZ,toronto,C,24°C,highest-temperature-in-toronto-on-june-26-2026,631439,1
+2026-06-26,EFHK,helsinki,C,23°C,highest-temperature-in-helsinki-on-june-26-2026,628361,1
+2026-06-26,KATL,atlanta,F,88-89°F,highest-temperature-in-atlanta-on-june-26-2026,631450,1
+2026-06-26,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-june-26-2026,631453,1
+2026-06-26,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-june-26-2026,631449,1
+2026-06-26,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-june-26-2026,631455,1
+2026-06-26,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-26-2026,631456,1
+2026-06-26,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-26-2026,631451,1
+2026-06-26,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-june-26-2026,631457,1
+2026-06-26,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-june-26-2026,628344,1
+2026-06-26,MMMX,mexico-city,C,26°C,highest-temperature-in-mexico-city-on-june-26-2026,631458,1
+2026-06-26,NZWN,wellington,C,11°C,highest-temperature-in-wellington-on-june-26-2026,628189,1
+2026-06-26,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-june-26-2026,631438,1
+2026-06-26,SBGR,sao-paulo,C,19°C,highest-temperature-in-sao-paulo-on-june-26-2026,631437,1
+2026-06-26,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-26-2026,628201,1
+2026-06-26,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-26-2026,628193,1
+2026-06-26,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-june-26-2026,628199,1
+2026-06-27,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-june-27-2026,635025,1
+2026-06-27,EFHK,helsinki,C,25°C,highest-temperature-in-helsinki-on-june-27-2026,632092,1
+2026-06-27,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-june-27-2026,635036,1
+2026-06-27,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-june-27-2026,635039,1
+2026-06-27,KDAL,dallas,F,96-97°F,highest-temperature-in-dallas-on-june-27-2026,635035,1
+2026-06-27,KHOU,houston,F,94-95°F,highest-temperature-in-houston-on-june-27-2026,635041,1
+2026-06-27,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-27-2026,635042,1
+2026-06-27,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-june-27-2026,635037,1
+2026-06-27,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-june-27-2026,635043,1
+2026-06-27,LTAC,ankara,C,28°C,highest-temperature-in-ankara-on-june-27-2026,632075,1
+2026-06-27,MMMX,mexico-city,C,26°C,highest-temperature-in-mexico-city-on-june-27-2026,635044,1
+2026-06-27,NZWN,wellington,C,11°C,highest-temperature-in-wellington-on-june-27-2026,631926,1
+2026-06-27,SAEZ,buenos-aires,C,19°C,highest-temperature-in-buenos-aires-on-june-27-2026,635024,1
+2026-06-27,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-june-27-2026,635023,1
+2026-06-27,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-27-2026,631938,1
+2026-06-27,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-june-27-2026,631930,1
+2026-06-27,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-june-27-2026,631936,1
+2026-06-28,CYYZ,toronto,C,28°C,highest-temperature-in-toronto-on-june-28-2026,638948,1
+2026-06-28,EFHK,helsinki,C,24°C,highest-temperature-in-helsinki-on-june-28-2026,635501,1
+2026-06-28,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-june-28-2026,638959,1
+2026-06-28,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-june-28-2026,638962,1
+2026-06-28,KDAL,dallas,F,96-97°F,highest-temperature-in-dallas-on-june-28-2026,638956,1
+2026-06-28,KHOU,houston,F,94-95°F,highest-temperature-in-houston-on-june-28-2026,638964,1
+2026-06-28,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-28-2026,638965,1
+2026-06-28,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-28-2026,638960,1
+2026-06-28,KSFO,san-francisco,F,72-73°F,highest-temperature-in-san-francisco-on-june-28-2026,638966,1
+2026-06-28,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-june-28-2026,635480,1
+2026-06-28,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-june-28-2026,638967,1
+2026-06-28,NZWN,wellington,C,11°C,highest-temperature-in-wellington-on-june-28-2026,635481,1
+2026-06-28,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-28-2026,638947,1
+2026-06-28,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-june-28-2026,638946,1
+2026-06-28,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-june-28-2026,635502,1
+2026-06-28,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-28-2026,635487,1
+2026-06-28,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-june-28-2026,635496,1
+2026-06-29,CYYZ,toronto,C,28°C,highest-temperature-in-toronto-on-june-29-2026,642565,1
+2026-06-29,EFHK,helsinki,C,27°C,highest-temperature-in-helsinki-on-june-29-2026,639561,1
+2026-06-29,KATL,atlanta,F,94-95°F,highest-temperature-in-atlanta-on-june-29-2026,642569,1
+2026-06-29,KAUS,austin,F,96-97°F,highest-temperature-in-austin-on-june-29-2026,642572,1
+2026-06-29,KDAL,dallas,F,96-97°F,highest-temperature-in-dallas-on-june-29-2026,642568,1
+2026-06-29,KHOU,houston,F,94-95°F,highest-temperature-in-houston-on-june-29-2026,642574,1
+2026-06-29,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-june-29-2026,642575,1
+2026-06-29,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-29-2026,642570,1
+2026-06-29,KSFO,san-francisco,F,72-73°F,highest-temperature-in-san-francisco-on-june-29-2026,642576,1
+2026-06-29,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-june-29-2026,639540,1
+2026-06-29,MMMX,mexico-city,C,23°C,highest-temperature-in-mexico-city-on-june-29-2026,642577,1
+2026-06-29,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-june-29-2026,639541,1
+2026-06-29,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-29-2026,642557,1
+2026-06-29,SBGR,sao-paulo,C,28°C,highest-temperature-in-sao-paulo-on-june-29-2026,642556,1
+2026-06-29,WMKK,kuala-lumpur,C,31°C,highest-temperature-in-kuala-lumpur-on-june-29-2026,639562,1
+2026-06-29,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-june-29-2026,639547,1
+2026-06-29,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-june-29-2026,639556,1
+2026-06-30,CYYZ,toronto,C,34°C,highest-temperature-in-toronto-on-june-30-2026,646274,1
+2026-06-30,EFHK,helsinki,C,26°C,highest-temperature-in-helsinki-on-june-30-2026,643225,1
+2026-06-30,KATL,atlanta,F,94-95°F,highest-temperature-in-atlanta-on-june-30-2026,646278,1
+2026-06-30,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-june-30-2026,646281,1
+2026-06-30,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-june-30-2026,646277,1
+2026-06-30,KHOU,houston,F,94-95°F,highest-temperature-in-houston-on-june-30-2026,646283,1
+2026-06-30,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-june-30-2026,646284,1
+2026-06-30,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-june-30-2026,646279,1
+2026-06-30,KSFO,san-francisco,F,72-73°F,highest-temperature-in-san-francisco-on-june-30-2026,646285,1
+2026-06-30,LTAC,ankara,C,32°C,highest-temperature-in-ankara-on-june-30-2026,643215,1
+2026-06-30,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-june-30-2026,646286,1
+2026-06-30,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-june-30-2026,643053,1
+2026-06-30,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-june-30-2026,646273,1
+2026-06-30,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-june-30-2026,646272,1
+2026-06-30,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-june-30-2026,643065,1
+2026-06-30,WSSS,singapore,C,28°C,highest-temperature-in-singapore-on-june-30-2026,643057,1
+2026-06-30,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-june-30-2026,643063,1
+2026-07-01,CYYZ,toronto,C,36°C,highest-temperature-in-toronto-on-july-1-2026,649586,1
+2026-07-01,EFHK,helsinki,C,24°C,highest-temperature-in-helsinki-on-july-1-2026,646506,1
+2026-07-01,KATL,atlanta,F,94-95°F,highest-temperature-in-atlanta-on-july-1-2026,649597,1
+2026-07-01,KAUS,austin,F,96-97°F,highest-temperature-in-austin-on-july-1-2026,649600,1
+2026-07-01,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-july-1-2026,649596,1
+2026-07-01,KHOU,houston,F,94-95°F,highest-temperature-in-houston-on-july-1-2026,649602,1
+2026-07-01,KLAX,los-angeles,F,70-71°F,highest-temperature-in-los-angeles-on-july-1-2026,649603,1
+2026-07-01,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-july-1-2026,649598,1
+2026-07-01,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-july-1-2026,649604,1
+2026-07-01,LTAC,ankara,C,31°C,highest-temperature-in-ankara-on-july-1-2026,646485,1
+2026-07-01,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-july-1-2026,649605,1
+2026-07-01,NZWN,wellington,C,12°C,highest-temperature-in-wellington-on-july-1-2026,646486,1
+2026-07-01,SAEZ,buenos-aires,C,15°C,highest-temperature-in-buenos-aires-on-july-1-2026,649585,1
+2026-07-01,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-july-1-2026,649584,1
+2026-07-01,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-july-1-2026,646507,1
+2026-07-01,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-july-1-2026,646492,1
+2026-07-01,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-july-1-2026,646501,1
+2026-07-02,CYYZ,toronto,C,34°C,highest-temperature-in-toronto-on-july-2-2026,653278,1
+2026-07-02,EFHK,helsinki,C,20°C,highest-temperature-in-helsinki-on-july-2-2026,650221,1
+2026-07-02,KATL,atlanta,F,98-99°F,highest-temperature-in-atlanta-on-july-2-2026,653289,1
+2026-07-02,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-july-2-2026,653292,1
+2026-07-02,KDAL,dallas,F,94-95°F,highest-temperature-in-dallas-on-july-2-2026,653288,1
+2026-07-02,KHOU,houston,F,94-95°F,highest-temperature-in-houston-on-july-2-2026,653294,1
+2026-07-02,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-july-2-2026,653295,1
+2026-07-02,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-july-2-2026,653290,1
+2026-07-02,KSFO,san-francisco,F,70-71°F,highest-temperature-in-san-francisco-on-july-2-2026,653296,1
+2026-07-02,LTAC,ankara,C,34°C,highest-temperature-in-ankara-on-july-2-2026,650211,1
+2026-07-02,MMMX,mexico-city,C,22°C,highest-temperature-in-mexico-city-on-july-2-2026,653297,1
+2026-07-02,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-july-2-2026,650039,1
+2026-07-02,SAEZ,buenos-aires,C,9°C,highest-temperature-in-buenos-aires-on-july-2-2026,653277,1
+2026-07-02,SBGR,sao-paulo,C,26°C,highest-temperature-in-sao-paulo-on-july-2-2026,653276,1
+2026-07-02,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-july-2-2026,650058,1
+2026-07-02,WSSS,singapore,C,30°C,highest-temperature-in-singapore-on-july-2-2026,650043,1
+2026-07-02,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-july-2-2026,650056,1
+2026-07-03,CYYZ,toronto,C,35°C,highest-temperature-in-toronto-on-july-3-2026,657138,1
+2026-07-03,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-july-3-2026,653838,1
+2026-07-03,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-july-3-2026,657142,1
+2026-07-03,KAUS,austin,F,96-97°F,highest-temperature-in-austin-on-july-3-2026,657145,1
+2026-07-03,KDAL,dallas,F,96-97°F,highest-temperature-in-dallas-on-july-3-2026,657141,1
+2026-07-03,KHOU,houston,F,96-97°F,highest-temperature-in-houston-on-july-3-2026,657147,1
+2026-07-03,KLAX,los-angeles,F,72-73°F,highest-temperature-in-los-angeles-on-july-3-2026,657148,1
+2026-07-03,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-july-3-2026,657143,1
+2026-07-03,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-july-3-2026,657149,1
+2026-07-03,LTAC,ankara,C,31°C,highest-temperature-in-ankara-on-july-3-2026,653817,1
+2026-07-03,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-july-3-2026,657150,1
+2026-07-03,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-july-3-2026,653818,1
+2026-07-03,SAEZ,buenos-aires,C,10°C,highest-temperature-in-buenos-aires-on-july-3-2026,657137,1
+2026-07-03,SBGR,sao-paulo,C,27°C,highest-temperature-in-sao-paulo-on-july-3-2026,657136,1
+2026-07-03,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-july-3-2026,653839,1
+2026-07-03,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-july-3-2026,653824,1
+2026-07-03,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-july-3-2026,653833,1
+2026-07-04,CYYZ,toronto,C,27°C or below,highest-temperature-in-toronto-on-july-4-2026,660805,1
+2026-07-04,EFHK,helsinki,C,20°C,highest-temperature-in-helsinki-on-july-4-2026,657639,1
+2026-07-04,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-july-4-2026,660809,1
+2026-07-04,KAUS,austin,F,96-97°F,highest-temperature-in-austin-on-july-4-2026,660819,1
+2026-07-04,KDAL,dallas,F,98-99°F,highest-temperature-in-dallas-on-july-4-2026,660808,1
+2026-07-04,KHOU,houston,F,98-99°F,highest-temperature-in-houston-on-july-4-2026,660821,1
+2026-07-04,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-4-2026,660822,1
+2026-07-04,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-july-4-2026,660810,1
+2026-07-04,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-july-4-2026,660823,1
+2026-07-04,LTAC,ankara,C,30°C,highest-temperature-in-ankara-on-july-4-2026,657629,1
+2026-07-04,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-july-4-2026,660824,1
+2026-07-04,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-july-4-2026,657475,1
+2026-07-04,SAEZ,buenos-aires,C,10°C,highest-temperature-in-buenos-aires-on-july-4-2026,660804,1
+2026-07-04,SBGR,sao-paulo,C,20°C,highest-temperature-in-sao-paulo-on-july-4-2026,660803,1
+2026-07-04,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-july-4-2026,657487,1
+2026-07-04,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-july-4-2026,657479,1
+2026-07-04,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-july-4-2026,657485,1
+2026-07-05,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-july-5-2026,664381,1
+2026-07-05,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-july-5-2026,661267,1
+2026-07-05,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-july-5-2026,664385,1
+2026-07-05,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-july-5-2026,664394,1
+2026-07-05,KDAL,dallas,F,96-97°F,highest-temperature-in-dallas-on-july-5-2026,664384,1
+2026-07-05,KHOU,houston,F,98-99°F,highest-temperature-in-houston-on-july-5-2026,664397,1
+2026-07-05,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-5-2026,664398,1
+2026-07-05,KMIA,miami,F,94-95°F,highest-temperature-in-miami-on-july-5-2026,664386,1
+2026-07-05,KSFO,san-francisco,F,68-69°F,highest-temperature-in-san-francisco-on-july-5-2026,664399,1
+2026-07-05,LTAC,ankara,C,25°C,highest-temperature-in-ankara-on-july-5-2026,661245,1
+2026-07-05,MMMX,mexico-city,C,23°C,highest-temperature-in-mexico-city-on-july-5-2026,664400,1
+2026-07-05,NZWN,wellington,C,14°C,highest-temperature-in-wellington-on-july-5-2026,661246,1
+2026-07-05,SAEZ,buenos-aires,C,9°C,highest-temperature-in-buenos-aires-on-july-5-2026,664380,1
+2026-07-05,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-july-5-2026,664379,1
+2026-07-05,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-july-5-2026,661268,1
+2026-07-05,WSSS,singapore,C,33°C,highest-temperature-in-singapore-on-july-5-2026,661253,1
+2026-07-05,ZGSZ,shenzhen,C,32°C,highest-temperature-in-shenzhen-on-july-5-2026,661262,1
+2026-07-06,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-july-6-2026,667962,1
+2026-07-06,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-july-6-2026,665013,1
+2026-07-06,KATL,atlanta,F,90-91°F,highest-temperature-in-atlanta-on-july-6-2026,667966,1
+2026-07-06,KAUS,austin,F,98-99°F,highest-temperature-in-austin-on-july-6-2026,667969,1
+2026-07-06,KDAL,dallas,F,98-99°F,highest-temperature-in-dallas-on-july-6-2026,667965,1
+2026-07-06,KHOU,houston,F,96-97°F,highest-temperature-in-houston-on-july-6-2026,667971,1
+2026-07-06,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-6-2026,667972,1
+2026-07-06,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-july-6-2026,667967,1
+2026-07-06,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-july-6-2026,667973,1
+2026-07-06,LTAC,ankara,C,27°C,highest-temperature-in-ankara-on-july-6-2026,665003,1
+2026-07-06,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-july-6-2026,667974,1
+2026-07-06,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-july-6-2026,664850,1
+2026-07-06,SAEZ,buenos-aires,C,11°C,highest-temperature-in-buenos-aires-on-july-6-2026,667961,1
+2026-07-06,SBGR,sao-paulo,C,24°C,highest-temperature-in-sao-paulo-on-july-6-2026,667960,1
+2026-07-06,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-july-6-2026,664869,1
+2026-07-06,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-july-6-2026,664854,1
+2026-07-06,ZGSZ,shenzhen,C,29°C,highest-temperature-in-shenzhen-on-july-6-2026,664867,1
+2026-07-07,CYYZ,toronto,C,27°C,highest-temperature-in-toronto-on-july-7-2026,671358,1
+2026-07-07,EFHK,helsinki,C,17°C,highest-temperature-in-helsinki-on-july-7-2026,668439,1
+2026-07-07,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-july-7-2026,671362,1
+2026-07-07,KAUS,austin,F,96-97°F,highest-temperature-in-austin-on-july-7-2026,671365,1
+2026-07-07,KDAL,dallas,F,100-101°F,highest-temperature-in-dallas-on-july-7-2026,671361,1
+2026-07-07,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-july-7-2026,671367,1
+2026-07-07,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-7-2026,671368,1
+2026-07-07,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-july-7-2026,671363,1
+2026-07-07,KSFO,san-francisco,F,62-63°F,highest-temperature-in-san-francisco-on-july-7-2026,671369,1
+2026-07-07,LTAC,ankara,C,28°C,highest-temperature-in-ankara-on-july-7-2026,668418,1
+2026-07-07,MMMX,mexico-city,C,24°C,highest-temperature-in-mexico-city-on-july-7-2026,671370,1
+2026-07-07,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-july-7-2026,668419,1
+2026-07-07,SAEZ,buenos-aires,C,18°C,highest-temperature-in-buenos-aires-on-july-7-2026,671357,1
+2026-07-07,SBGR,sao-paulo,C,21°C,highest-temperature-in-sao-paulo-on-july-7-2026,671356,1
+2026-07-07,WMKK,kuala-lumpur,C,32°C,highest-temperature-in-kuala-lumpur-on-july-7-2026,668440,1
+2026-07-07,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-july-7-2026,668425,1
+2026-07-07,ZGSZ,shenzhen,C,28°C,highest-temperature-in-shenzhen-on-july-7-2026,668434,1
+2026-07-08,CYYZ,toronto,C,29°C,highest-temperature-in-toronto-on-july-8-2026,675113,1
+2026-07-08,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-july-8-2026,671860,1
+2026-07-08,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-july-8-2026,675117,1
+2026-07-08,KAUS,austin,F,98-99°F,highest-temperature-in-austin-on-july-8-2026,675127,1
+2026-07-08,KDAL,dallas,F,100-101°F,highest-temperature-in-dallas-on-july-8-2026,675116,1
+2026-07-08,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-july-8-2026,675129,1
+2026-07-08,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-8-2026,675130,1
+2026-07-08,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-july-8-2026,675118,1
+2026-07-08,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-july-8-2026,675131,1
+2026-07-08,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-july-8-2026,671838,1
+2026-07-08,MMMX,mexico-city,C,23°C,highest-temperature-in-mexico-city-on-july-8-2026,675132,1
+2026-07-08,NZWN,wellington,C,13°C,highest-temperature-in-wellington-on-july-8-2026,671839,1
+2026-07-08,SAEZ,buenos-aires,C,18°C,highest-temperature-in-buenos-aires-on-july-8-2026,675112,1
+2026-07-08,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-july-8-2026,675111,1
+2026-07-08,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-july-8-2026,671861,1
+2026-07-08,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-july-8-2026,671846,1
+2026-07-08,ZGSZ,shenzhen,C,31°C,highest-temperature-in-shenzhen-on-july-8-2026,671855,1
+2026-07-09,CYYZ,toronto,C,29°C,highest-temperature-in-toronto-on-july-9-2026,678804,1
+2026-07-09,EFHK,helsinki,C,19°C,highest-temperature-in-helsinki-on-july-9-2026,675507,1
+2026-07-09,KATL,atlanta,F,94-95°F,highest-temperature-in-atlanta-on-july-9-2026,678808,1
+2026-07-09,KAUS,austin,F,96-97°F,highest-temperature-in-austin-on-july-9-2026,678811,1
+2026-07-09,KDAL,dallas,F,100-101°F,highest-temperature-in-dallas-on-july-9-2026,678807,1
+2026-07-09,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-july-9-2026,678813,1
+2026-07-09,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-9-2026,678814,1
+2026-07-09,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-july-9-2026,678809,1
+2026-07-09,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-july-9-2026,678815,1
+2026-07-09,LTAC,ankara,C,31°C,highest-temperature-in-ankara-on-july-9-2026,675486,1
+2026-07-09,MMMX,mexico-city,C,23°C,highest-temperature-in-mexico-city-on-july-9-2026,678816,1
+2026-07-09,NZWN,wellington,C,11°C,highest-temperature-in-wellington-on-july-9-2026,675487,1
+2026-07-09,SBGR,sao-paulo,C,22°C,highest-temperature-in-sao-paulo-on-july-9-2026,678802,1
+2026-07-09,WMKK,kuala-lumpur,C,34°C,highest-temperature-in-kuala-lumpur-on-july-9-2026,675508,1
+2026-07-09,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-july-9-2026,675493,1
+2026-07-09,ZGSZ,shenzhen,C,30°C,highest-temperature-in-shenzhen-on-july-9-2026,675502,1
+2026-07-10,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-july-10-2026,682454,1
+2026-07-10,EFHK,helsinki,C,22°C,highest-temperature-in-helsinki-on-july-10-2026,679362,1
+2026-07-10,KATL,atlanta,F,92-93°F,highest-temperature-in-atlanta-on-july-10-2026,682458,1
+2026-07-10,KAUS,austin,F,94-95°F,highest-temperature-in-austin-on-july-10-2026,682461,1
+2026-07-10,KDAL,dallas,F,98-99°F,highest-temperature-in-dallas-on-july-10-2026,682457,1
+2026-07-10,KHOU,houston,F,92-93°F,highest-temperature-in-houston-on-july-10-2026,682463,1
+2026-07-10,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-10-2026,682464,1
+2026-07-10,KMIA,miami,F,92-93°F,highest-temperature-in-miami-on-july-10-2026,682459,1
+2026-07-10,KSFO,san-francisco,F,64-65°F,highest-temperature-in-san-francisco-on-july-10-2026,682465,1
+2026-07-10,LTAC,ankara,C,29°C,highest-temperature-in-ankara-on-july-10-2026,679345,1
+2026-07-10,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-july-10-2026,682466,1
+2026-07-10,NZWN,wellington,C,10°C,highest-temperature-in-wellington-on-july-10-2026,679196,1
+2026-07-10,SAEZ,buenos-aires,C,14°C,highest-temperature-in-buenos-aires-on-july-10-2026,682446,1
+2026-07-10,SBGR,sao-paulo,C,26°C,highest-temperature-in-sao-paulo-on-july-10-2026,682445,1
+2026-07-10,WMKK,kuala-lumpur,C,33°C,highest-temperature-in-kuala-lumpur-on-july-10-2026,679208,1
+2026-07-10,WSSS,singapore,C,32°C,highest-temperature-in-singapore-on-july-10-2026,679200,1
+2026-07-10,ZGSZ,shenzhen,C,33°C,highest-temperature-in-shenzhen-on-july-10-2026,679206,1
+2026-07-11,CYYZ,toronto,C,26°C,highest-temperature-in-toronto-on-july-11-2026,686127,1
+2026-07-11,EFHK,helsinki,C,28°C,highest-temperature-in-helsinki-on-july-11-2026,682960,1
+2026-07-11,KATL,atlanta,F,94-95°F,highest-temperature-in-atlanta-on-july-11-2026,686138,1
+2026-07-11,KAUS,austin,F,90-91°F,highest-temperature-in-austin-on-july-11-2026,686141,1
+2026-07-11,KDAL,dallas,F,98-99°F,highest-temperature-in-dallas-on-july-11-2026,686137,1
+2026-07-11,KHOU,houston,F,88-89°F,highest-temperature-in-houston-on-july-11-2026,686143,1
+2026-07-11,KLAX,los-angeles,F,74-75°F,highest-temperature-in-los-angeles-on-july-11-2026,686145,1
+2026-07-11,KMIA,miami,F,90-91°F,highest-temperature-in-miami-on-july-11-2026,686139,1
+2026-07-11,KSFO,san-francisco,F,66-67°F,highest-temperature-in-san-francisco-on-july-11-2026,686146,1
+2026-07-11,LTAC,ankara,C,30°C,highest-temperature-in-ankara-on-july-11-2026,682938,1
+2026-07-11,MMMX,mexico-city,C,25°C,highest-temperature-in-mexico-city-on-july-11-2026,686147,1
+2026-07-11,NZWN,wellington,C,10°C,highest-temperature-in-wellington-on-july-11-2026,682939,1
+2026-07-11,SAEZ,buenos-aires,C,12°C,highest-temperature-in-buenos-aires-on-july-11-2026,686126,1
+2026-07-11,SBGR,sao-paulo,C,28°C,highest-temperature-in-sao-paulo-on-july-11-2026,686125,1
+2026-07-11,WMKK,kuala-lumpur,C,29°C,highest-temperature-in-kuala-lumpur-on-july-11-2026,682961,1
+2026-07-11,WSSS,singapore,C,31°C,highest-temperature-in-singapore-on-july-11-2026,682946,1
+2026-07-11,ZGSZ,shenzhen,C,34°C,highest-temperature-in-shenzhen-on-july-11-2026,682955,1

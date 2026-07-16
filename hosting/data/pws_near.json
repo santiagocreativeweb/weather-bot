@@ -1,0 +1,1738 @@
+{
+"LIMC": [
+{
+"pws_id": "ILOMBARD227",
+"dist_km": 2.68,
+"lat": 45.61394,
+"lon": 8.7487
+},
+{
+"pws_id": "ISAMAR42",
+"dist_km": 3.11,
+"lat": 45.63,
+"lon": 8.763
+},
+{
+"pws_id": "ICARDA5",
+"dist_km": 4.39,
+"lat": 45.647,
+"lon": 8.774
+},
+{
+"pws_id": "ISAMAR22",
+"dist_km": 4.49,
+"lat": 45.61745,
+"lon": 8.77787
+},
+{
+"pws_id": "ILONAT5",
+"dist_km": 4.62,
+"lat": 45.595,
+"lon": 8.755
+},
+{
+"pws_id": "ILONAT3",
+"dist_km": 4.73,
+"lat": 45.598,
+"lon": 8.763
+},
+{
+"pws_id": "IGALLA20",
+"dist_km": 5.91,
+"lat": 45.647,
+"lon": 8.795
+},
+{
+"pws_id": "IGALLA17",
+"dist_km": 6.07,
+"lat": 45.651,
+"lon": 8.795
+},
+{
+"pws_id": "IGALLA29",
+"dist_km": 6.39,
+"lat": 45.65,
+"lon": 8.8
+},
+{
+"pws_id": "IGALLA30",
+"dist_km": 6.56,
+"lat": 45.665,
+"lon": 8.791
+}
+],
+"KLGA": [
+{
+"pws_id": "KNYNEWYO5707",
+"dist_km": 1.9,
+"lat": 40.7648,
+"lon": -73.86742
+},
+{
+"pws_id": "KNYNEWYO1552",
+"dist_km": 2.7,
+"lat": 40.78,
+"lon": -73.912
+},
+{
+"pws_id": "KNYNEWYO1591",
+"dist_km": 2.89,
+"lat": 40.762,
+"lon": -73.906
+},
+{
+"pws_id": "KNYNEWYO1771",
+"dist_km": 3.21,
+"lat": 40.781,
+"lon": -73.918
+},
+{
+"pws_id": "KNYNEWYO1958",
+"dist_km": 3.59,
+"lat": 40.763,
+"lon": -73.917
+},
+{
+"pws_id": "KNYNEWYO1620",
+"dist_km": 3.69,
+"lat": 40.759,
+"lon": -73.915
+},
+{
+"pws_id": "KNYTHEBR7",
+"dist_km": 3.81,
+"lat": 40.808,
+"lon": -73.856
+},
+{
+"pws_id": "KNYNEWYO1906",
+"dist_km": 4.49,
+"lat": 40.788,
+"lon": -73.828
+},
+{
+"pws_id": "KNYNEWYO1824",
+"dist_km": 4.57,
+"lat": 40.76429,
+"lon": -73.93072
+},
+{
+"pws_id": "KNYNEWYO1800",
+"dist_km": 4.7,
+"lat": 40.748,
+"lon": -73.918
+}
+],
+"KORD": [
+{
+"pws_id": "KILROSEM4",
+"dist_km": 0.43,
+"lat": 41.98,
+"lon": -87.91
+},
+{
+"pws_id": "KILROSEM2",
+"dist_km": 3.64,
+"lat": 41.99299,
+"lon": -87.86517
+},
+{
+"pws_id": "KILBENSE15",
+"dist_km": 3.76,
+"lat": 41.96447,
+"lon": -87.9461
+},
+{
+"pws_id": "KILBENSE14",
+"dist_km": 4.46,
+"lat": 41.9636,
+"lon": -87.95478
+},
+{
+"pws_id": "KILPARKR23",
+"dist_km": 4.85,
+"lat": 41.996,
+"lon": -87.851
+},
+{
+"pws_id": "KILMELRO2",
+"dist_km": 5.03,
+"lat": 41.93401,
+"lon": -87.89875
+},
+{
+"pws_id": "KILBENSE13",
+"dist_km": 5.11,
+"lat": 41.95,
+"lon": -87.953
+},
+{
+"pws_id": "KILBENSE12",
+"dist_km": 5.18,
+"lat": 41.95,
+"lon": -87.954
+},
+{
+"pws_id": "KILFRANK104",
+"dist_km": 5.25,
+"lat": 41.937,
+"lon": -87.876
+},
+{
+"pws_id": "KILFRANK74",
+"dist_km": 5.28,
+"lat": 41.935,
+"lon": -87.881
+}
+],
+"EGLC": [
+{
+"pws_id": "ILONDO288",
+"dist_km": 1.6,
+"lat": 51.514,
+"lon": 0.037
+},
+{
+"pws_id": "ILONDO1011",
+"dist_km": 1.87,
+"lat": 51.49212,
+"lon": 0.07248
+},
+{
+"pws_id": "ILONDON828",
+"dist_km": 2,
+"lat": 51.52287,
+"lon": 0.05842
+},
+{
+"pws_id": "ILONDO672",
+"dist_km": 2.24,
+"lat": 51.4853,
+"lon": 0.04829
+},
+{
+"pws_id": "ILONDO636",
+"dist_km": 2.67,
+"lat": 51.529,
+"lon": 0.057
+},
+{
+"pws_id": "ILONDO873",
+"dist_km": 2.68,
+"lat": 51.526,
+"lon": 0.036
+},
+{
+"pws_id": "ILONDO575",
+"dist_km": 3.45,
+"lat": 51.51187,
+"lon": 0.00638
+},
+{
+"pws_id": "ILONDO658",
+"dist_km": 3.8,
+"lat": 51.53467,
+"lon": 0.02766
+},
+{
+"pws_id": "IBARKI7",
+"dist_km": 3.9,
+"lat": 51.515,
+"lon": 0.109
+},
+{
+"pws_id": "ILONDO869",
+"dist_km": 3.91,
+"lat": 51.483,
+"lon": 0.011
+}
+],
+"LFPB": [
+{
+"pws_id": "IGONES2",
+"dist_km": 2.87,
+"lat": 48.994,
+"lon": 2.431
+},
+{
+"pws_id": "IDRANC6",
+"dist_km": 5.11,
+"lat": 48.92359,
+"lon": 2.45213
+},
+{
+"pws_id": "ICOUEN15",
+"dist_km": 6.51,
+"lat": 49.014,
+"lon": 2.384
+},
+{
+"pws_id": "ISAINT5901",
+"dist_km": 6.74,
+"lat": 48.99363,
+"lon": 2.35664
+},
+{
+"pws_id": "IROISS4",
+"dist_km": 6.85,
+"lat": 49.00556,
+"lon": 2.51658
+},
+{
+"pws_id": "IMONTM45",
+"dist_km": 7.67,
+"lat": 48.96516,
+"lon": 2.3361
+},
+{
+"pws_id": "ISEVRA3",
+"dist_km": 7.88,
+"lat": 48.933,
+"lon": 2.534
+},
+{
+"pws_id": "IDEUIL2",
+"dist_km": 8.2,
+"lat": 48.97212,
+"lon": 2.32883
+},
+{
+"pws_id": "IPANTI8",
+"dist_km": 8.54,
+"lat": 48.894,
+"lon": 2.416
+},
+{
+"pws_id": "ILESPA16",
+"dist_km": 8.57,
+"lat": 48.90375,
+"lon": 2.50353
+}
+],
+"RJTT": [
+{
+"pws_id": "ITOKYO179",
+"dist_km": 7.42,
+"lat": 35.5883,
+"lon": 139.71138
+},
+{
+"pws_id": "ITOKYO106",
+"dist_km": 8.38,
+"lat": 35.62054,
+"lon": 139.7399
+},
+{
+"pws_id": "ITOKYO162",
+"dist_km": 8.43,
+"lat": 35.60177,
+"lon": 139.70958
+},
+{
+"pws_id": "IOTA1",
+"dist_km": 9.17,
+"lat": 35.59309,
+"lon": 139.69234
+},
+{
+"pws_id": "ITOKYO111",
+"dist_km": 9.62,
+"lat": 35.62306,
+"lon": 139.71851
+},
+{
+"pws_id": "IKANAGAW12",
+"dist_km": 10.23,
+"lat": 35.55181,
+"lon": 139.66797
+},
+{
+"pws_id": "ITOKYOOO2",
+"dist_km": 10.37,
+"lat": 35.58265,
+"lon": 139.67233
+},
+{
+"pws_id": "ITOKYO135",
+"dist_km": 10.37,
+"lat": 35.61496,
+"lon": 139.69524
+},
+{
+"pws_id": "IYOKOH37",
+"dist_km": 10.47,
+"lat": 35.53318,
+"lon": 139.66788
+},
+{
+"pws_id": "ITOKYO157",
+"dist_km": 10.94,
+"lat": 35.6256,
+"lon": 139.69938
+}
+],
+"RKSI": [
+{
+"pws_id": "IJUNGG22",
+"dist_km": 11.78,
+"lat": 37.50081,
+"lon": 126.56421
+},
+{
+"pws_id": "IJUNG17",
+"dist_km": 15.95,
+"lat": 37.43168,
+"lon": 126.61811
+},
+{
+"pws_id": "IJUNGG14",
+"dist_km": 16.33,
+"lat": 37.46934,
+"lon": 126.6257
+},
+{
+"pws_id": "IANSAN1",
+"dist_km": 33.1,
+"lat": 37.33328,
+"lon": 126.78005
+},
+{
+"pws_id": "IINCHE9",
+"dist_km": 35.26,
+"lat": 37.77637,
+"lon": 126.41413
+},
+{
+"pws_id": "IHWASE5",
+"dist_km": 38.29,
+"lat": 37.28252,
+"lon": 126.81231
+},
+{
+"pws_id": "ISEOUL170",
+"dist_km": 38.86,
+"lat": 37.55705,
+"lon": 126.86421
+},
+{
+"pws_id": "IGEUMC2",
+"dist_km": 41.24,
+"lat": 37.47995,
+"lon": 126.90758
+},
+{
+"pws_id": "IDONGJ1",
+"dist_km": 42.88,
+"lat": 37.49933,
+"lon": 126.92445
+},
+{
+"pws_id": "IANYAN2",
+"dist_km": 44.39,
+"lat": 37.40283,
+"lon": 126.93858
+}
+],
+"RCSS": [
+{
+"pws_id": "ITAIPE22",
+"dist_km": 1.07,
+"lat": 25.05944,
+"lon": 121.55058
+},
+{
+"pws_id": "ITAIPE19",
+"dist_km": 1.09,
+"lat": 25.05942,
+"lon": 121.54962
+},
+{
+"pws_id": "ITAIPE60",
+"dist_km": 1.52,
+"lat": 25.06027,
+"lon": 121.54044
+},
+{
+"pws_id": "ITAIPE18",
+"dist_km": 2.02,
+"lat": 25.05089,
+"lon": 121.55366
+},
+{
+"pws_id": "ITAIPE40",
+"dist_km": 2.43,
+"lat": 25.04819,
+"lon": 121.55931
+},
+{
+"pws_id": "ITAIPE50",
+"dist_km": 2.52,
+"lat": 25.06114,
+"lon": 121.57544
+},
+{
+"pws_id": "ITAIPE59",
+"dist_km": 3.05,
+"lat": 25.04461,
+"lon": 121.53822
+},
+{
+"pws_id": "ITAIPE48",
+"dist_km": 3.21,
+"lat": 25.0402,
+"lon": 121.55334
+},
+{
+"pws_id": "IDATON1",
+"dist_km": 3.38,
+"lat": 25.07636,
+"lon": 121.51948
+},
+{
+"pws_id": "ITAIPE29",
+"dist_km": 3.97,
+"lat": 25.04166,
+"lon": 121.57729
+}
+],
+"LEMD": [
+{
+"pws_id": "IMADRI883",
+"dist_km": 2.68,
+"lat": 40.47699,
+"lon": -3.59204
+},
+{
+"pws_id": "IMADRI133",
+"dist_km": 2.69,
+"lat": 40.457,
+"lon": -3.586
+},
+{
+"pws_id": "IMADRI265",
+"dist_km": 2.98,
+"lat": 40.47415,
+"lon": -3.59612
+},
+{
+"pws_id": "IMADRI211",
+"dist_km": 3.06,
+"lat": 40.46448,
+"lon": -3.59576
+},
+{
+"pws_id": "IMADRI763",
+"dist_km": 3.4,
+"lat": 40.444,
+"lon": -3.577
+},
+{
+"pws_id": "IMADRI882",
+"dist_km": 3.47,
+"lat": 40.45386,
+"lon": -3.59439
+},
+{
+"pws_id": "IPARAC71",
+"dist_km": 3.9,
+"lat": 40.498,
+"lon": -3.53
+},
+{
+"pws_id": "IPARAC59",
+"dist_km": 4.02,
+"lat": 40.498,
+"lon": -3.528
+},
+{
+"pws_id": "IPARAC33",
+"dist_km": 4.12,
+"lat": 40.46909,
+"lon": -3.5125
+},
+{
+"pws_id": "IMADRI56",
+"dist_km": 4.53,
+"lat": 40.48827,
+"lon": -3.61011
+}
+],
+"EDDM": [
+{
+"pws_id": "IOBERD38",
+"dist_km": 3.37,
+"lat": 48.346,
+"lon": 11.83
+},
+{
+"pws_id": "IHALLB20",
+"dist_km": 4.14,
+"lat": 48.323,
+"lon": 11.755
+},
+{
+"pws_id": "IFREIS64",
+"dist_km": 4.39,
+"lat": 48.392,
+"lon": 11.77
+},
+{
+"pws_id": "IFREIS66",
+"dist_km": 4.54,
+"lat": 48.38909,
+"lon": 11.75451
+},
+{
+"pws_id": "IOBERD70",
+"dist_km": 4.56,
+"lat": 48.313,
+"lon": 11.789
+},
+{
+"pws_id": "IOBFREIS10",
+"dist_km": 4.99,
+"lat": 48.39653,
+"lon": 11.76458
+},
+{
+"pws_id": "IFREIS61",
+"dist_km": 5.29,
+"lat": 48.39947,
+"lon": 11.76492
+},
+{
+"pws_id": "IFREIS14",
+"dist_km": 5.67,
+"lat": 48.4,
+"lon": 11.753
+},
+{
+"pws_id": "IMARZL1",
+"dist_km": 5.9,
+"lat": 48.40683,
+"lon": 11.79346
+},
+{
+"pws_id": "IOBERD46",
+"dist_km": 5.92,
+"lat": 48.31855,
+"lon": 11.84579
+}
+],
+"NZWN": [
+{
+"pws_id": "IWELLI478",
+"dist_km": 0.86,
+"lat": -41.329,
+"lon": 174.795
+},
+{
+"pws_id": "IWGNLYAL3",
+"dist_km": 1.1,
+"lat": -41.32512,
+"lon": 174.7921
+},
+{
+"pws_id": "IWELLI216",
+"dist_km": 1.52,
+"lat": -41.332,
+"lon": 174.822
+},
+{
+"pws_id": "IWELLI324",
+"dist_km": 1.59,
+"lat": -41.326,
+"lon": 174.824
+},
+{
+"pws_id": "IWELLI438",
+"dist_km": 1.84,
+"lat": -41.32162,
+"lon": 174.78416
+},
+{
+"pws_id": "IWELLI36",
+"dist_km": 2.08,
+"lat": -41.311,
+"lon": 174.81799
+},
+{
+"pws_id": "IWELLI524",
+"dist_km": 2.12,
+"lat": -41.335,
+"lon": 174.782
+},
+{
+"pws_id": "IWELLI56",
+"dist_km": 2.21,
+"lat": -41.314,
+"lon": 174.825
+},
+{
+"pws_id": "IWELLI187",
+"dist_km": 2.27,
+"lat": -41.32189,
+"lon": 174.77862
+},
+{
+"pws_id": "IWELLI448",
+"dist_km": 2.3,
+"lat": -41.312,
+"lon": 174.786
+}
+],
+"LTAC": [
+{
+"pws_id": "IANKAR46",
+"dist_km": 23.42,
+"lat": 39.9306,
+"lon": 32.89901
+},
+{
+"pws_id": "IANKARA40",
+"dist_km": 25.4,
+"lat": 39.92378,
+"lon": 32.86141
+},
+{
+"pws_id": "IANKAR54",
+"dist_km": 27.26,
+"lat": 39.92091,
+"lon": 32.82368
+},
+{
+"pws_id": "IANKAR59",
+"dist_km": 28.54,
+"lat": 39.88416,
+"lon": 32.89036
+},
+{
+"pws_id": "IANKAR28",
+"dist_km": 28.84,
+"lat": 39.89308,
+"lon": 32.85154
+},
+{
+"pws_id": "IANKAR53",
+"dist_km": 35.84,
+"lat": 39.94081,
+"lon": 32.65225
+},
+{
+"pws_id": "IANKAR47",
+"dist_km": 36.16,
+"lat": 39.88311,
+"lon": 32.71569
+},
+{
+"pws_id": "IGLBAI11",
+"dist_km": 41.44,
+"lat": 39.783,
+"lon": 32.811
+},
+{
+"pws_id": "IANKAR65",
+"dist_km": 41.95,
+"lat": 39.99724,
+"lon": 32.53257
+},
+{
+"pws_id": "IANKARAA11",
+"dist_km": 44.11,
+"lat": 39.82271,
+"lon": 32.66447
+}
+],
+"KMIA": [
+{
+"pws_id": "KFLMIAMI1095",
+"dist_km": 2.63,
+"lat": 25.811,
+"lon": -80.274
+},
+{
+"pws_id": "KFLMIAMI661",
+"dist_km": 3.17,
+"lat": 25.817,
+"lon": -80.274
+},
+{
+"pws_id": "KFLMIAMI454",
+"dist_km": 3.2,
+"lat": 25.76588,
+"lon": -80.28022
+},
+{
+"pws_id": "KFLWESTM8",
+"dist_km": 3.56,
+"lat": 25.761,
+"lon": -80.293
+},
+{
+"pws_id": "KFLMIAMI706",
+"dist_km": 3.66,
+"lat": 25.763,
+"lon": -80.276
+},
+{
+"pws_id": "KFLMIAMI69",
+"dist_km": 3.71,
+"lat": 25.82506,
+"lon": -80.30122
+},
+{
+"pws_id": "KFLHIALE119",
+"dist_km": 3.76,
+"lat": 25.826,
+"lon": -80.283
+},
+{
+"pws_id": "KFLMIAMI684",
+"dist_km": 4.13,
+"lat": 25.756,
+"lon": -80.287
+},
+{
+"pws_id": "KFLMIAMI1030",
+"dist_km": 4.25,
+"lat": 25.766,
+"lon": -80.321
+},
+{
+"pws_id": "KFLCORAL168",
+"dist_km": 4.33,
+"lat": 25.76,
+"lon": -80.268
+}
+],
+"WSSS": [
+{
+"pws_id": "ISINGA249",
+"dist_km": 0.86,
+"lat": 1.34401,
+"lon": 103.9989
+},
+{
+"pws_id": "ISINGA263",
+"dist_km": 4.15,
+"lat": 1.34,
+"lon": 103.958
+},
+{
+"pws_id": "ISINGA128",
+"dist_km": 6.21,
+"lat": 1.3325,
+"lon": 103.94092
+},
+{
+"pws_id": "ISINGA251",
+"dist_km": 11.19,
+"lat": 1.395,
+"lon": 103.904
+},
+{
+"pws_id": "ISINGA250",
+"dist_km": 11.19,
+"lat": 1.39524,
+"lon": 104.08393
+},
+{
+"pws_id": "ISINGA64",
+"dist_km": 11.24,
+"lat": 1.308,
+"lon": 103.902
+},
+{
+"pws_id": "ISINGA178",
+"dist_km": 11.57,
+"lat": 1.318,
+"lon": 103.895
+},
+{
+"pws_id": "ISINGA204",
+"dist_km": 12.76,
+"lat": 1.35553,
+"lon": 103.87935
+},
+{
+"pws_id": "ISINGA261",
+"dist_km": 13.87,
+"lat": 1.329,
+"lon": 103.871
+},
+{
+"pws_id": "ISINGA221",
+"dist_km": 14.84,
+"lat": 1.362,
+"lon": 103.861
+}
+],
+"WMKK": [
+{
+"pws_id": "IDENGK2",
+"dist_km": 17.1,
+"lat": 2.89276,
+"lon": 101.75605
+},
+{
+"pws_id": "IKAJAN12",
+"dist_km": 23.16,
+"lat": 2.95116,
+"lon": 101.74581
+},
+{
+"pws_id": "IPUTRA2",
+"dist_km": 23.89,
+"lat": 2.95923,
+"lon": 101.68365
+},
+{
+"pws_id": "IKAJAN7",
+"dist_km": 25.92,
+"lat": 2.97791,
+"lon": 101.73385
+},
+{
+"pws_id": "IKAJAN13",
+"dist_km": 27.19,
+"lat": 2.98954,
+"lon": 101.73238
+},
+{
+"pws_id": "IKAJAN2",
+"dist_km": 27.92,
+"lat": 2.99574,
+"lon": 101.73563
+},
+{
+"pws_id": "IMANTI1",
+"dist_km": 28.97,
+"lat": 2.86099,
+"lon": 101.94411
+},
+{
+"pws_id": "ISERIK15",
+"dist_km": 29.54,
+"lat": 3.01156,
+"lon": 101.71827
+},
+{
+"pws_id": "ISEREM4",
+"dist_km": 31.25,
+"lat": 2.69062,
+"lon": 101.9858
+},
+{
+"pws_id": "IKUALA41",
+"dist_km": 33.13,
+"lat": 3.042,
+"lon": 101.67631
+}
+],
+"ZGSZ": [
+{
+"pws_id": "IHONGKON163",
+"dist_km": 27.02,
+"lat": 22.50209,
+"lon": 114.02844
+},
+{
+"pws_id": "IHONGKON146",
+"dist_km": 27.04,
+"lat": 22.49991,
+"lon": 114.02698
+},
+{
+"pws_id": "IHONGK38",
+"dist_km": 30.67,
+"lat": 22.47,
+"lon": 114.047
+},
+{
+"pws_id": "IHONGKON159",
+"dist_km": 30.73,
+"lat": 22.48045,
+"lon": 114.05608
+},
+{
+"pws_id": "I920",
+"dist_km": 30.92,
+"lat": 22.44886,
+"lon": 114.0307
+},
+{
+"pws_id": "IHONGK53",
+"dist_km": 31.53,
+"lat": 22.4708,
+"lon": 114.05814
+},
+{
+"pws_id": "IHKHOSHE2",
+"dist_km": 33.66,
+"lat": 22.51137,
+"lon": 114.10831
+},
+{
+"pws_id": "IHONGKON165",
+"dist_km": 35.11,
+"lat": 22.5333,
+"lon": 114.1333
+},
+{
+"pws_id": "IHONGK68",
+"dist_km": 35.83,
+"lat": 22.43203,
+"lon": 114.07837
+},
+{
+"pws_id": "IHONGK35",
+"dist_km": 36.46,
+"lat": 22.441,
+"lon": 114.094
+}
+],
+"KSFO": [
+{
+"pws_id": "KCAMILLB8",
+"dist_km": 2.56,
+"lat": 37.60031,
+"lon": -122.39199
+},
+{
+"pws_id": "KCASANBR92",
+"dist_km": 2.65,
+"lat": 37.617,
+"lon": -122.405
+},
+{
+"pws_id": "KCASANBR107",
+"dist_km": 2.91,
+"lat": 37.619,
+"lon": -122.408
+},
+{
+"pws_id": "KCAMILLB11",
+"dist_km": 3.14,
+"lat": 37.59898,
+"lon": -122.40011
+},
+{
+"pws_id": "KCASANBR16",
+"dist_km": 3.36,
+"lat": 37.62116,
+"lon": -122.4131
+},
+{
+"pws_id": "KCAMILLB13",
+"dist_km": 3.38,
+"lat": 37.591,
+"lon": -122.39
+},
+{
+"pws_id": "KCASANBR40",
+"dist_km": 3.53,
+"lat": 37.61242,
+"lon": -122.41423
+},
+{
+"pws_id": "KCABURLI61",
+"dist_km": 3.59,
+"lat": 37.587,
+"lon": -122.37
+},
+{
+"pws_id": "KCABURLI77",
+"dist_km": 3.6,
+"lat": 37.587,
+"lon": -122.381
+},
+{
+"pws_id": "KCASANBR104",
+"dist_km": 3.65,
+"lat": 37.61441,
+"lon": -122.41603
+}
+],
+"KLAX": [
+{
+"pws_id": "KCAELSEG28",
+"dist_km": 1.76,
+"lat": 33.92755,
+"lon": -118.40396
+},
+{
+"pws_id": "KCAELSEG35",
+"dist_km": 1.77,
+"lat": 33.93,
+"lon": -118.419
+},
+{
+"pws_id": "KCALOSAN958",
+"dist_km": 1.89,
+"lat": 33.959,
+"lon": -118.401
+},
+{
+"pws_id": "KCAELSEG31",
+"dist_km": 1.99,
+"lat": 33.93008,
+"lon": -118.42287
+},
+{
+"pws_id": "KCALOSAN1182",
+"dist_km": 2.07,
+"lat": 33.9554,
+"lon": -118.42477
+},
+{
+"pws_id": "KCAELSEG23",
+"dist_km": 2.13,
+"lat": 33.925,
+"lon": -118.416
+},
+{
+"pws_id": "KCALOSAN1317",
+"dist_km": 2.45,
+"lat": 33.965,
+"lon": -118.407
+},
+{
+"pws_id": "KCALOSAN961",
+"dist_km": 2.53,
+"lat": 33.962,
+"lon": -118.393
+},
+{
+"pws_id": "KCAELSEG13",
+"dist_km": 2.59,
+"lat": 33.92465,
+"lon": -118.42535
+},
+{
+"pws_id": "KCALOSAN698",
+"dist_km": 2.61,
+"lat": 33.96466,
+"lon": -118.3971
+}
+],
+"KDAL": [
+{
+"pws_id": "KTXDALLA1343",
+"dist_km": 1.9,
+"lat": 32.863,
+"lon": -96.845
+},
+{
+"pws_id": "KTXDALLA703",
+"dist_km": 2.49,
+"lat": 32.82493,
+"lon": -96.84749
+},
+{
+"pws_id": "KTXDALLA960",
+"dist_km": 2.75,
+"lat": 32.843,
+"lon": -96.823
+},
+{
+"pws_id": "KTXDALLA1198",
+"dist_km": 2.78,
+"lat": 32.872,
+"lon": -96.851
+},
+{
+"pws_id": "KTXDALLA843",
+"dist_km": 3.04,
+"lat": 32.861,
+"lon": -96.824
+},
+{
+"pws_id": "KTXDALLA1276",
+"dist_km": 3.15,
+"lat": 32.829,
+"lon": -96.878
+},
+{
+"pws_id": "KTXDALLA1254",
+"dist_km": 3.37,
+"lat": 32.829,
+"lon": -96.823
+},
+{
+"pws_id": "KTXDALLA1436",
+"dist_km": 3.51,
+"lat": 32.868,
+"lon": -96.824
+},
+{
+"pws_id": "KTXDALLA102",
+"dist_km": 3.64,
+"lat": 32.82,
+"lon": -96.83
+},
+{
+"pws_id": "KTXDALLA1075",
+"dist_km": 3.64,
+"lat": 32.85325,
+"lon": -96.81372
+}
+],
+"KATL": [
+{
+"pws_id": "KGAATLAN557",
+"dist_km": 3.04,
+"lat": 33.664,
+"lon": -84.43298
+},
+{
+"pws_id": "KGAHAPEV1",
+"dist_km": 3.79,
+"lat": 33.661,
+"lon": -84.399
+},
+{
+"pws_id": "KGARIVER19",
+"dist_km": 6.78,
+"lat": 33.576,
+"lon": -84.429
+},
+{
+"pws_id": "KGAFORES13",
+"dist_km": 7.04,
+"lat": 33.638,
+"lon": -84.352
+},
+{
+"pws_id": "KGAATLAN378",
+"dist_km": 7.36,
+"lat": 33.68098,
+"lon": -84.48737
+},
+{
+"pws_id": "KGAATLAN1046",
+"dist_km": 8.38,
+"lat": 33.663,
+"lon": -84.513
+},
+{
+"pws_id": "KGACONLE4",
+"dist_km": 8.81,
+"lat": 33.654,
+"lon": -84.335
+},
+{
+"pws_id": "KGASOUTH8",
+"dist_km": 8.95,
+"lat": 33.6304,
+"lon": -84.5244
+},
+{
+"pws_id": "KGAATLAN972",
+"dist_km": 8.98,
+"lat": 33.717,
+"lon": -84.415
+},
+{
+"pws_id": "KGAATLAN707",
+"dist_km": 10.31,
+"lat": 33.71149,
+"lon": -84.36172
+}
+],
+"KHOU": [
+{
+"pws_id": "KTXHOUST4910",
+"dist_km": 2.91,
+"lat": 29.652,
+"lon": -95.308
+},
+{
+"pws_id": "KTXSOUTH79",
+"dist_km": 3.71,
+"lat": 29.65833,
+"lon": -95.24384
+},
+{
+"pws_id": "KTXSOUTH173",
+"dist_km": 4.25,
+"lat": 29.653,
+"lon": -95.236
+},
+{
+"pws_id": "KTXHOUST4608",
+"dist_km": 4.48,
+"lat": 29.64018,
+"lon": -95.23293
+},
+{
+"pws_id": "KTXHOUST4108",
+"dist_km": 4.52,
+"lat": 29.672,
+"lon": -95.314
+},
+{
+"pws_id": "KTXHOUST3557",
+"dist_km": 4.79,
+"lat": 29.60908,
+"lon": -95.25159
+},
+{
+"pws_id": "KTXHOUST3277",
+"dist_km": 4.97,
+"lat": 29.68,
+"lon": -95.311
+},
+{
+"pws_id": "KTXHOUST5249",
+"dist_km": 5.13,
+"lat": 29.642,
+"lon": -95.226
+},
+{
+"pws_id": "KTXHOUST5216",
+"dist_km": 5.41,
+"lat": 29.63269,
+"lon": -95.33319
+},
+{
+"pws_id": "KTXSOUTH146",
+"dist_km": 5.63,
+"lat": 29.664,
+"lon": -95.225
+}
+],
+"KAUS": [
+{
+"pws_id": "KTXAUSTI3939",
+"dist_km": 2.27,
+"lat": 30.18,
+"lon": -97.686
+},
+{
+"pws_id": "KTXAUSTI2283",
+"dist_km": 3.94,
+"lat": 30.1684,
+"lon": -97.69712
+},
+{
+"pws_id": "KTXAUSTI1864",
+"dist_km": 5,
+"lat": 30.229,
+"lon": -97.704
+},
+{
+"pws_id": "KTXAUSTI4040",
+"dist_km": 5.39,
+"lat": 30.236,
+"lon": -97.7
+},
+{
+"pws_id": "KTXAUSTI2523",
+"dist_km": 5.74,
+"lat": 30.24226,
+"lon": -97.69394
+},
+{
+"pws_id": "KTXAUSTI2090",
+"dist_km": 5.76,
+"lat": 30.226,
+"lon": -97.718
+},
+{
+"pws_id": "KTXAUSTI3746",
+"dist_km": 5.82,
+"lat": 30.161,
+"lon": -97.716
+},
+{
+"pws_id": "KTXDELVA43",
+"dist_km": 5.87,
+"lat": 30.166,
+"lon": -97.619
+},
+{
+"pws_id": "KTXAUSTI2929",
+"dist_km": 5.98,
+"lat": 30.163,
+"lon": -97.72
+},
+{
+"pws_id": "KTXAUSTI768",
+"dist_km": 6.06,
+"lat": 30.19917,
+"lon": -97.73282
+}
+],
+"CYYZ": [
+{
+"pws_id": "IETOBI26",
+"dist_km": 4.28,
+"lat": 43.706,
+"lon": -79.596
+},
+{
+"pws_id": "IMISSI113",
+"dist_km": 6.25,
+"lat": 43.733,
+"lon": -79.637
+},
+{
+"pws_id": "IONTARIO1108",
+"dist_km": 6.81,
+"lat": 43.71417,
+"lon": -79.69833
+},
+{
+"pws_id": "IBRAMP81",
+"dist_km": 6.86,
+"lat": 43.705,
+"lon": -79.707
+},
+{
+"pws_id": "ITORON111",
+"dist_km": 7.61,
+"lat": 43.631,
+"lon": -79.561
+},
+{
+"pws_id": "ITORON175",
+"dist_km": 7.69,
+"lat": 43.637,
+"lon": -79.553
+},
+{
+"pws_id": "IBRAMP64",
+"dist_km": 7.76,
+"lat": 43.665,
+"lon": -79.726
+},
+{
+"pws_id": "IMISSI114",
+"dist_km": 7.78,
+"lat": 43.619,
+"lon": -79.577
+},
+{
+"pws_id": "IETOBI11",
+"dist_km": 8.53,
+"lat": 43.656,
+"lon": -79.529
+},
+{
+"pws_id": "IMISSI156",
+"dist_km": 8.59,
+"lat": 43.604,
+"lon": -79.666
+}
+],
+"SBGR": [
+{
+"pws_id": "IGUARU31",
+"dist_km": 3.41,
+"lat": -23.4385,
+"lon": -46.43967
+},
+{
+"pws_id": "IGUARU18",
+"dist_km": 7.76,
+"lat": -23.48,
+"lon": -46.532
+},
+{
+"pws_id": "ISOPAU375",
+"dist_km": 12.65,
+"lat": -23.508,
+"lon": -46.569
+},
+{
+"pws_id": "IPO284",
+"dist_km": 15.95,
+"lat": -23.52942,
+"lon": -46.35434
+},
+{
+"pws_id": "IMOGIDAS3",
+"dist_km": 20.93,
+"lat": -23.46384,
+"lon": -46.27012
+},
+{
+"pws_id": "ISOPAU32",
+"dist_km": 21,
+"lat": -23.581,
+"lon": -46.605
+},
+{
+"pws_id": "ISUZAN2",
+"dist_km": 21.12,
+"lat": -23.561,
+"lon": -46.317
+},
+{
+"pws_id": "ISOPAU182",
+"dist_km": 21.16,
+"lat": -23.57223,
+"lon": -46.61791
+},
+{
+"pws_id": "ISANTO75",
+"dist_km": 21.54,
+"lat": -23.62462,
+"lon": -46.52124
+},
+{
+"pws_id": "ISOPAU341",
+"dist_km": 22.89,
+"lat": -23.547,
+"lon": -46.662
+}
+],
+"SAEZ": [
+{
+"pws_id": "IEZEIZ1",
+"dist_km": 3.88,
+"lat": -34.85205,
+"lon": -58.51449
+},
+{
+"pws_id": "IEZEIZ7",
+"dist_km": 4.23,
+"lat": -34.859,
+"lon": -58.525
+},
+{
+"pws_id": "ILAUNI59",
+"dist_km": 4.64,
+"lat": -34.86208,
+"lon": -58.55024
+},
+{
+"pws_id": "IBUENOSA487",
+"dist_km": 5.45,
+"lat": -34.81769,
+"lon": -58.59542
+},
+{
+"pws_id": "IMONTEGR27",
+"dist_km": 6.36,
+"lat": -34.81667,
+"lon": -58.46667
+},
+{
+"pws_id": "IMONTE92",
+"dist_km": 6.9,
+"lat": -34.81787,
+"lon": -58.46054
+},
+{
+"pws_id": "IMONTEGR28",
+"dist_km": 7.02,
+"lat": -34.80898,
+"lon": -58.46077
+},
+{
+"pws_id": "IESTEB2",
+"dist_km": 7.98,
+"lat": -34.8874,
+"lon": -58.49998
+},
+{
+"pws_id": "IESTEB1",
+"dist_km": 9.12,
+"lat": -34.8924,
+"lon": -58.48475
+},
+{
+"pws_id": "ILLAVA4",
+"dist_km": 10.23,
+"lat": -34.79,
+"lon": -58.431
+}
+],
+"MMMX": [
+{
+"pws_id": "INEZAH5",
+"dist_km": 3.41,
+"lat": 19.4616,
+"lon": -99.05416
+},
+{
+"pws_id": "IMEXIC159",
+"dist_km": 6.57,
+"lat": 19.479,
+"lon": -99.115
+},
+{
+"pws_id": "IMEXIC72",
+"dist_km": 7.59,
+"lat": 19.47747,
+"lon": -99.12948
+},
+{
+"pws_id": "IMEXIC225",
+"dist_km": 8.42,
+"lat": 19.39939,
+"lon": -99.14223
+},
+{
+"pws_id": "IMEXIC218",
+"dist_km": 9.47,
+"lat": 19.35325,
+"lon": -99.05075
+},
+{
+"pws_id": "INEZAH1",
+"dist_km": 9.5,
+"lat": 19.38011,
+"lon": -99.0035
+},
+{
+"pws_id": "IMEXIC198",
+"dist_km": 9.63,
+"lat": 19.386,
+"lon": -99.147
+},
+{
+"pws_id": "IMEXIC197",
+"dist_km": 9.68,
+"lat": 19.39257,
+"lon": -99.15202
+},
+{
+"pws_id": "IMEXIC299",
+"dist_km": 9.72,
+"lat": 19.475,
+"lon": -99.155
+},
+{
+"pws_id": "IMEXIC275",
+"dist_km": 10.27,
+"lat": 19.363,
+"lon": -99.132
+}
+],
+"EFHK": [
+{
+"pws_id": "IVANTA31",
+"dist_km": 3.63,
+"lat": 60.29,
+"lon": 25
+},
+{
+"pws_id": "IVANTA16",
+"dist_km": 4.77,
+"lat": 60.282,
+"lon": 24.91284
+},
+{
+"pws_id": "IVANTA18",
+"dist_km": 6.45,
+"lat": 60.334,
+"lon": 25.075
+},
+{
+"pws_id": "IVANTA19",
+"dist_km": 6.68,
+"lat": 60.27532,
+"lon": 24.8756
+},
+{
+"pws_id": "IVANTA26",
+"dist_km": 6.96,
+"lat": 60.344,
+"lon": 25.077
+},
+{
+"pws_id": "IHELSI120",
+"dist_km": 7,
+"lat": 60.26428,
+"lon": 25.03231
+},
+{
+"pws_id": "ISUOMI58",
+"dist_km": 7.32,
+"lat": 60.3589,
+"lon": 25.0656
+},
+{
+"pws_id": "IHELSI98",
+"dist_km": 7.73,
+"lat": 60.24919,
+"lon": 24.99377
+},
+{
+"pws_id": "IHELSI124",
+"dist_km": 7.77,
+"lat": 60.24715,
+"lon": 24.96892
+},
+{
+"pws_id": "IHELSI109",
+"dist_km": 7.85,
+"lat": 60.25,
+"lon": 24.918
+}
+],
+"HKO": [
+{
+"pws_id": "IHONGKON111",
+"dist_km": 1.63,
+"lat": 22.31661,
+"lon": 114.17326
+},
+{
+"pws_id": "IKOWLOON3",
+"dist_km": 2.39,
+"lat": 22.32347,
+"lon": 114.17333
+},
+{
+"pws_id": "IHONGK71",
+"dist_km": 2.57,
+"lat": 22.2819,
+"lon": 114.1863
+},
+{
+"pws_id": "IKOWLO16",
+"dist_km": 2.65,
+"lat": 22.32397,
+"lon": 114.18409
+},
+{
+"pws_id": "IYAUTS4",
+"dist_km": 2.72,
+"lat": 22.32603,
+"lon": 114.16908
+},
+{
+"pws_id": "IKOWLO11",
+"dist_km": 2.88,
+"lat": 22.32788,
+"lon": 114.17585
+},
+{
+"pws_id": "ISHAMS15",
+"dist_km": 2.89,
+"lat": 22.327,
+"lon": 114.1664
+},
+{
+"pws_id": "IPRINCE39",
+"dist_km": 2.95,
+"lat": 22.32695,
+"lon": 114.18371
+},
+{
+"pws_id": "IKOWLO9",
+"dist_km": 3.2,
+"lat": 22.32958,
+"lon": 114.18286
+},
+{
+"pws_id": "IHONGKON55",
+"dist_km": 3.2,
+"lat": 22.28313,
+"lon": 114.15048
+}
+]
+}

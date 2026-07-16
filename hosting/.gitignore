@@ -1,0 +1,11 @@
+# secretos y ruido de runtime (NO versionar)
+data/.telegram_token
+data/.wu_key
+data/.qweather_key
+data/telegram_chats.json
+data/telegram_bot*.log
+data/*.log
+data/.dashboard_watch.lock
+data/accumulator.log
+__pycache__/
+*.pyc

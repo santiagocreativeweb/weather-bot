@@ -1,0 +1,14 @@
+[Unit]
+Description=WXBT dashboard (web)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/wxbt-hosting
+ExecStart=/usr/bin/env bash %h/wxbt-hosting/run_web.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
