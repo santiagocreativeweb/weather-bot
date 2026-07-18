@@ -1556,7 +1556,7 @@ def actions_bar():
     btns = [
         ("live",         "🎯 Pronóstico en vivo",     "COMBO TODO-EN-UNO: limpia caché + re-baja pronósticos + corre modelos locales + lanza calibración y sincronización (leaderboard/stats/Excel incluidos) + redibuja"),
         ("orderbook",    "🔃 Recargar orderbook",     "re-baja precios/buckets de Polymarket AHORA (si las cards quedaron atrás del mercado)"),
-        ("sync",         "♻ Sincronización completa", "lanza run_daily.ps1 en background: acumuladores + fuentes + leaderboard + stats + Excel/DB"),
+        ("sync",         "♻ Sincronización completa", "lanza run_daily (ps1 en Windows / sh en el VPS) en background: acumuladores + fuentes + leaderboard + stats + Excel/DB"),
         ("alerts_clear", "🗑 Limpiar alertas",        "borra TODAS las alertas por evento del servidor (se limpian en todos los dispositivos, celu incluido)"),
         ("pages",        "🏙 Regenerar páginas",      "regenera historial (desde 08/07), modelos por ciudad y vistas por ciudad (PWS incluido) — tarda ~1-2 min"),
         ("results",      "🏁 Actualizar resultados",  "re-consulta Gamma los días finalizados sin resultado (todas las ciudades) y regenera historiales, leaderboard y estadísticas — tarda ~1-2 min"),
@@ -2326,6 +2326,22 @@ def _make_action_runner(today_s, horizon, interval):
         re-bajan en cada generate_once; esto fuerza tambien los cacheados a re-consultarse a Gamma."""
         _CACHE["slug"].clear()
 
+    def spawn_daily():
+        """Lanza la sincronizacion diaria en background, MULTIPLATAFORMA (fix 2026-07-17: en el
+        VPS Ubuntu no hay powershell — los botones live/sync morian con [Errno 2] 'powershell').
+        Windows: scripts/run_daily.ps1. Linux: run_daily.sh en la raiz del bundle hosting, o
+        deploy/run_daily.sh en el repo completo. Devuelve el nombre lanzado o None."""
+        if os.name == "nt":
+            subprocess.Popen(["powershell", "-NoProfile", "-File",
+                              os.path.join(SCR, "run_daily.ps1")], cwd=ROOT)
+            return "run_daily.ps1"
+        for cand in (os.path.join(ROOT, "run_daily.sh"),
+                     os.path.join(ROOT, "deploy", "run_daily.sh")):
+            if os.path.exists(cand):
+                subprocess.Popen(["bash", cand], cwd=ROOT)
+                return os.path.basename(cand)
+        return None
+
     def run_action(do):
         try:
             if do in ("regen", "dashboard"):
@@ -2345,11 +2361,11 @@ def _make_action_runner(today_s, horizon, interval):
                     except Exception:
                         mres.append(scr.split(".")[0] + "✗")
                 subprocess.Popen([sys.executable, os.path.join(SCR, "calib_lab.py")], cwd=ROOT)
-                subprocess.Popen(["powershell", "-NoProfile", "-File",
-                                  os.path.join(SCR, "run_daily.ps1")], cwd=ROOT)
+                daily = spawn_daily()
                 regen(clear=("fc", "obs", "params", "s2"))
+                sync_txt = "calibración y sync lanzadas" if daily else "calibración lanzada (sync no disponible acá)"
                 return True, ("pronóstico en vivo: caché limpia + modelos (" + " ".join(mres) +
-                              ") + calibración y sync lanzadas + redibujado")
+                              ") + " + sync_txt + " + redibujado")
             if do == "cache":
                 regen(clear=("fc", "obs", "params", "s2")); return True, "caché limpiada + redibujado"
             if do == "forecasts":
@@ -2393,9 +2409,10 @@ def _make_action_runner(today_s, horizon, interval):
                 subprocess.Popen([sys.executable, os.path.join(SCR, "calib_lab.py")], cwd=ROOT)
                 return True, "calibración lanzada en background (calib_lab.py)"
             if do == "sync":
-                subprocess.Popen(["powershell", "-NoProfile", "-File",
-                                  os.path.join(SCR, "run_daily.ps1")], cwd=ROOT)
-                return True, "sincronización completa lanzada en background"
+                daily = spawn_daily()
+                if daily:
+                    return True, f"sincronización completa lanzada en background ({daily})"
+                return False, "no encontré run_daily (.ps1/.sh) en esta instalación"
             if do == "alerts_clear":
                 # [2026-07-13] limpia las alertas EN EL SERVIDOR (alerts.json) -> desaparecen en
                 # todos los dispositivos (el ✕/limpiar del panel solo oculta en ESTE navegador).
