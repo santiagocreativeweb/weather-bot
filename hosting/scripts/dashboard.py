@@ -1559,6 +1559,7 @@ def actions_bar():
         ("sync",         "♻ Sincronización completa", "lanza run_daily.ps1 en background: acumuladores + fuentes + leaderboard + stats + Excel/DB"),
         ("alerts_clear", "🗑 Limpiar alertas",        "borra TODAS las alertas por evento del servidor (se limpian en todos los dispositivos, celu incluido)"),
         ("pages",        "🏙 Regenerar páginas",      "regenera historial (desde 08/07), modelos por ciudad y vistas por ciudad (PWS incluido) — tarda ~1-2 min"),
+        ("results",      "🏁 Actualizar resultados",  "re-consulta Gamma los días finalizados sin resultado (todas las ciudades) y regenera historiales, leaderboard y estadísticas — tarda ~1-2 min"),
     ]
     cells = "".join(
         f'<button class="qbtn" data-do="{did}" data-tip="{tip}">{lbl}</button>' for did, lbl, tip in btns)
@@ -2370,6 +2371,18 @@ def _make_action_runner(today_s, horizon, interval):
                     return ok, "páginas por ciudad: " + m
                 except Exception as e:
                     return False, f"city_pages: {e}"
+            if do == "results":
+                # [2026-07-17, pedido Santiago "los historiales no refrescan los resultados"]:
+                # completa los ganadores oficiales (Gamma) de los dias ya finalizados
+                # (winners_cache.json es global) y regenera TODO lo que los muestra.
+                try:
+                    ok, m = run_py("city_pages.py", ["--refresh"], timeout=600)
+                    ok2, m2 = run_py("leaderboard.py")
+                    ok3, m3 = run_py("stats_page.py")
+                    extra = "" if (ok2 and ok3) else " (leaderboard/stats con avisos, ver consola)"
+                    return ok, f"resultados actualizados + páginas regeneradas{extra}: {m}"
+                except Exception as e:
+                    return False, f"results: {e}"
             if do == "leaderboard":
                 ok, m = run_py("leaderboard.py"); return ok, "leaderboard: " + m
             if do == "stats":

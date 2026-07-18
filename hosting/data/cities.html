@@ -381,7 +381,12 @@ function autoRefresh(cb){
       var tc=TCOL[it.tier]||['·','var(--base)'];
       var track=it.n?('<b style="color:var(--fc)">'+it.ex+'/'+it.n+'</b> exactos · '+it.t2+'/'+it.n+' top-2'):'<span style="color:var(--mut)">sin track aún</span>';
       var best=it.best?('<div class="ci-model">🏅 mejor modelo: <b>'+esc(it.best[0])+'</b> '+Math.round(it.best[1]*100)+'% (n='+it.best[2]+')</div>'):'';
-      var picks=(it.picks||[]).map(function(p){var kt=p.kind==='24h'?'🔒24h':(p.kind==='48h'?'⏳48h':'◷');return '<div class="ci-pk"><span class="d">'+esc(p.date)+' '+kt+'</span> '+pickHtml(p.top)+'</div>';}).join('');
+      var picks=(it.picks||[]).map(function(p){
+        var L=[];
+        if(p.p24)L.push('<div class="ci-pk"><span class="d">'+esc(p.date)+' 🔒24h</span> '+pickHtml(p.p24.top)+'</div>');
+        if(p.p48)L.push('<div class="ci-pk"><span class="d">'+esc(p.date)+' ⏳48h</span> '+pickHtml(p.p48.top)+'</div>');
+        if(p.prelim)L.push('<div class="ci-pk"><span class="d">'+esc(p.date)+' ◷</span> '+pickHtml(p.prelim.top)+'</div>');
+        return L.join('');}).join('');
       var pbox=picks?('<div class="ci-picks">'+picks+'</div>'):'';
       return '<a class="ci-card" href="city.html?city='+it.code+'" style="--tcol:'+tc[1]+'" data-cont="'+it.cont+'" data-q="'+esc((it.city+' '+it.code+' '+it.country).toLowerCase())+'"><div class="ci-top"><div><div class="ci-name">'+esc(it.city)+'</div><div class="ci-sub">'+it.code+' · '+esc(it.country)+' · '+it.cont+'</div></div><span style="font-size:15px">'+tc[0]+'</span></div><div class="ci-track">'+track+'</div>'+best+pbox+'</a>';
     }).join('');

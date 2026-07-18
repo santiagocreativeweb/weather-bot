@@ -175,6 +175,19 @@ crontab -e
 
 
 def main():
+    # [2026-07-17] PRESERVAR la data previa del bundle: en un clon de dev fresco los CSVs de
+    # runtime (forecasts/obs/backfill...) estan gitignoreados en data/ y NO existen — sin este
+    # rescate, regenerar hosting/ los BORRABA del bundle y el deploy quedaba sin historia.
+    import tempfile
+    prev = {}
+    hdata = os.path.join(HOST, "data")
+    if os.path.isdir(hdata):
+        tmpd = tempfile.mkdtemp(prefix="wxbt_hostdata_")
+        for fn in DATA_KEEP:
+            old = os.path.join(hdata, fn)
+            if os.path.exists(old):
+                shutil.copy2(old, os.path.join(tmpd, fn))
+                prev[fn] = os.path.join(tmpd, fn)
     if os.path.isdir(HOST):
         shutil.rmtree(HOST)
     os.makedirs(os.path.join(HOST, "data"))
@@ -186,10 +199,12 @@ def main():
     for fn in sorted(os.listdir(os.path.join(ROOT, "scripts"))):
         if fn.endswith(".py"):
             shutil.copy2(os.path.join(ROOT, "scripts", fn), os.path.join(HOST, "scripts", fn))
-    # datos curados
+    # datos curados (data/ del repo primero — es lo fresco; si falta, la copia previa del bundle)
     kept, miss = [], []
     for fn in DATA_KEEP:
         src = os.path.join(ROOT, "data", fn)
+        if not os.path.exists(src) and fn in prev:
+            src = prev[fn]
         if os.path.exists(src):
             shutil.copy2(src, os.path.join(HOST, "data", fn))
             kept.append(fn)

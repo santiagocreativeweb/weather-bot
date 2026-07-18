@@ -401,8 +401,9 @@ def view_city(code, today=None):
     else:
         L.append(f"\n🏆 Estabilidad: sin mercados resueltos aún (ciudad nueva)")
 
-    # picks fijados para los proximos 2 dias (24h y 48h) — con TOP-1/2/3 (pedido Santiago):
-    # 🎯 exacto (top-1) · 🥈 top-2 · 🥉 top-3.
+    # picks fijados para los proximos 2 dias — AMBOS picks por dia (24h Y 48h, pedido Santiago
+    # 2026-07-17: "tendrias 2 pronosticos por dia, uno 48hs antes y el otro 24hs"), cada uno en su
+    # linea + linea en blanco entre dias para poder diferenciarlos.
     L.append("\n<b>🔒 Picks — 🎯 exacto · 🥈 top-2 · 🥉 top-3:</b>")
     for k in range(0, 3):
         d = d_mkt + dt.timedelta(days=k)
@@ -413,19 +414,25 @@ def view_city(code, today=None):
         f48 = rec.get("froze48") or {}
         pr = preds.get((code, d))
         info_d = cm.get(d)
+        lines = []
         if froze.get("mu") is not None:
             top = top3_labels(code, froze["mu"], froze.get("sg"), info_d, froze.get("top"))
-            tag = f"🔒 fijado · μ {froze['mu']:.1f}{deg}"
-        elif f48.get("mu") is not None:
+            lines.append((f"🔒 <b>24h</b> · μ {froze['mu']:.1f}{deg}", top))
+        if f48.get("mu") is not None:
             top = top3_labels(code, f48["mu"], f48.get("sg"), info_d, f48.get("top"))
-            tag = f"⏳ fijado 48h (el de 24h se fija {frz_local} local) · μ {f48['mu']:.1f}{deg}"
-        elif pr:
-            top = top3_labels(code, pr[0], pr[1], info_d)
-            tag = f"◷ preliminar · μ {pr[0]:.1f}{deg}"
-        else:
+            tag48 = f"⏳ <b>48h</b> · μ {f48['mu']:.1f}{deg}"
+            if froze.get("mu") is None:
+                tag48 += f" (el de 24h se fija {frz_local} local)"
+            lines.append((tag48, top))
+        if not lines and pr:
+            lines.append((f"◷ preliminar · μ {pr[0]:.1f}{deg}",
+                          top3_labels(code, pr[0], pr[1], info_d)))
+        if not lines:
             continue
-        picks_txt = "  ".join(f"{emo}<b>{h(lab)}</b>" for emo, lab in top)
-        L.append(f"   <u>{d.strftime('%d/%m')}</u> {tag}\n      {picks_txt}")
+        L.append(f"\n<u>{d.strftime('%d/%m')}</u>")
+        for tag, top in lines:
+            picks_txt = " · ".join(f"{emo}<b>{h(lab)}</b>" for emo, lab in top)
+            L.append(f"   {tag}\n      {picks_txt}")
     bm = best_model_line(code)
     if bm:
         L.append("\n" + bm)
@@ -444,25 +451,50 @@ def best_model_line(code):
     return None
 
 
-def view_historial(code):
+def kb_hist(code):
+    """Teclado del historial: refresh de resultados (re-consulta Gamma) + volver."""
+    return [[{"text": "🔄 Actualizar resultados", "callback_data": f"hr|{code}"}],
+            [{"text": f"« {code}", "callback_data": f"c|{code}"},
+             {"text": "« Ciudades", "callback_data": "menu"}]]
+
+
+def view_historial(code, refresh=False):
+    """Historial con LOS DOS picks por dia (24h y 48h, pedido Santiago 2026-07-17), cada uno
+    scoreado contra el ganador oficial. refresh=True re-consulta Gamma los dias sin resolver
+    (boton 🔄 — el cache de ganadores es global, actualiza TODAS las ciudades de paso)."""
     import dashboard as D
     ciudad = D.STATION_META[code][2]
-    hist = sorted([r for r in I.bot_history() if r["station"] == code],
+    hist = sorted([r for r in I.bot_history(refresh=refresh) if r["station"] == code],
                   key=lambda r: r["target"], reverse=True)
+    h48 = {r["target"]: r for r in I.bot_history(kind="froze48") if r["station"] == code}
     if not hist:
-        return f"Sin historial congelado para {h(ciudad)} aún.", kb_back(code)
+        return f"Sin historial congelado para {h(ciudad)} aún.", kb_hist(code)
     icon = {"EXACTO": "✅", "TOP-2": "✅", "TOP-3": "🔶", "PERDIDA": "❌", None: "⏳"}
-    L = [f"<b>🗓 Historial {h(ciudad)} ({code})</b>", "<pre>fecha  pick     ganó     resultado"]
-    for r in hist[:14]:
-        L.append(f"{r['target'].strftime('%d/%m')}  {(r['pick_lbl'] or '—'):<8.8} "
-                 f"{(r['win_lbl'] or '—'):<8.8} {icon[r['nivel']]} {r['nivel'] or 'pendiente'}")
-    L.append("</pre>")
+    L = [f"<b>🗓 Historial {h(ciudad)} ({code})</b>"]
+    for r in hist[:10]:
+        d = r["target"]
+        won = f"ganó <b>{h(r['win_lbl'])}</b>" if r["win_lbl"] else "⏳ sin resolver"
+        L.append(f"\n<u>{d.strftime('%d/%m')}</u> — {won}")
+        L.append(f"   🔒 24h: <b>{h(r['pick_lbl'] or '—')}</b> "
+                 f"{icon[r['nivel']]} {r['nivel'] or 'pendiente'}")
+        r48 = h48.get(d)
+        if r48:
+            L.append(f"   ⏳ 48h: <b>{h(r48['pick_lbl'] or '—')}</b> "
+                     f"{icon[r48['nivel']]} {r48['nivel'] or 'pendiente'}")
     sc = [r for r in hist if r["nivel"]]
     if sc:
         ex = sum(r["nivel"] == "EXACTO" for r in sc)
         t2 = sum(r["nivel"] in ("EXACTO", "TOP-2") for r in sc)
-        L.append(f"Total: <b>{ex}/{len(sc)}</b> exactos · <b>{t2}/{len(sc)}</b> top-2")
-    return "\n".join(L), kb_back(code)
+        L.append(f"\nTotal 24h: <b>{ex}/{len(sc)}</b> exactos · <b>{t2}/{len(sc)}</b> top-2")
+    sc48 = [r for r in h48.values() if r["nivel"]]
+    if sc48:
+        ex = sum(r["nivel"] == "EXACTO" for r in sc48)
+        t2 = sum(r["nivel"] in ("EXACTO", "TOP-2") for r in sc48)
+        L.append(f"Total 48h: <b>{ex}/{len(sc48)}</b> exactos · <b>{t2}/{len(sc48)}</b> top-2 "
+                 f"(acumula desde 16/07)")
+    if refresh:
+        L.append("<i>✅ resultados actualizados desde Gamma (todas las ciudades)</i>")
+    return "\n".join(L), kb_hist(code)
 
 
 def view_estadistica(code):
@@ -541,7 +573,8 @@ def view_estadisticas_gen():
         n_, ex_, t2_ = by[cont]
         L.append(f"   {cont}: exacto {ex_ / n_:.0%} · top-2 {t2_ / n_:.0%} (n={n_})")
     L.append("\nTab 48hs (pick fijado un día antes): en la página 📊 Estadísticas — acumula desde el 16/07.")
-    return "\n".join(L), [[{"text": "🏆 Ranking", "callback_data": "top"},
+    return "\n".join(L), [[{"text": "🔄 Actualizar resultados", "callback_data": "refreshall"}],
+                          [{"text": "🏆 Ranking", "callback_data": "top"},
                            {"text": "🏙 Ciudades", "callback_data": "menu"}]]
 
 
@@ -658,17 +691,27 @@ def handle(text, today=None):
 
 
 def handle_callback(data):
-    """callback_data -> (texto, keyboard). Rutas: menu | top | c|CODE | h|CODE | e|CODE."""
+    """callback_data -> (texto, keyboard).
+    Rutas: menu | top | refreshall | c|CODE | h|CODE | hr|CODE (historial + refresh) | e|CODE."""
     if data == "menu":
         return view_menu()
     if data == "top":
         return view_top()
+    if data == "refreshall":
+        # completa ganadores faltantes desde Gamma (cache global) y re-muestra estadisticas
+        I.load_winners(refresh=True)
+        _CACHE["rank"] = (0.0, None)      # invalidar ranking cacheado (puede haber cambiado)
+        text, kb = view_estadisticas_gen()
+        return "✅ <i>resultados actualizados desde Gamma</i>\n\n" + text, kb
     kind, _, code = data.partition("|")
     if code in STATIONS:
         if kind == "c":
             return view_city(code)
         if kind == "h":
             return view_historial(code)
+        if kind == "hr":
+            _CACHE["rank"] = (0.0, None)
+            return view_historial(code, refresh=True)
         if kind == "e":
             return view_estadistica(code)
     return "Menú desactualizado — mandá /picks de nuevo.", None

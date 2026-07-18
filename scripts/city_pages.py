@@ -189,7 +189,7 @@ def market_timeline(code, d, audit, hours=48, max_buckets=10):
 
 
 def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws_ref, live_pws,
-                    live_obs, rank_rows, no_live=False):
+                    live_obs, rank_rows, no_live=False, hist48_rows=()):
     unit = STATIONS[code][3]
     deg = "°F" if unit == "F" else "°C"
     cont, pais, ciudad = D.STATION_META[code][:3]
@@ -207,7 +207,8 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
     same = (tnow is not None and lm is not None and abs(float(tnow) - float(lm)) < 0.05)
     pos = next((i + 1 for i, r in enumerate(rank_rows) if r["station"] == code), None)
 
-    # picks proximos dias con top-1/2/3
+    # picks proximos dias — AMBOS picks por dia (24h Y 48h, pedido Santiago 2026-07-17: "tendrias
+    # 2 pronosticos por dia"), cada uno con su top-1/2/3. prelim solo si no hay ninguno fijado.
     picks = []
     for k in range(0, 3):
         d = d_mkt + dt.timedelta(days=k)
@@ -216,15 +217,17 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
         info_d = mk.get(code, {}).get(d)
         bkts = [(lab, lo, hi) for lab, lo, hi, p in info_d["buckets"]] if info_d and info_d.get("buckets") else None
         pr = preds.get((code, d))
+        entry = dict(date=d.strftime("%d/%m"))
         if f24.get("mu") is not None:
-            picks.append(dict(date=d.strftime("%d/%m"), kind="24h", mu=round(f24["mu"], 1),
-                              top=top3(code, f24["mu"], f24.get("sg"), bkts, f24.get("top"))))
-        elif f48.get("mu") is not None:
-            picks.append(dict(date=d.strftime("%d/%m"), kind="48h", mu=round(f48["mu"], 1),
-                              top=top3(code, f48["mu"], f48.get("sg"), bkts, f48.get("top"))))
-        elif pr:
-            picks.append(dict(date=d.strftime("%d/%m"), kind="prelim", mu=round(pr[0], 1),
-                              top=top3(code, pr[0], pr[1], bkts)))
+            entry["p24"] = dict(mu=round(f24["mu"], 1),
+                                top=top3(code, f24["mu"], f24.get("sg"), bkts, f24.get("top")))
+        if f48.get("mu") is not None:
+            entry["p48"] = dict(mu=round(f48["mu"], 1),
+                                top=top3(code, f48["mu"], f48.get("sg"), bkts, f48.get("top")))
+        if "p24" not in entry and "p48" not in entry and pr:
+            entry["prelim"] = dict(mu=round(pr[0], 1), top=top3(code, pr[0], pr[1], bkts))
+        if len(entry) > 1:
+            picks.append(entry)
 
     # mercado hoy/mañana
     markets = []
@@ -292,8 +295,12 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
                      mae=(round(r["mae"], 2) if r["mae"] == r["mae"] else None)) for r in sub[:6]]
     best = _read_rank().get(code)
 
-    # historial
+    # historial — con el pick 48h al lado del de 24h (pedido Santiago 2026-07-17), cada uno con
+    # su resultado propio contra el ganador oficial.
+    h48 = {r["target"]: r for r in hist48_rows if r["station"] == code}
     hist = [dict(date=r["target"].strftime("%d/%m"), pick=r["pick_lbl"] or "—",
+                 pick48=(h48.get(r["target"]) or {}).get("pick_lbl"),
+                 niv48=(h48.get(r["target"]) or {}).get("nivel"),
                  win=r.get("win_lbl") or "—", niv=r["nivel"])
             for r in sorted([x for x in hist_rows if x["station"] == code],
                             key=lambda r: r["target"], reverse=True)[:14]]
@@ -325,12 +332,12 @@ def build_index_data(rank_rows, cities_data):
         r = by.get(code)
         tier = "FUERTE" if code in STRONG else ("DEBIL" if code in WEAK else "MEDIA")
         cd = cities_data.get(code, {})
-        # picks 24h y 48h (los primeros dos que haya) con top-1/2/3
+        # primeros 2 dias, cada uno con AMBOS picks (p24/p48) — la card los muestra en lineas
         picks = cd.get("picks", [])[:2]
         out.append(dict(code=code, city=ciudad, country=pais, cont=cont, tier=tier,
                         ex=(r["exact"] if r else 0), n=(r["n"] if r else 0),
                         t2=(r["top2"] if r else 0), best=cd.get("best"),
-                        picks=[dict(date=p["date"], kind=p["kind"], top=p["top"]) for p in picks]))
+                        picks=picks))
     return out
 
 
@@ -354,6 +361,7 @@ def main(a):
     preds = D.load_preds(today)
     audit = I._load_audit()
     hist_rows = I.bot_history(refresh=a.refresh, today=today)
+    hist48_rows = I.bot_history(today=today, kind="froze48")   # pick 48h scoreado (historiales)
     rank_rows = I.stability(hist=hist_rows)
     perf = I.model_perf(days=90, today=today)
     try:
@@ -390,7 +398,8 @@ def main(a):
     cities = dict(existing.get("cities", {}))
     for code in codes:
         cities[code] = build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map,
-                                       pws_ref, live_pws, live_obs, rank_rows, no_live=a.no_live)
+                                       pws_ref, live_pws, live_obs, rank_rows, no_live=a.no_live,
+                                       hist48_rows=hist48_rows)
         print(f"  {code} OK", flush=True)
     index = build_index_data(rank_rows, cities)
     payload = {"cities": cities, "index": index,

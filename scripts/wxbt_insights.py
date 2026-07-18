@@ -186,22 +186,26 @@ def load_winners(refresh=False, today=None, lookback_days=14):
 
 
 def _fetch_winners_gamma(pairs):
-    """Ganador oficial por slug para (station, date) — SOLO mercados resueltos (closed/UMA)."""
+    """Ganador oficial por slug para (station, date) — SOLO mercados resueltos (closed/UMA).
+    CONCURRENTE (2026-07-17): el boton 'Actualizar resultados' llama esto en vivo; en serie eran
+    ~30 requests de hasta 25s c/u y el callback parecia muerto."""
     import requests
-    out = {}
-    for st, d in pairs:
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(pair):
+        st, d = pair
         city = CITY_OF.get(st)
         if not city:
-            continue
+            return pair, None
         slug = f"highest-temperature-in-{city}-on-{MONTHS_EN[d.month - 1]}-{d.day}-{d.year}"
         try:
             r = requests.get(f"{GAMMA}/events", params={"slug": slug}, timeout=25)
             evs = r.json() if r.status_code == 200 else []
         except Exception as e:
             print(f"[WARN] gamma {slug}: {e}", file=sys.stderr)
-            continue
+            return pair, None
         if not evs:
-            continue
+            return pair, None
         ev_closed = bool(evs[0].get("closed"))
         for mk in evs[0].get("markets", []):
             op = mk.get("outcomePrices")
@@ -212,8 +216,16 @@ def _fetch_winners_gamma(pairs):
             resolved = (ev_closed or bool(mk.get("closed"))
                         or str(mk.get("umaResolutionStatus") or "").lower() == "resolved")
             if yes is not None and yes >= 0.99 and resolved and mk.get("groupItemTitle"):
-                out[(st, d)] = mk["groupItemTitle"]
-                break
+                return pair, mk["groupItemTitle"]
+        return pair, None
+
+    out = {}
+    if not pairs:
+        return out
+    with ThreadPoolExecutor(max_workers=8) as tp:
+        for pair, lbl in tp.map(one, pairs):
+            if lbl:
+                out[pair] = lbl
     return out
 
 
