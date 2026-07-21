@@ -134,6 +134,51 @@ def pws_current(pws_ids, unit):
     return out
 
 
+def pws_today(pws_ids, unit, d=None):
+    """{pws_id: {"hi","lo","now"}} del dia d (hoy local de la ciudad): history/daily con la fecha
+    de HOY devuelve el resumen PARCIAL del dia en curso (max/min hasta el momento) + current.
+    [2026-07-21, pedido Santiago: registrar max/min/actual por PWS en las city pages]."""
+    import datetime as _dt
+    d = d or _dt.date.today()
+    units = "e" if unit == "F" else "m"
+    key = "imperial" if unit == "F" else "metric"
+    out = {}
+
+    def one(pid):
+        hi = lo = now = None
+        try:
+            r = requests.get(f"{API}/v2/pws/history/daily",
+                             params=dict(stationId=pid, format="json", units=units,
+                                         date=d.strftime("%Y%m%d"), numericPrecision="decimal",
+                                         apiKey=wu_key()), timeout=20)
+            if r.status_code == 200:
+                obs = r.json().get("observations") or []
+                if obs:
+                    m = obs[0].get(key) or {}
+                    hi = m.get("tempHigh")
+                    lo = m.get("tempLow")
+        except Exception:
+            pass
+        try:
+            r = requests.get(f"{API}/v2/pws/observations/current",
+                             params=dict(stationId=pid, format="json", units=units,
+                                         numericPrecision="decimal", apiKey=wu_key()), timeout=20)
+            if r.status_code == 200:
+                obs = r.json().get("observations") or []
+                if obs:
+                    now = (obs[0].get(key) or {}).get("temp")
+        except Exception:
+            pass
+        return pid, dict(hi=(float(hi) if hi is not None else None),
+                         lo=(float(lo) if lo is not None else None),
+                         now=(float(now) if now is not None else None))
+    with ThreadPoolExecutor(max_workers=8) as tp:
+        for pid, v in tp.map(one, pws_ids):
+            if any(x is not None for x in v.values()):
+                out[pid] = v
+    return out
+
+
 def load_hist():
     """{(station, pws_id, date_iso): tmax} de data/pws_history.csv."""
     out = {}

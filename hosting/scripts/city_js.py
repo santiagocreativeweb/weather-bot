@@ -57,27 +57,42 @@ CITY_JS = SHARED_JS + r"""
       '<p class="subt" style="margin:6px 0 0">24h = fijado 04:30 local (lo que se opera). 48h = fijado un día antes (mejor precio de entrada; lo mide el tab 48hs de Estadísticas).</p></div>';
   }
   function mktBox(C){
+    /* [2026-07-21] badges top-1/2/3 CONGELADOS en los buckets (🎯 verde / 🥈 amarillo / 🥉
+       naranja); MAÑANA usa el pick 48h fijado si el de 24h todavia no existe. */
     return C.markets.map(function(m){
       var rows=m.rows.map(function(r){var cls=[r.cls,(r.dead?'dead':'')].filter(Boolean).join(' ');
-        return '<tr class="'+cls+'"><td>'+esc(r.lab)+'</td><td class="num">'+r.mid.toFixed(2)+'</td><td class="num">'+(r.pbot!=null?Math.round(r.pbot*100)+'%':'—')+'</td><td class="num">'+(r.edge!=null?(r.edge>=0?'+':'')+r.edge:'—')+'</td></tr>';}).join('');
+        var mk=(r.cls==='pick')?'🎯':(r.cls==='t2b'?'🥈':(r.cls==='t3b'?'🥉':(r.cls==='win'?'🏁':'')));
+        return '<tr class="'+cls+'"><td>'+mk+' '+esc(r.lab)+'</td><td class="num">'+r.mid.toFixed(2)+'</td><td class="num">'+(r.pbot!=null?Math.round(r.pbot*100)+'%':'—')+'</td><td class="num">'+(r.edge!=null?(r.edge>=0?'+':'')+r.edge:'—')+'</td></tr>';}).join('');
       var mut=(m.mu!=null?('μ <b>'+m.mu+C.deg+'</b> σ '+m.sg+' '+(m.frozen?'🔒':'◷')):'sin predicción');
+      var srctag=(m.tops_src==='48h')?' · colores = pick <b>48h</b> fijado':(m.tops_src==='24h'?' · colores = pick 24h fijado':'');
       var lmt=(m.live_max!=null?' · máx en vivo: <b>'+m.live_max+C.deg+'</b>':'');
       var win=(m.winner?'<p class="subt">🏁 ganó <b>'+esc(m.winner)+'</b></p>':'');
       return '<div class="panelbox"><h4>🎯 Mercado '+m.head+' — '+esc(m.date)+'</h4>'+
-        '<p class="subt" style="margin:0 0 8px">'+mut+lmt+' · <a href="'+m.url+'" target="_blank">Polymarket ↗</a> · <a href="'+m.wu+'" target="_blank">'+(C.code==='HKO'?'HKO ↗':'WU ↗')+'</a></p>'+
-        (rows?('<table class="ct"><thead><tr><th>rango</th><th>mercado</th><th>p bot</th><th>Δ¢</th></tr></thead><tbody>'+rows+'</tbody></table>'):'<p class="subt">sin mercado.</p>')+win+'</div>';
+        '<p class="subt" style="margin:0 0 8px">'+mut+srctag+lmt+' · <a href="'+m.url+'" target="_blank">Polymarket ↗</a> · <a href="'+m.wu+'" target="_blank">'+(C.code==='HKO'?'HKO ↗':'WU ↗')+'</a></p>'+
+        (rows?('<table class="ct"><thead><tr><th>rango</th><th>mercado</th><th>p bot</th><th>Δ¢</th></tr></thead><tbody>'+rows+'</tbody></table>'):'<p class="subt">sin mercado.</p>')+win+'</div>'+noTable(m);
     }).join('');
   }
-  function pwsBox(C){
-    var rows=C.pws.map(function(p){return '<tr><td>'+esc(p.id)+'</td><td class="num">'+p.km.toFixed(1)+'</td><td class="num">'+(p.bias>=0?'+':'')+p.bias.toFixed(2)+'</td><td class="num">'+p.std.toFixed(2)+'</td><td class="num">'+(p.now!=null?p.now.toFixed(1)+C.deg:'—')+'</td></tr>';}).join('');
-    var est=(C.est!=null?'<p class="subt" style="margin:8px 0 0">estimado del sensor oficial AHORA: <b style="color:var(--live);font-size:16px">'+C.est+C.deg+'</b> = mediana(PWS − bias)</p>':'');
-    return '<div class="panelbox"><h4>🗺 Estación + PWS (mapa CARTO)</h4><div id="citymap"></div>'+est+
-      (rows?('<table class="ct" style="margin-top:10px"><thead><tr><th>pws</th><th>km</th><th>bias</th><th>σ</th><th>ahora</th></tr></thead><tbody>'+rows+'</tbody></table>'):'<p class="subt">sin PWS</p>')+'</div>';
+  function noTable(m){
+    /* [2026-07-21, pedido Santiago] pronosticos NO congelados (solo ciudades top-7 del ranking):
+       cada bucket del book del freeze etiquetado EXACTO / TOP-2 / TOP-3 / NO con su precio. */
+    if(!m.nos||!m.nos.length)return '';
+    var TC={'EXACTO':'nt-ex','TOP-2':'nt-t2','TOP-3':'nt-t3','NO':'nt-no'};
+    var rows=m.nos.map(function(r){return '<tr class="'+(TC[r.tag]||'')+'"><td>'+r.tag+'</td><td>'+esc(r.lab)+'</td><td class="num">'+(r.px!=null?r.px.toFixed(2):'—')+'</td></tr>';}).join('');
+    return '<div class="panelbox"><h4>🎰 Pronósticos NO — '+m.head+' (congelados al freeze'+(m.tops_src==='48h'?' 48h':'')+')</h4>'+
+      '<table class="ct"><thead><tr><th>pronóstico</th><th>bucket</th><th>p ($) yes</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p class="subt" style="margin:6px 0 0">NO = fuera del top-3 congelado. Ciudad top-7 del ranking (las que más aciertan) — apta para jugar NO en buckets que paguen bien. Precio = al momento del freeze.</p></div>';
   }
-  function perfBox(C){
-    function tb(arr,src){return arr.map(function(r){return '<tr><td>'+r.m+'</td><td class="num">'+src+'</td><td class="num">'+r.hits+'/'+r.n+'</td><td class="num">'+Math.round(r.rate*100)+'%</td><td class="num">'+(r.mae!=null?r.mae:'—')+'</td></tr>';}).join('');}
-    var rows=tb(C.models.vivo,'vivo')+tb(C.models.retro,'retro'); if(!rows)return '';
-    return '<div class="panelbox"><h4>🧪 Qué modelo acierta acá</h4><table class="ct"><thead><tr><th>modelo</th><th>fuente</th><th>exactos</th><th>%</th><th>MAE</th></tr></thead><tbody>'+rows+'</tbody></table><p class="subt" style="margin:6px 0 0">los que más pesan son los que mejor aciertan en ESTA ciudad.</p></div>';
+  function pwsBox(C){
+    /* [2026-07-21, pedido Santiago] max/min PARCIALES del dia + actual por PWS, y el estimado
+       del sensor oficial para las tres (mediana PWS - bias). La card de modelos se ELIMINO. */
+    var rows=C.pws.map(function(p){return '<tr><td>'+esc(p.id)+'</td><td class="num">'+p.km.toFixed(1)+'</td><td class="num">'+(p.bias>=0?'+':'')+p.bias.toFixed(2)+'</td><td class="num">'+(p.now!=null?p.now.toFixed(1):'—')+'</td><td class="num" style="color:#ff8c42">'+(p.hi!=null?p.hi.toFixed(1):'—')+'</td><td class="num" style="color:#42c9ff">'+(p.lo!=null?p.lo.toFixed(1):'—')+'</td></tr>';}).join('');
+    var est=[];
+    if(C.est!=null)est.push('ahora <b style="color:var(--live)">'+C.est+C.deg+'</b>');
+    if(C.est_hi!=null)est.push('máx hoy <b style="color:#ff8c42">'+C.est_hi+C.deg+'</b>');
+    if(C.est_lo!=null)est.push('mín hoy <b style="color:#42c9ff">'+C.est_lo+C.deg+'</b>');
+    var estl=est.length?'<p class="subt" style="margin:8px 0 0">estimado del sensor oficial (mediana PWS − bias): '+est.join(' · ')+'</p>':'';
+    return '<div class="panelbox"><h4>🗺 Estación + PWS — actual · máx · mín del día</h4><div id="citymap"></div>'+estl+
+      (rows?('<table class="ct" style="margin-top:10px"><thead><tr><th>pws</th><th>km</th><th>bias</th><th>ahora</th><th>máx</th><th>mín</th></tr></thead><tbody>'+rows+'</tbody></table>'):'<p class="subt">sin PWS</p>')+'</div>';
   }
   function histBox(C){
     /* [2026-07-17] columna pick 48h (con su propio resultado) + boton para re-consultar Gamma */
@@ -106,19 +121,22 @@ CITY_JS = SHARED_JS + r"""
     });
   }
   function tlBox(C){
+    /* [2026-07-21] slider FUERA de #tlgraph: sirve tambien en el modo tabla (que ahora es la
+       vista estilo terminal, con barras y Δ, en el instante del cursor). Chip 48hs arranca ON
+       (coincide con tlState.hours=48 — antes el chip decia 24 y mostraba 48: bug). */
     if(!C.tl||!C.tl.labels.length)return '';
     var opts=C.tl.labels.map(function(l){return '<label><input type="checkbox" data-b="'+esc(l)+'" checked> '+esc(l)+'</label>';}).join('');
     return '<div class="panelbox" style="position:relative"><h4>⏱ Timeline del mercado — precios en %</h4>'+
       '<div class="tlbar"><button class="chip on" data-m="graph">📊 Gráfico</button><button class="chip" data-m="table">📋 Tabla</button>'+
-      '<span style="width:8px"></span><button class="chip on" data-h="24">24 hs</button><button class="chip" data-h="48">48 hs</button>'+
+      '<span style="width:8px"></span><button class="chip" data-h="24">24 hs</button><button class="chip on" data-h="48">48 hs</button>'+
       '<span class="sp"></span><button class="chip" id="tlgear">⚙ Buckets</button></div>'+
       '<div class="gearpop hidden" id="tlgearpop" style="right:16px">'+opts+'</div>'+
       '<div class="tllegend"><span><i style="background:var(--pick)"></i>🎯 exacto (top-1)</span>'+
       '<span><i style="background:var(--t2)"></i>🥈 top-2</span><span><i style="background:var(--t3)"></i>🥉 top-3</span>'+
       '<span><i style="background:#5b6b7d"></i>otros</span><span><i style="background:var(--live)"></i>🔒 freeze 24h/48h</span></div>'+
-      '<div id="tlgraph"><div class="chartbox"><canvas id="tlchart"></canvas></div>'+
-      '<input type="range" id="tlrange" min="0" value="0"><div class="tlcursor" id="tlcursor"></div></div>'+
-      '<div id="tltable" class="hidden"></div></div>';
+      '<div id="tlgraph"><div class="chartbox"><canvas id="tlchart"></canvas></div></div>'+
+      '<div id="tltable" class="hidden"></div>'+
+      '<input type="range" id="tlrange" min="0" value="0"><div class="tlcursor" id="tlcursor"></div></div>';
   }
 
   var freezePlugin={id:'frz',afterDraw:function(ch){
@@ -166,15 +184,25 @@ CITY_JS = SHARED_JS + r"""
     document.getElementById('tlcursor').innerHTML='🕐 <b>'+ts2ar(si.times[i])+' AR</b> · '+(parts.join(' · ')||'sin datos')+(mu!=null?(' · μ '+mu+C.deg):'');
   }
   function buildTable(C){
-    var tl=C.tl,si=sliceInfo(C),i0=si.i0,nAll=tl.times.length;
-    var labs=tl.labels.filter(function(l){return !tlState.hidden[l];});
-    var head='<tr><th>hora AR</th>'+labs.map(function(l){return '<th>'+esc(l)+'</th>';}).join('')+'<th>μ</th></tr>';
+    /* [2026-07-21, pedido Santiago] tabla ESTILO TERMINAL: una fila por bucket con barra de
+       precio, $ y Δ→ahora, en el INSTANTE del cursor (slider compartido con el grafico). */
+    var tl=C.tl,si=sliceInfo(C);
+    var i=(tlState.cursor!=null?tlState.cursor:si.n-1); if(i>si.n-1)i=si.n-1;
+    var idx=si.i0+i,last=tl.times.length-1,top=tl.top||[];
+    var rg=document.getElementById('tlrange');
+    if(rg){rg.max=si.n-1;if(+rg.value>si.n-1)rg.value=si.n-1;}
     var rows='';
-    for(var i=nAll-1;i>=i0;i--){
-      var cells=labs.map(function(l){var v=tl.series[l]?tl.series[l][i]:null;return '<td>'+(v==null?'—':(v*100).toFixed(1))+'</td>';}).join('');
-      rows+='<tr><td>'+ts2ar(tl.times[i])+'</td>'+cells+'<td>'+(tl.mu[i]==null?'—':tl.mu[i])+'</td></tr>';
-    }
-    document.getElementById('tltable').innerHTML='<div class="tltabwrap"><table class="tltab"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div><p class="subt" style="margin:6px 0 0">precios en % (0.365→36.5). μ en '+C.deg+'.</p>';
+    tl.labels.filter(function(l){return !tlState.hidden[l];}).forEach(function(lab){
+      var v=tl.series[lab]?tl.series[lab][idx]:null;
+      var vn=tl.series[lab]?tl.series[lab][last]:null;
+      var w=(v==null)?0:Math.max(2,Math.round(v*100));
+      var dl=(v!=null&&vn!=null)?(((vn-v)>=0?'+':'')+Math.round((vn-v)*100)+'c'):'—';
+      var dot='',cls='';
+      if(lab===top[0]){dot='🎯';cls='tl-r1';}else if(lab===top[1]){dot='🥈';cls='tl-r2';}else if(lab===top[2]){dot='🥉';cls='tl-r3';}
+      rows+='<tr class="'+cls+'"><td>'+dot+'</td><td>'+esc(lab)+'</td><td class="trk"><span class="track"><span class="fill" style="width:'+w+'%"></span></span></td><td class="num">'+(v==null?'—':v.toFixed(2))+'</td><td class="num">'+dl+'</td></tr>';
+    });
+    document.getElementById('tltable').innerHTML='<table class="tltab2"><thead><tr><th></th><th>bucket</th><th>precio en ese momento</th><th>$</th><th>Δ→ahora</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p class="subt" style="margin:6px 0 0">arrastrá el slider de abajo: cada paso = 30 min.</p>';
   }
   function wireTL(C){
     document.querySelectorAll('.tlbar [data-m]').forEach(function(b){b.addEventListener('click',function(){
@@ -190,7 +218,11 @@ CITY_JS = SHARED_JS + r"""
     document.addEventListener('click',function(){gp.classList.add('hidden');});
     gp.addEventListener('click',function(e){e.stopPropagation();});
     gp.querySelectorAll('input[data-b]').forEach(function(c){c.addEventListener('change',function(){tlState.hidden[c.dataset.b]=!c.checked;if(tlState.mode==='graph')buildTL(C);else buildTable(C);});});
-    document.getElementById('tlrange').addEventListener('input',function(){updateCursor(C);});
+    // el slider mueve el cursor en AMBOS modos (en tabla redibuja las barras de ese instante)
+    document.getElementById('tlrange').addEventListener('input',function(){
+      updateCursor(C);
+      if(tlState.mode==='table')buildTable(C);
+    });
   }
   function drawMap(C){
     var el=document.getElementById('citymap'); if(!el||!window.L)return;
@@ -205,6 +237,70 @@ CITY_JS = SHARED_JS + r"""
       var t=L.divIcon({className:'',html:'<div style="color:#8fe3ff;font:10px monospace;text-shadow:0 1px 2px #000;transform:translate(-50%,-190%);white-space:nowrap">'+(p.now!=null?p.now.toFixed(1)+'°':'')+'</div>',iconSize:[0,0]});
       L.marker([p.lat,p.lon],{icon:t,interactive:false}).addTo(cmap);});
     if(pts.length>1)cmap.fitBounds(pts,{padding:[34,34]});
+  }
+  function daysBox(C){
+    /* [2026-07-21, pedido Santiago] selector de fechas desde el ARRANQUE de la ciudad hasta
+       mañana: picks congelados + resultado + book NO + timeline del dia (via /timeline). */
+    if(!C.days||!C.days.length)return '';
+    var opts=C.days.slice().reverse().map(function(d){return '<option value="'+d.d+'">'+d.lbl+'</option>';}).join('');
+    return '<div class="panelbox"><h4>📅 Día por día — desde el '+esc(C.days[0].lbl)+'</h4>'+
+      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><select class="citysel" id="daysel">'+opts+'</select>'+
+      '<span class="subt">elegí cualquier fecha: picks congelados, resultado y timeline de ese día</span></div>'+
+      '<div id="dayview" style="margin-top:8px"></div></div>';
+  }
+  var IC_NIV={'EXACTO':['✅','g-ex'],'TOP-2':['✅','g-t2'],'TOP-3':['🔶','g-t3'],'PERDIDA':['❌','g-bad']};
+  function nivTag(niv){if(!niv)return '';var ic=IC_NIV[niv]||['⏳',''];return ' · <span class="gv '+ic[1]+'">'+ic[0]+' '+niv+'</span>';}
+  function renderDay(C){
+    var sel=document.getElementById('daysel'); if(!sel)return;
+    var d=null; C.days.forEach(function(x){if(x.d===sel.value)d=x;}); if(!d)return;
+    var L=['<div class="pickrow"><div style="font-weight:700">'+esc(d.lbl)+' — '+(d.win?('ganó <b>'+esc(d.win)+'</b>'+nivTag(d.niv)):'⏳ sin resolver')+'</div>'];
+    if(d.p24)L.push('<div style="margin:3px 0 0">🔒 <b>24h</b> · μ '+d.p24.mu+C.deg+'<br>&nbsp;&nbsp;'+pickHtml(d.p24.top)+'</div>');
+    if(d.p48)L.push('<div style="margin:3px 0 0">⏳ <b>48h</b> · μ '+d.p48.mu+C.deg+nivTag(d.niv48)+'<br>&nbsp;&nbsp;'+pickHtml(d.p48.top)+'</div>');
+    if(!d.p24&&!d.p48)L.push('<div class="subt">sin pick congelado ese día</div>');
+    L.push('</div>');
+    if(d.book){
+      var tops=(d.p24&&d.p24.top)||(d.p48&&d.p48.top)||[];
+      var TC={'EXACTO':'nt-ex','TOP-2':'nt-t2','TOP-3':'nt-t3','NO':'nt-no'};
+      var rows=d.book.map(function(b){var lab=b[0],px=b[1];
+        var tag=lab===tops[0]?'EXACTO':(lab===tops[1]?'TOP-2':(lab===tops[2]?'TOP-3':'NO'));
+        return '<tr class="'+TC[tag]+'"><td>'+tag+'</td><td>'+esc(lab)+'</td><td class="num">'+(px!=null?px.toFixed(2):'—')+'</td></tr>';}).join('');
+      L.push('<table class="ct" style="margin:6px 0"><thead><tr><th>pronóstico</th><th>bucket</th><th>p ($) yes al freeze</th></tr></thead><tbody>'+rows+'</tbody></table>');
+    }
+    L.push('<div id="daytl" class="subt" style="margin-top:8px"></div>');
+    document.getElementById('dayview').innerHTML=L.join('');
+    var dv=document.getElementById('daytl');
+    if(location.protocol.indexOf('http')!==0){dv.textContent='timeline del día: abrí la página servida por el dashboard (puerto 8765)';return;}
+    dv.textContent='cargando timeline del día…';
+    fetch('/timeline?st='+C.code+'&date='+d.d+'&h=48').then(function(r){return r.json();}).then(function(j){
+      if(!j.ok){dv.textContent='timeline: '+(j.msg||'sin datos');return;}
+      drawDayTL(dv,j);
+    }).catch(function(e){dv.textContent='timeline: '+e;});
+  }
+  function drawDayTL(dv,j){
+    var n=j.times.length;
+    dv.classList.remove('subt');
+    dv.innerHTML='<input type="range" id="dtl-sl" min="0" max="'+(n-1)+'" value="'+(n-1)+'"><div class="tlcursor" id="dtl-cur"></div><div id="dtl-tab"></div>';
+    var sl=document.getElementById('dtl-sl');
+    function draw(){
+      var i=+sl.value,rk=(j.ranks&&j.ranks[i])||[],mu=j.mu[i];
+      document.getElementById('dtl-cur').innerHTML='🕐 <b>'+ts2ar(j.times[i])+' AR</b>'+(mu!=null?(' · μ '+mu+j.unit):'')+' · '+(n-1-i===0?'ancla (último precio)':(((n-1-i)*30)/60).toFixed(1)+'h antes');
+      var rows='';
+      j.labels.forEach(function(lab){
+        var p=j.prices[lab][i],pn=j.prices[lab][n-1];
+        var w=(p==null)?0:Math.max(2,Math.round(p*100));
+        var dl=(p!=null&&pn!=null)?(((pn-p)>=0?'+':'')+Math.round((pn-p)*100)+'c'):'—';
+        var dot='',cls='';
+        if(lab===rk[0]){dot='🎯';cls='tl-r1';}else if(lab===rk[1]){dot='🥈';cls='tl-r2';}else if(lab===rk[2]){dot='🥉';cls='tl-r3';}
+        rows+='<tr class="'+cls+'"><td>'+dot+'</td><td>'+esc(lab)+'</td><td class="trk"><span class="track"><span class="fill" style="width:'+w+'%"></span></span></td><td class="num">'+(p==null?'—':p.toFixed(2))+'</td><td class="num">'+dl+'</td></tr>';
+      });
+      document.getElementById('dtl-tab').innerHTML='<table class="tltab2"><thead><tr><th></th><th>bucket</th><th>precio en ese momento</th><th>$</th><th>Δ→fin</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    }
+    sl.addEventListener('input',draw);draw();
+  }
+  function wireDays(C){
+    var sel=document.getElementById('daysel'); if(!sel)return;
+    sel.addEventListener('change',function(){renderDay(C);});
+    renderDay(C);
   }
   function drawObs(C){
     var el=document.getElementById('histchart'); if(!el||!window.Chart)return;
@@ -221,15 +317,16 @@ CITY_JS = SHARED_JS + r"""
   function render(){
     var C=DATA.cities[code]; if(!C){document.getElementById('cbody').innerHTML='<p class="none">Ciudad no encontrada</p>';return;}
     document.getElementById('ctitle').innerHTML='🏙 '+esc(C.city)+' · '+C.code;
-    document.getElementById('clinks').innerHTML='<a href="cities.html">← ciudades</a><a href="'+C.markets[0].url+'" target="_blank">Polymarket ↗</a><a href="'+C.markets[0].wu+'" target="_blank">'+(C.code==='HKO'?'HKO ↗':'WU ↗')+'</a><a href="https://www.windy.com/'+C.lat.toFixed(3)+'/'+C.lon.toFixed(3)+'" target="_blank">Windy ↗</a>';
+    document.getElementById('clinks').innerHTML='<a class="chip" href="cities.html">← ciudades</a> <a class="chip" href="'+C.markets[0].url+'" target="_blank">📈 Polymarket ↗</a> <a class="chip" href="'+C.markets[0].wu+'" target="_blank">'+(C.code==='HKO'?'🇭🇰 HKO ↗':'🌡 WU ↗')+'</a> <a class="chip" href="https://www.windy.com/'+C.lat.toFixed(3)+'/'+C.lon.toFixed(3)+'" target="_blank">🌀 Windy ↗</a>';
     document.getElementById('cgen').innerHTML='🕒 '+DATA.generated+' (AR) · '+esc(C.country)+' · '+esc(C.cont)+' · '+C.resol;
     document.getElementById('cbody').innerHTML=statCards(C)+tlBox(C)+
-      '<div class="cols"><div class="col">'+mktBox(C)+picksBox(C)+'</div><div class="col">'+pwsBox(C)+perfBox(C)+histBox(C)+'</div></div>'+
+      '<div class="cols"><div class="col">'+mktBox(C)+picksBox(C)+'</div><div class="col">'+pwsBox(C)+histBox(C)+daysBox(C)+'</div></div>'+
       '<div class="panelbox"><h4>📈 Últimos 30 días — obs real vs pick congelado</h4><div class="chartbox"><canvas id="histchart"></canvas></div></div>';
     tlState={mode:'graph',hours:48,cursor:null,hidden:{}};
     drawMap(C);
     if(C.tl&&C.tl.labels.length){buildTL(C);wireTL(C);}
     wireHist();
+    wireDays(C);
     drawObs(C);
   }
   render();

@@ -401,13 +401,14 @@ CLOB = "https://clob.polymarket.com"
 TL_TTL = 900   # cache 15 min por (station, date): 1 slider abierto = ~10 fetches a prices-history
 
 
-def build_timeline(code, d):
-    """Serie de 24h en pasos de 30 min para el modal: precios por bucket (prices-history del CLOB
-    por token YES) + mu del bot (revisiones de forecast_audit.json, funcion escalonada). Tiempos en
-    epoch UTC; el JS los muestra en UTC-3."""
+def build_timeline(code, d, hours=24):
+    """Serie de 24h (o 48h, toggle 2026-07-21) en pasos de 30 min para el modal: precios por
+    bucket (prices-history del CLOB por token YES) + mu del bot (revisiones de
+    forecast_audit.json, funcion escalonada). Tiempos en epoch UTC; el JS los muestra en UTC-3."""
+    hours = 48 if int(hours or 24) >= 48 else 24
     now = time.monotonic()
     tl = _CACHE.setdefault("tl", {})
-    hit = tl.get((code, d.isoformat()))
+    hit = tl.get((code, d.isoformat(), hours))
     if hit and now - hit[0] < TL_TTL:
         return hit[1]
     slug = pm_slug(code, d)
@@ -446,7 +447,8 @@ def build_timeline(code, d):
             last_trade = max(last_trade, int(h[-1]["t"]))
     # ancla: ultimo trade (mercado cerrado) o ahora (mercado vivo), redondeado a 30 min
     end_ts = (min(now_ts, last_trade) if last_trade else now_ts) // 1800 * 1800
-    times = [end_ts - (48 - i) * 1800 for i in range(49)]          # 24h que terminan en el ancla
+    steps = hours * 2
+    times = [end_ts - (steps - i) * 1800 for i in range(steps + 1)]   # ventana que TERMINA en el ancla
     for lab in labels:
         h = raw_hist.get(lab, [])
         series, j, last = [], 0, None
@@ -505,8 +507,8 @@ def build_timeline(code, d):
         ranks.append(([pick_lab] + rest)[:3])
     out = {"ok": True, "times": times, "labels": labels, "prices": prices,
            "mu": mu_series, "pick": pick, "ranks": ranks, "unit": "°F" if unit == "F" else "°C",
-           "city": STATION_META[code][2], "frz": frz_ts}
-    tl[(code, d.isoformat())] = (now, out)
+           "city": STATION_META[code][2], "frz": frz_ts, "hours": hours}
+    tl[(code, d.isoformat(), hours)] = (now, out)
     return out
 
 
@@ -1033,6 +1035,10 @@ html,body{margin:0;padding:0;min-height:100vh;background:#05080c;
 #tl-modal .tl-x{cursor:pointer;color:#617688;font-weight:700;padding:2px 10px;border-radius:6px;font-size:16px;}
 #tl-modal .tl-x:hover{color:#ff5d70;background:rgba(255,93,112,.1);}
 #tl-modal .tl-ctl{display:flex;gap:14px;align-items:center;margin:8px 0 12px;}
+#tl-modal .tl-hbtns{display:inline-flex;gap:4px;}
+#tl-modal .tl-hb{background:#101a24;color:#8fa6b8;border:1px solid #2b3f52;border-radius:6px;
+  padding:3px 9px;font-size:11px;font-family:inherit;cursor:pointer;}
+#tl-modal .tl-hb.on{color:#ffc24a;border-color:#ffc24a;}
 #tl-modal input[type=range]{flex:1;accent-color:#25e6a4;}
 #tl-modal .tl-time{font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#ffc24a;
   min-width:150px;text-align:right;white-space:nowrap;}
@@ -1254,8 +1260,13 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
         _rank = _rank_floor()
         top2 = set(_rank[:2]); top3 = set(_rank[:3])
         if _rank:
+            # "book" = TODOS los buckets del mercado + precio al freeze (2026-07-21, pedido
+            # Santiago): habilita la vista de pronosticos NO congelados (NO = fuera del top-3).
             audit.setdefault(key, {})["froze"] = {
-                "mu": round(mu, 2), "sg": (round(sg, 2) if sg is not None else None), "top": _rank[:3]}
+                "mu": round(mu, 2), "sg": (round(sg, 2) if sg is not None else None),
+                "top": _rank[:3],
+                "book": [[lab, (round(p, 3) if p is not None else None)]
+                         for lab, lo, hi, p in priced]}
             _FROZE["dirty"] = True
     # [2026-07-16, pedido Santiago] PICK 48H: segundo freeze INMUTABLE 24h ANTES del bloqueo
     # normal (04:30 local del dia ANTERIOR ≈ 44h antes de que termine el dia del mercado) — para
@@ -1280,6 +1291,8 @@ def card_html(code, d, today, now_utc, unit, fc_day, info, pred=None, live=None,
                     top48 = ([pick48] if pick48 else []) + rest48
                 audit.setdefault(key, {})["froze48"] = {
                     "mu": round(mu48, 2), "sg": round(sg, 2), "top": top48[:3],
+                    "book": [[lab, (round(p, 3) if p is not None else None)]
+                             for lab, lo, hi, p in priced],
                     "cap": to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m %H:%M")}
                 _FROZE["dirty"] = True
     reco = False
@@ -1581,9 +1594,13 @@ def toolbar_html(today, all_dates=()):
         f'<select id="f-pais"><option value="">País</option>{opt(paises)}</select>'
         f'<select id="f-ciudad"><option value="">Ciudad</option>{opt(ciudades)}</select>'
         f'<select id="f-st"><option value="">Aeropuerto</option>{opt(sts)}</select>'
+        # [2026-07-21, pedido Santiago] HOY y MAÑANA siempre arriba; el resto ascendente.
         '<select id="f-fecha"><option value="">Fecha (todas)</option>' + "".join(
-            f'<option value="{d.isoformat()}">{ddmmyyyy(d)}{" · HOY" if d == today else ""}</option>'
-            for d in all_dates) + '</select>'
+            f'<option value="{d.isoformat()}">{ddmmyyyy(d)}'
+            f'{" · HOY" if d == today else (" · MAÑANA" if d == today + dt.timedelta(days=1) else "")}</option>'
+            for d in ([x for x in (today, today + dt.timedelta(days=1)) if x in set(all_dates)]
+                      + sorted(x for x in all_dates
+                               if x not in (today, today + dt.timedelta(days=1))))) + '</select>'
         '<select id="f-estado"><option value="">Estado</option>'
         '<option value="encurso">En curso</option><option value="prox">Próximo</option>'
         '<option value="soon">Pico cerca</option><option value="resol">Resolviendo</option>'
@@ -1765,6 +1782,7 @@ FILTER_JS = """
   }
   // TIMELINE 24h por card (slider 30 min, hora UTC-3). Modal appendeado a <body>, FUERA de
   // .viz-root: el morph del --watch jamas lo toca, sobrevive refrescos.
+  var tlHours=24;   // toggle 24/48hs (2026-07-21, pedido Santiago)
   function tlOpen(st, fe){
     var m=document.getElementById('tl-modal');
     if(!m){
@@ -1778,24 +1796,30 @@ FILTER_JS = """
     m.style.display='flex';
     document.getElementById('tl-title').textContent='⏱ '+st+' · '+fe;
     var body=document.getElementById('tl-body');
-    body.textContent='cargando timeline de 24h…';
+    body.textContent='cargando timeline de '+tlHours+'h…';
     if(location.protocol.indexOf('http')!==0){ body.textContent=WX_SERVE_MSG; return; }
-    fetch('/timeline?st='+encodeURIComponent(st)+'&date='+encodeURIComponent(fe))
+    fetch('/timeline?st='+encodeURIComponent(st)+'&date='+encodeURIComponent(fe)+'&h='+tlHours)
       .then(wxJSON)
-      .then(function(j){ if(!j.ok){ body.textContent='sin datos: '+(j.msg||''); return; } tlRender(body,j,st); })
+      .then(function(j){ if(!j.ok){ body.textContent='sin datos: '+(j.msg||''); return; } tlRender(body,j,st,fe); })
       .catch(function(e){ body.textContent=(e&&e.message)||(''+e); });
   }
-  function tlRender(body, j, st){
-    var n=j.times.length;
+  function tlRender(body, j, st, fe){
+    var n=j.times.length, win=j.hours||24;
     // [2026-07-13] mercado PASADO = el ancla (ultimo precio real) esta >2h antes de ahora: el
     // extremo del slider es el CIERRE, no AHORA, y la Δ se mide contra el cierre.
     var isPast = (Date.now()/1000 - j.times[n-1]) > 7200;
     var anchorTxt = isPast ? 'cierre' : 'AHORA';
-    body.innerHTML='<div class="tl-ctl"><input type="range" id="tl-sl" min="0" max="'+(n-1)+'" value="'+(n-1)+'" step="1">'
+    body.innerHTML='<div class="tl-ctl"><span class="tl-hbtns">'
+      +'<button class="tl-hb'+(win===24?' on':'')+'" data-h="24">24h</button>'
+      +'<button class="tl-hb'+(win===48?' on':'')+'" data-h="48">48h</button></span>'
+      +'<input type="range" id="tl-sl" min="0" max="'+(n-1)+'" value="'+(n-1)+'" step="1">'
       +'<span class="tl-time" id="tl-time"></span></div>'
       +'<div class="tl-bot" id="tl-bot"></div><table id="tl-tab"></table>'
       +'<div class="tl-note">arrastra el slider: cada paso = 30 min · Δ = cuanto se movio el precio de ese momento al '+anchorTxt+' · '
-      +j.city+(isPast?' · mercado ya resuelto: ventana = 24h antes del cierre':'')+'</div>';
+      +j.city+(isPast?' · mercado ya resuelto: ventana = '+win+'h antes del cierre':'')+'</div>';
+    body.querySelectorAll('.tl-hb').forEach(function(b){
+      b.addEventListener('click',function(){ tlHours=+b.dataset.h; tlOpen(st, fe); });
+    });
     var sl=document.getElementById('tl-sl');
     function f2(x){return (x<10?'0':'')+x;}
     function draw(){
@@ -2505,9 +2529,10 @@ def watch(today_s, horizon, interval, max_iters, serve=0):
                     q = urllib.parse.parse_qs(u.query)
                     st = (q.get("st") or [""])[0]
                     ds = (q.get("date") or [""])[0]
+                    hh = (q.get("h") or ["24"])[0]
                     try:
                         assert st in STATIONS
-                        payload = build_timeline(st, dt.date.fromisoformat(ds))
+                        payload = build_timeline(st, dt.date.fromisoformat(ds), hours=int(hh))
                     except Exception as e:
                         payload = {"ok": False, "msg": str(e)}
                     body = _json2.dumps(payload).encode("utf-8")

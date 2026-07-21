@@ -5,14 +5,14 @@
 # Genera data/leaderboard.html (tab aparte, linkeado desde el dashboard).
 #
 # [2026-07-13, pedido Santiago] Cada fila es CLICKEABLE -> despliega un GAMELOG por ciudad estilo
-# app de apuestas (Fecha | Ganó WU | Pick bot | Resultado ✅/❌) para ver de un vistazo los EXACTOS,
-# TOP-2, TOP-3 y las PERDIDAS de esa estacion. + timestamp de ultima actualizacion de la tabla.
-#
-# Reglas (coherentes con check_predictions.py / dashboard):
-#   * Por (station, target) se scorea el forecast CONGELADO a la hora de entrada.
-#   * Pick oficial = floor(mu_cal) -> su bucket (WU FLOOREA la obs SIEMPRE).
-#   * top-2/3 = ranking de buckets por bucket_prob(mu-0.5, sigma, lo, hi).
-#   * Resolucion MERCADO (Gamma outcomePrices) primaria; FISICA (obs IEM floreada) secundaria.
+# app de apuestas (Fecha | Ganó WU | Pick bot | Resultado ✅/❌).
+# [2026-07-21, pedidos Santiago]:
+#   * el NIVEL sale del top-1/2/3 CONGELADO (froze['top'] via wxbt_insights.nivel_vs_top) — antes
+#     cada vista re-derivaba su ranking y el historial de ciudad podia contradecir al leaderboard.
+#   * tab 48hs (froze48) al lado del 24hs.
+#   * "p ganador" = % de veces que el TOP-2 congelado gano (ej. 10/11 = 90.9%).
+#   * filtros por continente + orden clickeando los encabezados EXACTOS/TOP-2.
+#   * el boton 🔄 dispara do=results (regenera TAMBIEN historiales de ciudad y stats — coherencia).
 import collections
 import json
 import math
@@ -28,6 +28,7 @@ from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp   
 from wxbt.market import bucket_prob                                               # noqa: E402
 from wxbt.forward_scoring import frozen_forecast, audit_only_targets              # noqa: E402
 from wxbt_nav import nav_html, NAV_CSS                                            # noqa: E402
+import wxbt_insights as I                                                         # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -47,7 +48,7 @@ def lbl_of(bucket, unit):
 
 def live_records(today):
     """DataFrame por (station, target) YA RESUELTO con exact/top2/top3/pwin/res + labels de pick y
-    ganador y nivel (para el gamelog por ciudad)."""
+    ganador y nivel (para el gamelog por ciudad). El nivel usa el top CONGELADO cuando existe."""
     p = pd.read_csv(os.path.join(D, "predictions_forward.csv"), parse_dates=["target"])
     p["target"] = p["target"].dt.date
     due = p[p["target"] <= today].sort_values("lead_h").drop_duplicates(
@@ -85,16 +86,43 @@ def live_records(today):
             continue  # sin evidencia point-in-time del pick operable: no entra al KPI oficial
         pick = winner_by_temp(buckets, int(math.floor(mu)))
         probs = [bucket_prob(mu - 0.5, sigma, lo, hi) for lo, hi in buckets]
-        order = sorted(range(len(buckets)), key=lambda i: -probs[i])
-        rank_w = order.index(buckets.index(winner)) + 1         # 1 = nuestro bucket mas probable
-        exact = int(pick == winner)
-        top2 = int(exact or rank_w <= 2)                        # EXACTO siempre cuenta como top-2
-        top3 = int(top2 or rank_w <= 3)
-        nivel = ("EXACTO" if exact else ("TOP-2" if top2 else ("TOP-3" if top3 else "PERDIDA")))
+        pwin = probs[buckets.index(winner)]
+        # FUENTE DE VERDAD: el top-1/2/3 congelado en el freeze (mismo criterio en historiales,
+        # stats y telegram). El ranking re-derivado por probabilidad queda SOLO para legacy.
+        stored = ((audit.get(f"{r.station}|{r.target.isoformat()}") or {}).get("froze") or {}).get("top")
+        nivel = I.nivel_vs_top(stored, winner[0], winner[1])
+        if nivel is not None:
+            pick_lbl = stored[0]
+        else:
+            order = sorted(range(len(buckets)), key=lambda i: -probs[i])
+            rank_w = order.index(buckets.index(winner)) + 1     # 1 = nuestro bucket mas probable
+            exact_f = int(pick == winner)
+            nivel = ("EXACTO" if exact_f else ("TOP-2" if rank_w <= 2 else
+                     ("TOP-3" if rank_w <= 3 else "PERDIDA")))
+            pick_lbl = lbl_of(pick, unit)
+        exact = int(nivel == "EXACTO")
+        top2 = int(nivel in ("EXACTO", "TOP-2"))
+        top3 = int(nivel in ("EXACTO", "TOP-2", "TOP-3"))
         recs.append(dict(station=r.station, target=r.target, res=res, exact=exact,
-                         top2=top2, top3=top3, pwin=probs[buckets.index(winner)], nivel=nivel,
-                         pick_lbl=lbl_of(pick, unit), win_lbl=lbl_of(winner, unit),
+                         top2=top2, top3=top3, pwin=pwin, nivel=nivel,
+                         pick_lbl=pick_lbl, win_lbl=lbl_of(winner, unit),
                          forecast_source=forecast_source))
+    return pd.DataFrame(recs)
+
+
+def records48(today):
+    """Records del pick 48H (froze48, scoreado con SU top congelado) en el mismo formato."""
+    recs = []
+    for r in I.bot_history(today=today, kind="froze48"):
+        if r["nivel"] is None:
+            continue
+        recs.append(dict(station=r["station"], target=r["target"], res="mercado",
+                         exact=int(r["nivel"] == "EXACTO"),
+                         top2=int(r["nivel"] in ("EXACTO", "TOP-2")),
+                         top3=int(r["nivel"] in ("EXACTO", "TOP-2", "TOP-3")),
+                         pwin=r.get("pwin"), nivel=r["nivel"],
+                         pick_lbl=r["pick_lbl"] or "—", win_lbl=r["win_lbl"] or "—",
+                         forecast_source="froze48"))
     return pd.DataFrame(recs)
 
 
@@ -102,20 +130,9 @@ NIV_ICON = {"EXACTO": "✅", "TOP-2": "✅", "TOP-3": "🔶", "PERDIDA": "❌"}
 NIV_CLS = {"EXACTO": "g-ex", "TOP-2": "g-t2", "TOP-3": "g-t3", "PERDIDA": "g-bad"}
 
 
-def main():
-    today = dt.date.today()
-    print(f"Track record vivo al {today} (consultando ganadores en Gamma)...")
-    df = live_records(today)
-    try:
-        bf = pd.read_csv(os.path.join(D, "backfill_check.csv"))
-        bf = bf[(bf.lead == 2) & bf.max_real.notna()]
-        lab = bf.groupby("station").hit_cal.mean().to_dict()
-    except Exception:
-        lab = {}
-    # TODAS las estaciones activas aparecen aunque n=0 (ciudades nuevas esperando su primer
-    # mercado resuelto) — antes eran invisibles y parecia que "no contaban".
+def build_rows(df, lab):
+    """[{st, ciudad, cont, n, ex, t2, t3, lab}] ordenado + gamelog por estacion."""
     stations = sorted(set(df.station.unique() if len(df) else []) | set(lab) | set(STATIONS))
-
     rows, gamelog = [], {}
     for st in stations:
         g = df[df.station == st] if len(df) else pd.DataFrame()
@@ -123,23 +140,25 @@ def main():
         ex = int(g.exact.sum()) if n else 0
         t2 = int(g.top2.sum()) if n else 0
         t3 = int(g.top3.sum()) if n else 0
-        pw = float(g.pwin.mean()) if n else float("nan")
         nfis = int((g.res == "fisica").sum()) if n else 0
         cont, pais, ciudad = STATION_META.get(st, ("?", "?", st))[:3]
         rows.append(dict(st=st, ciudad=ciudad, cont=cont, n=n, ex=ex, t2=t2, t3=t3,
-                         pw=pw, nfis=nfis, lab=lab.get(st, float("nan"))))
-        # gamelog por estacion: mas reciente primero
+                         nfis=nfis, lab=lab.get(st, float("nan"))))
         gl = []
         for r in (g.sort_values("target", ascending=False).itertuples() if n else []):
             gl.append({"d": ddmmyyyy(r.target), "win": r.win_lbl, "pick": r.pick_lbl,
                        "niv": r.nivel, "fis": (r.res == "fisica")})
         gamelog[st] = gl
-    rows.sort(key=lambda r: (-r["ex"], -r["t2"], -(r["pw"] if r["pw"] == r["pw"] else -1.0),
+    rows.sort(key=lambda r: (-r["ex"], -r["t2"], -(r["t2"] / r["n"] if r["n"] else 0),
                              -r["t3"], r["st"]))
+    return rows, gamelog
 
+
+def table_html(rows, gamelog, suffix, with_lab=True):
+    """Tabla + gamelogs embebidos. suffix distingue ids/data-attrs entre tabs 24/48."""
     def cls_of(r):
         if not r["n"]:
-            return "wait"            # sin mercados resueltos aun: neutro, no "malo"
+            return "wait"
         if r["ex"] / r["n"] >= 0.5:
             return "top"
         return "ok" if r["ex"] >= 1 else "bad"
@@ -152,17 +171,21 @@ def main():
         cls = cls_of(r)
         has_gl = len(gamelog.get(r["st"], [])) > 0
         caret = '<span class="caret">▸</span>' if has_gl else '<span class="caret" style="opacity:.2">·</span>'
+        pgan = f"{r['t2'] / r['n']:.1%}" if r["n"] else "&mdash;"
+        exr = (r["ex"] / r["n"]) if r["n"] else -1
+        t2r = (r["t2"] / r["n"]) if r["n"] else -1
+        lab_td = f'<td class="num lab">{pct(r["lab"])}</td>' if with_lab else ""
         trs.append(
-            f'<tr class="lbrow {cls}" data-st="{r["st"]}" data-has="{1 if has_gl else 0}">'
+            f'<tr class="lbrow {cls}" data-st="{r["st"]}{suffix}" data-cont="{r["cont"]}" '
+            f'data-has="{1 if has_gl else 0}" data-ex="{r["ex"]}" data-exr="{exr:.4f}" '
+            f'data-t2="{r["t2"]}" data-t2r="{t2r:.4f}" data-n="{r["n"]}">'
             f'<td class="rk">{i}</td>'
             f'<td class="stn">{caret}{r["st"]}<span>{r["ciudad"]} · {r["cont"]}</span></td>'
             f'<td class="num big">{r["ex"]}/{r["n"]}</td>'
             f'<td class="num">{r["t2"]}/{r["n"]}</td>'
             f'<td class="num">{r["t3"]}/{r["n"]}</td>'
-            f'<td class="num">{pct(r["pw"])}</td>'
-            f'<td class="num">{r["n"]}</td>'
-            f'<td class="num lab">{pct(r["lab"])}</td></tr>')
-        # fila-detalle (oculta) con el gamelog embebido
+            f'<td class="num pg">{pgan}</td>'
+            f'<td class="num">{r["n"]}</td>{lab_td}</tr>')
         if has_gl:
             gl_rows = "".join(
                 f'<tr><td class="gd">{e["d"]}</td>'
@@ -170,13 +193,37 @@ def main():
                 f'<td class="gp">{e["pick"]}</td>'
                 f'<td class="gv {NIV_CLS[e["niv"]]}">{NIV_ICON[e["niv"]]} {e["niv"]}</td></tr>'
                 for e in gamelog[r["st"]])
+            ncols = 8 if with_lab else 7
             trs.append(
-                f'<tr class="glrow hidden" data-for="{r["st"]}"><td></td><td colspan="7">'
+                f'<tr class="glrow hidden" data-for="{r["st"]}{suffix}" data-cont="{r["cont"]}">'
+                f'<td></td><td colspan="{ncols - 1}">'
                 f'<div class="glbox"><div class="glhead">📊 GAMELOG {r["st"]} · {r["ciudad"]} '
-                f'— {r["ex"]} exacto{"s" if r["ex"]!=1 else ""} · {r["t2"]} top-2 · {r["t3"]} top-3 '
+                f'— {r["ex"]} exacto{"s" if r["ex"] != 1 else ""} · {r["t2"]} top-2 · {r["t3"]} top-3 '
                 f'de {r["n"]}</div>'
                 f'<table class="gl"><thead><tr><th>fecha</th><th>ganó (WU)</th><th>pick bot</th>'
                 f'<th>resultado</th></tr></thead><tbody>{gl_rows}</tbody></table></div></td></tr>')
+    lab_th = '<th>lab 60d</th>' if with_lab else ''
+    return (f'<table class="lb"><thead><tr><th>#</th><th>estación</th>'
+            f'<th class="sortable" data-sort="exr">EXACTOS ⇅</th>'
+            f'<th class="sortable" data-sort="t2r">TOP-2 ⇅</th>'
+            f'<th>TOP-3</th><th>p ganador</th><th>n</th>{lab_th}</tr></thead>'
+            f'<tbody>{"".join(trs)}</tbody></table>')
+
+
+def main():
+    today = dt.date.today()
+    print(f"Track record vivo al {today} (consultando ganadores en Gamma)...")
+    df = live_records(today)
+    df48 = records48(today)
+    try:
+        bf = pd.read_csv(os.path.join(D, "backfill_check.csv"))
+        bf = bf[(bf.lead == 2) & bf.max_real.notna()]
+        lab = bf.groupby("station").hit_cal.mean().to_dict()
+    except Exception:
+        lab = {}
+    rows, gamelog = build_rows(df, lab)
+    rows48, gamelog48 = build_rows(df48, {})
+    conts = sorted({r["cont"] for r in rows})
 
     if len(df):
         d0, d1 = min(df.target), max(df.target)
@@ -187,37 +234,52 @@ def main():
     nfis_tot = sum(r["nfis"] for r in rows)
     nota_fis = (f" ({nfis_tot} resuelto{'s' if nfis_tot != 1 else ''} por obs IEM, "
                 f"mercado sin ganador publicado)") if nfis_tot else ""
-    # ULTIMA ACTUALIZACION (pedido Santiago): hora ART de esta regeneracion.
     updated = to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m/%Y %H:%M")
+    n48 = int(df48.shape[0]) if len(df48) else 0
+    cont_chips = "".join(f'<button class="chip" data-cont="{c}">{c}</button>' for c in conts)
 
     body = f'''<div class="viz-root">
 <div class="topbar">{nav_html("leaderboard")}<div class="row1"><h1>🏆 Track record VIVO del bot — WXBT</h1>
 <span class="subt">ranking por RESULTADOS REALES contra el bucket ganador oficial de Polymarket
-· targets resueltos {rango}</span>
+· targets resueltos {rango}{nota_fis}</span>
 <button class="qbtn" id="lb-refresh" style="margin-left:auto"
-  data-tip="re-consulta los ganadores en Gamma y recalcula el ranking al momento (requiere el dashboard servido con --serve)">🔄 Actualizar ahora</button></div>
+  data-tip="re-consulta los ganadores en Gamma y regenera leaderboard + historiales de ciudad + estadísticas (todo junto, coherente)">🔄 Actualizar resultados</button></div>
 <div class="updbar">🕒 Tabla actualizada: <b>{updated}</b> (hora Argentina) · se regenera cada corrida ·
-<span id="lb-msg"></span></div></div>
-<p class="subt" style="margin:8px 0 14px"><b>Clic en cualquier fila</b> para ver el GAMELOG de esa
-ciudad: cada mercado con lo que ganó (WU), el pick del bot y el resultado —
-<span class="gv g-ex">✅ EXACTO</span> · <span class="gv g-t2">✅ TOP-2</span> ·
-<span class="gv g-t3">🔶 TOP-3</span> · <span class="gv g-bad">❌ PÉRDIDA</span>. Ordenado por
-<b>EXACTOS</b>, desempate TOP-2 y p ganador. <b>lab 60d</b> = hit del backfill (referencia).</p>
-<table class="lb"><thead><tr><th>#</th><th>estación</th><th>EXACTOS</th><th>TOP-2</th>
-<th>TOP-3</th><th>p ganador</th><th>n</th><th>lab 60d</th></tr></thead>
-<tbody>{"".join(trs)}</tbody></table>
-<p class="subt" style="margin-top:14px">Pick oficial = <code>floor(μ_cal)</code> del snapshot más
-fresco (mín lead_h) — WU FLOOREA la obs siempre. Con pocos días esto es indicativo, no veredicto.
-Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
+<span id="lb-msg"></span></div>
+<div class="vfilters" style="margin-top:10px">
+<button class="chip on" data-tab="lb24">⏱ 24hs</button>
+<button class="chip" data-tab="lb48">⏳ 48hs ({n48} resueltos)</button>
+<span style="width:14px"></span>
+<button class="chip on" data-cont="all">Todos los continentes</button>{cont_chips}
+</div></div>
+<p class="subt" style="margin:8px 0 14px"><b>Clic en cualquier fila</b> para el GAMELOG de esa
+ciudad — <span class="gv g-ex">✅ EXACTO</span> · <span class="gv g-t2">✅ TOP-2</span> ·
+<span class="gv g-t3">🔶 TOP-3</span> · <span class="gv g-bad">❌ PÉRDIDA</span>.
+El nivel se scorea contra el <b>top-1/2/3 CONGELADO</b> en el freeze (mismo criterio que el
+historial de cada ciudad y estadísticas). <b>p ganador</b> = % de mercados donde ganó el top-2
+congelado. Clic en <b>EXACTOS</b> o <b>TOP-2</b> ordena por ese %. <b>lab 60d</b> = hit del
+backfill (referencia).</p>
+<div id="lb24">{table_html(rows, gamelog, "", with_lab=True)}</div>
+<div id="lb48" style="display:none">
+<p class="subt" style="margin:0 0 8px">Pick fijado ~44h antes del cierre (entrada más temprana =
+mejor precio) — acumula desde el 16/07.</p>
+{table_html(rows48, gamelog48, "@48", with_lab=False)}</div>
+<p class="subt" style="margin-top:14px">Pick oficial = top-1 congelado 04:30 local. Con pocos días
+esto es indicativo, no veredicto. Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
 
     extra_css = '''
+.viz-root .vfilters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .viz-root table.lb{border-collapse:collapse;width:100%;font-size:13px;}
 .viz-root table.lb th{font-size:10px;color:var(--mut);text-transform:uppercase;text-align:right;
   padding:6px 10px;border-bottom:1px solid var(--bd);letter-spacing:.04em;}
 .viz-root table.lb th:nth-child(-n+2){text-align:left;}
+.viz-root table.lb th.sortable{cursor:pointer;color:var(--ink2);}
+.viz-root table.lb th.sortable:hover{color:var(--fc);}
+.viz-root table.lb th.sortable.on{color:var(--fc);}
 .viz-root table.lb td{padding:8px 10px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;}
 .viz-root table.lb td.num{text-align:right;}
 .viz-root table.lb td.big{font-size:17px;font-weight:700;}
+.viz-root table.lb td.pg{color:var(--fc);font-weight:700;}
 .viz-root table.lb td.lab{font-size:11px;color:var(--mut);}
 .viz-root tr.lbrow[data-has="1"]{cursor:pointer;}
 .viz-root tr.lbrow[data-has="1"]:hover td{background:var(--s2);}
@@ -247,6 +309,7 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
 '''
     lb_js = '''<script>
 (function(){
+  // gamelog desplegable
   document.querySelectorAll('tr.lbrow[data-has="1"]').forEach(function(row){
     row.addEventListener('click',function(){
       var st=row.dataset.st;
@@ -256,21 +319,71 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
       row.classList.toggle('open',open);
     });
   });
-  // Refresh manual: POST /action?do=leaderboard (lo sirve el dashboard con --serve), luego recarga.
+  // tabs 24/48
+  document.querySelectorAll('.chip[data-tab]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.chip[data-tab]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      document.getElementById('lb24').style.display=(b.dataset.tab==='lb24')?'':'none';
+      document.getElementById('lb48').style.display=(b.dataset.tab==='lb48')?'':'none';
+      try{sessionStorage.setItem('wxbt-lbtab',b.dataset.tab);}catch(e){}
+    });
+  });
+  try{var t=sessionStorage.getItem('wxbt-lbtab');if(t==='lb48'){var b=document.querySelector('.chip[data-tab="lb48"]');if(b)b.click();}}catch(e){}
+  // filtro por continente (aplica a ambas tablas, renumera el ranking visible)
+  var cont='all';
+  function applyCont(){
+    ['lb24','lb48'].forEach(function(id){
+      var box=document.getElementById(id); if(!box)return;
+      var i=0;
+      box.querySelectorAll('tr.lbrow').forEach(function(r){
+        var ok=(cont==='all'||r.dataset.cont===cont);
+        r.style.display=ok?'':'none';
+        var det=box.querySelector('tr.glrow[data-for="'+r.dataset.st+'"]');
+        if(det&&!ok)det.classList.add('hidden');
+        if(det)det.style.display=ok?'':'none';
+        if(ok){i++;var rk=r.querySelector('.rk');if(rk)rk.textContent=i;r.classList.remove('open');}
+      });
+    });
+  }
+  document.querySelectorAll('.chip[data-cont]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.chip[data-cont]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); cont=b.dataset.cont; applyCont();
+    });
+  });
+  // orden clickeable por EXACTOS / TOP-2 (%): reordena pares fila+gamelog
+  var sortKey=null, sortAsc=false;
+  document.querySelectorAll('th.sortable').forEach(function(th){
+    th.addEventListener('click',function(){
+      var key=th.dataset.sort;
+      if(sortKey===key){sortAsc=!sortAsc;}else{sortKey=key;sortAsc=false;}
+      document.querySelectorAll('th.sortable').forEach(function(x){x.classList.remove('on');});
+      document.querySelectorAll('th.sortable[data-sort="'+key+'"]').forEach(function(x){x.classList.add('on');});
+      var tb=th.closest('table').querySelector('tbody');
+      var pairs=[];
+      tb.querySelectorAll('tr.lbrow').forEach(function(r){
+        pairs.push([r, tb.querySelector('tr.glrow[data-for="'+r.dataset.st+'"]')]);
+      });
+      pairs.sort(function(a,b){var va=+a[0].dataset[key],vb=+b[0].dataset[key];return sortAsc?(va-vb):(vb-va);});
+      pairs.forEach(function(p){tb.appendChild(p[0]);if(p[1])tb.appendChild(p[1]);});
+      applyCont();
+    });
+  });
+  // Refresh: do=results — regenera leaderboard + historiales de ciudad + stats con el MISMO
+  // cache de ganadores (coherencia entre vistas, pedido Santiago 2026-07-21).
   var btn=document.getElementById('lb-refresh'), msg=document.getElementById('lb-msg');
   if(btn) btn.addEventListener('click',function(){
     if(location.protocol==='file:'){ msg.textContent='abrí el dashboard servido (http) para usar el refresh en vivo'; return; }
-    btn.classList.add('busy'); btn.disabled=true; msg.textContent='recalculando ranking…';
-    fetch('/action?do=leaderboard',{method:'POST'}).then(function(r){
+    btn.classList.add('busy'); btn.disabled=true; msg.textContent='actualizando resultados… (~1-2 min)';
+    fetch('/action?do=results',{method:'POST'}).then(function(r){
         var ct=(r.headers&&r.headers.get&&r.headers.get('content-type'))||'';
         if(!r.ok||ct.indexOf('application/json')<0){ throw new Error('abrí el dashboard con --serve (http://…:8765) para usar el refresh en vivo'); }
         return r.json();
       })
-      .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},600); })
+      .then(function(j){ msg.textContent=(j.ok?'✓ ':'✗ ')+(j.msg||''); setTimeout(function(){location.reload();},800); })
       .catch(function(e){ btn.classList.remove('busy'); btn.disabled=false; msg.textContent=(e&&e.message)||(''+e); });
   });
-  // auto-refresh: recarga cada 3 min (toma la ultima regeneracion del server/run_daily) si la
-  // pestaña esta visible.
   setInterval(function(){ if(!document.hidden) location.reload(); }, 180000);
 })();
 </script>'''
@@ -281,15 +394,17 @@ Regenerar: <code>python scripts/leaderboard.py</code></p></div>'''
     out = os.path.abspath(os.path.join(D, "leaderboard.html"))
     open(out, "w", encoding="utf-8").write(html)
     print(f"Leaderboard -> {out}   (actualizado {updated} AR)")
-    print(f"Ranking vivo ({rango_txt}, n = targets resueltos):")
+    print(f"Ranking vivo 24h ({rango_txt}, n = targets resueltos):")
     for i, r in enumerate(rows, 1):
-        pws = f"{r['pw']:.3f}" if r["pw"] == r["pw"] else "-"
+        pg = f"{r['t2'] / r['n']:.1%}" if r["n"] else "-"
         labs = f"{r['lab']:.0%}" if r["lab"] == r["lab"] else "-"
         print(f"  {i:2d}. {r['st']} ({r['ciudad']}): exactos {r['ex']}/{r['n']}  "
-              f"top2 {r['t2']}/{r['n']}  top3 {r['t3']}/{r['n']}  pwin {pws}  lab60d {labs}")
+              f"top2 {r['t2']}/{r['n']}  top3 {r['t3']}/{r['n']}  p-ganador {pg}  lab60d {labs}")
     if len(df):
         src = df["forecast_source"].value_counts().to_dict()
         print("Fuente temporal del score: " + ", ".join(f"{k}={v}" for k, v in src.items()))
+    if n48:
+        print(f"Tab 48hs: {n48} resueltos.")
 
 
 if __name__ == "__main__":

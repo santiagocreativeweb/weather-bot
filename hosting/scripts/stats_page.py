@@ -19,6 +19,7 @@ from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp   
 from wxbt.market import bucket_prob                                                  # noqa: E402
 from wxbt.forward_scoring import frozen_forecast, audit_only_targets                 # noqa: E402
 from wxbt_nav import nav_html, NAV_CSS                                               # noqa: E402
+import wxbt_insights as I                                                            # noqa: E402
 
 D = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -86,15 +87,25 @@ def records(today):
         if forecast_source == "forward-fallback":
             continue  # no acreditar un resultado sin snapshot congelado/reconstruible
         pick = winner_by_temp(buckets, int(math.floor(mu)))
-        probs = [bucket_prob(mu - 0.5, sigma, lo, hi) for lo, hi in buckets]
-        order = sorted(range(len(buckets)), key=lambda i: -probs[i])
-        rank_w = order.index(buckets.index(winner)) + 1
-        exact = int(pick == winner)
-        top2 = int(exact or rank_w <= 2)
-        top3 = int(top2 or rank_w <= 3)
-        nivel = "EXACTO" if exact else ("TOP-2" if top2 else ("TOP-3" if top3 else "PERDIDA"))
+        # FUENTE DE VERDAD (2026-07-21): el top-1/2/3 CONGELADO del freeze — mismo criterio que
+        # leaderboard/historiales/telegram. Ranking re-derivado solo como fallback legacy.
+        stored = ((audit.get(f"{r.station}|{r.target.isoformat()}") or {}).get("froze") or {}).get("top")
+        nivel = I.nivel_vs_top(stored, winner[0], winner[1])
+        if nivel is not None:
+            pick_lbl = stored[0]
+        else:
+            probs = [bucket_prob(mu - 0.5, sigma, lo, hi) for lo, hi in buckets]
+            order = sorted(range(len(buckets)), key=lambda i: -probs[i])
+            rank_w = order.index(buckets.index(winner)) + 1
+            exact_f = int(pick == winner)
+            nivel = ("EXACTO" if exact_f else ("TOP-2" if rank_w <= 2 else
+                     ("TOP-3" if rank_w <= 3 else "PERDIDA")))
+            pick_lbl = lbl_of(pick, unit) if pick else "—"
+        exact = int(nivel == "EXACTO")
+        top2 = int(nivel in ("EXACTO", "TOP-2"))
+        top3 = int(nivel in ("EXACTO", "TOP-2", "TOP-3"))
         recs.append(dict(station=r.station, target=r.target, unit=unit, res=res,
-                         pick=lbl_of(pick, unit) if pick else "—",
+                         pick=pick_lbl,
                          win=lbl_of(winner, unit), nivel=nivel, exact=exact, top2=top2, top3=top3,
                          err=(abs(mu - obs) if obs is not None else None),
                          mu=mu, real=obs, forecast_source=forecast_source))
@@ -113,8 +124,10 @@ def pct(a, b):
     return f"{a/b:.0%}" if b else "—"
 
 
-def section_html(recs, empty_msg):
-    """Cards KPI + rendimiento dia-por-dia para un set de records (comun a tabs 24h y 48h)."""
+def section_html(recs, empty_msg, suffix="t24"):
+    """Cards KPI + rendimiento dia-por-dia para un set de records (comun a tabs 24h y 48h).
+    Las filas llevan data-st/data-cont y las cards viven en #cards-<suffix> para que el filtro
+    por continente/ciudad (2026-07-21, pedido Santiago) recalcule todo client-side."""
     n = len(recs)
     ex = sum(r["exact"] for r in recs)
     t2 = sum(r["top2"] for r in recs)
@@ -144,7 +157,8 @@ def section_html(recs, empty_msg):
             cont, pais, ciudad = STATION_META.get(r["station"], ("?", "?", r["station"]))[:3]
             fis = ' <span class="fis" title="resuelto por obs fisica IEM (mercado sin ganador aun)">·fís</span>' if r["res"] == "fisica" else ""
             trs.append(
-                f'<tr><td class="stn">{r["station"]}<span>{ciudad}</span></td>'
+                f'<tr data-st="{r["station"]}" data-cont="{cont}">'
+                f'<td class="stn">{r["station"]}<span>{ciudad}</span></td>'
                 f'<td>{r["pick"]}</td><td class="win">{r["win"]}{fis}</td>'
                 f'<td class="verd {NIV_CLS[r["nivel"]]}">{NIV_ICON[r["nivel"]]} {r["nivel"]}</td>'
                 f'<td class="num">{("%.1f°"%r["err"]) if r["err"] is not None else "—"}</td></tr>')
@@ -155,7 +169,7 @@ def section_html(recs, empty_msg):
             f'<table class="dtab"><thead><tr><th>estación</th><th>pick bot</th><th>ganó</th>'
             f'<th>resultado</th><th class="num">error</th></tr></thead><tbody>{"".join(trs)}</tbody></table></div>')
     stats = dict(n=n, ex=ex, t2=t2, t3=t3, perd=perd, mae=mae, days=days)
-    return (f'<div class="sgrid">{cards}</div>'
+    return (f'<div class="sgrid" id="cards-{suffix}">{cards}</div>'
             + ("".join(day_html) if day_html else f'<p class="subt">{empty_msg}</p>')), stats
 
 
@@ -183,14 +197,26 @@ def main():
     today = dt.date.today()
     print(f"Estadisticas del bot al {today} ...")
     recs = records(today)
-    sec24, s24 = section_html(recs, "Sin mercados resueltos todavía — vuelve cuando el día haya cerrado.")
+    sec24, s24 = section_html(recs, "Sin mercados resueltos todavía — vuelve cuando el día haya cerrado.", "t24")
     recs48 = records48(today)
     sec48, s48 = section_html(
         recs48, "El pick 48h se fija 24h antes que el normal (madrugada del día anterior) y "
                 "empezó a capturarse el 16/07/2026 — los primeros resultados aparecen cuando "
-                "resuelvan los mercados del 17/07 en adelante.")
+                "resuelvan los mercados del 17/07 en adelante.", "t48")
     n, days = s24["n"], s24["days"]
     ex, t2, t3, perd, mae = s24["ex"], s24["t2"], s24["t3"], s24["perd"], s24["mae"]
+
+    # datos minimos para que el filtro por continente/ciudad recalcule las cards client-side
+    def _mini(rs):
+        return [dict(st=r["station"], cont=STATION_META.get(r["station"], ("?",))[0],
+                     niv=r["nivel"], err=(round(r["err"], 2) if r["err"] is not None else None))
+                for r in rs]
+    conts = sorted({STATION_META.get(r["station"], ("?",))[0] for r in recs + recs48})
+    cities = sorted({(r["station"], STATION_META.get(r["station"], ("?", "?", r["station"]))[2])
+                     for r in recs + recs48}, key=lambda x: x[1])
+    cont_chips = "".join(f'<button class="chip" data-fc="{c}">{c}</button>' for c in conts)
+    city_opts = "".join(f'<option value="{st}">{city} · {st}</option>' for st, city in cities)
+    payload = json.dumps({"t24": _mini(recs), "t48": _mini(recs48)}, ensure_ascii=False)
 
     body = f'''<div class="viz-root">
 <div class="topbar">{nav_html("stats")}<div class="row1"><h1>📊 ESTADÍSTICAS — rendimiento del bot</h1>
@@ -198,18 +224,72 @@ def main():
 <div class="vfilters" style="margin-top:10px">
 <button class="chip on" data-tab="t24">⏱ 24hs — pick fijado 04:30 local</button>
 <button class="chip" data-tab="t48">⏳ 48hs — fijado un día antes ({s48["n"]} resueltos)</button>
+<span style="width:14px"></span>
+<button class="chip on" data-fc="all">Todos</button>{cont_chips}
+<select id="f-city" class="citysel"><option value="">Ciudad (todas)</option>{city_opts}</select>
 </div></div>
-<p class="subt" style="margin:8px 0 12px">En cada mercado, el <b>pick</b> del bot (floor μ) contra
+<p class="subt" style="margin:8px 0 12px">En cada mercado, el <b>pick</b> del bot contra
 el <b>bucket que ganó</b> — <span class="verd n-ex">✓ EXACTO</span> ·
 <span class="verd n-t2">✓ TOP-2</span> · <span class="verd n-t3">~ TOP-3</span> ·
-<span class="verd n-bad">✗ PÉRDIDA</span>. El tab <b>48hs</b> mide el pick fijado ~44h antes de que
-termine el día del mercado (entrada más temprana = mejor precio); acumula desde el 16/07.</p>
+<span class="verd n-bad">✗ PÉRDIDA</span> (nivel = vs el top-1/2/3 CONGELADO al freeze, mismo
+criterio que leaderboard e historiales). El tab <b>48hs</b> mide el pick fijado ~44h antes;
+acumula desde el 16/07. Los filtros de continente/ciudad recalculan las cards.</p>
 <div id="t24">{sec24}</div>
 <div id="t48" style="display:none">{sec48}</div>
 <p class="subt" style="margin-top:16px">Regenerar: <code>python scripts/stats_page.py</code> o el botón
 📊 del dashboard.</p></div>
+<script>window.__WXR={payload};</script>
 <script>
 (function(){{
+  var fc='all', fcity='';
+  function scard(l,b,s,c){{return '<div class="scard '+(c||'')+'"><div class="lbl">'+l+'</div><div class="big">'+b+'</div><div class="sub">'+s+'</div></div>';}}
+  function pct(a,b){{return b?Math.round(100*a/b)+'%':'—';}}
+  function recalc(tab){{
+    var rs=(window.__WXR[tab]||[]).filter(function(r){{
+      return (fc==='all'||r.cont===fc)&&(!fcity||r.st===fcity);}});
+    var n=rs.length,ex=0,t2=0,t3=0,pe=0,errs=[];
+    rs.forEach(function(r){{
+      if(r.niv==='EXACTO')ex++;
+      if(r.niv==='EXACTO'||r.niv==='TOP-2')t2++;
+      if(r.niv==='EXACTO'||r.niv==='TOP-2'||r.niv==='TOP-3')t3++;
+      if(r.niv==='PERDIDA')pe++;
+      if(r.err!=null)errs.push(r.err);}});
+    var mae=errs.length?errs.reduce(function(a,b){{return a+b;}},0)/errs.length:null;
+    var rmse=errs.length?Math.sqrt(errs.reduce(function(a,b){{return a+b*b;}},0)/errs.length):null;
+    var el=document.getElementById('cards-'+tab); if(!el)return;
+    el.innerHTML=scard('mercados resueltos',n,(fc==='all'&&!fcity)?'todos':'con el filtro aplicado')+
+      scard('acierto EXACTO',pct(ex,n),ex+'/'+n+' · bucket clavado')+
+      scard('acierto TOP-2',pct(t2,n),t2+'/'+n+' · ganador en top-2','y')+
+      scard('acierto TOP-3',pct(t3,n),t3+'/'+n,'o')+
+      scard('PÉRDIDAS',pe,'de '+n+' · fuera del top-3','bad')+
+      scard('MAE / RMSE',mae!=null?mae.toFixed(2)+'°':'—',rmse!=null?'RMSE '+rmse.toFixed(2)+'°':'');
+  }}
+  function applyRows(){{
+    ['t24','t48'].forEach(function(tab){{
+      var box=document.getElementById(tab); if(!box)return;
+      box.querySelectorAll('.daysec').forEach(function(sec){{
+        var vis=0;
+        sec.querySelectorAll('tbody tr').forEach(function(tr){{
+          var ok=(fc==='all'||tr.dataset.cont===fc)&&(!fcity||tr.dataset.st===fcity);
+          tr.style.display=ok?'':'none'; if(ok)vis++;
+        }});
+        sec.style.display=vis?'':'none';
+        var roll=sec.querySelector('.droll');
+        if(roll&&vis){{
+          var dex=0,dt2=0,dpe=0;
+          sec.querySelectorAll('tbody tr').forEach(function(tr){{
+            if(tr.style.display==='none')return;
+            var v=tr.querySelector('.verd')||{{className:''}};
+            if(v.className.indexOf('n-ex')>=0)dex++;
+            if(v.className.indexOf('n-ex')>=0||v.className.indexOf('n-t2')>=0)dt2++;
+            if(v.className.indexOf('n-bad')>=0)dpe++;
+          }});
+          roll.innerHTML=dex+' exacto'+(dex!==1?'s':'')+' · '+dt2+' top-2 · <b class="dbad">'+dpe+' pérdida'+(dpe!==1?'s':'')+'</b>';
+        }}
+      }});
+      recalc(tab);
+    }});
+  }}
   document.querySelectorAll('.chip[data-tab]').forEach(function(b){{
     b.addEventListener('click',function(){{
       document.querySelectorAll('.chip[data-tab]').forEach(function(x){{x.classList.remove('on');}});
@@ -219,6 +299,14 @@ termine el día del mercado (entrada más temprana = mejor precio); acumula desd
       try{{sessionStorage.setItem('wxbt-stab',b.dataset.tab);}}catch(e){{}}
     }});
   }});
+  document.querySelectorAll('.chip[data-fc]').forEach(function(b){{
+    b.addEventListener('click',function(){{
+      document.querySelectorAll('.chip[data-fc]').forEach(function(x){{x.classList.remove('on');}});
+      b.classList.add('on'); fc=b.dataset.fc; applyRows();
+    }});
+  }});
+  var cs=document.getElementById('f-city');
+  if(cs)cs.addEventListener('change',function(){{fcity=cs.value;applyRows();}});
   // restaurar tab tras auto-refresh + recargar cada 3 min si visible
   try{{var t=sessionStorage.getItem('wxbt-stab');if(t==='t48'){{var b=document.querySelector('.chip[data-tab="t48"]');if(b)b.click();}}}}catch(e){{}}
   setInterval(function(){{ if(!document.hidden) location.reload(); }}, 180000);
@@ -227,6 +315,8 @@ termine el día del mercado (entrada más temprana = mejor precio); acumula desd
 
     extra = '''
 .viz-root .vfilters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.viz-root select.citysel{background:var(--s2);color:var(--ink);border:1px solid var(--bd);
+  border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit;}
 .viz-root .daysec{margin:16px 0 8px;}
 .viz-root .daysec h3{font-size:13px;color:var(--fc);margin:0 0 6px;font-family:var(--mono);
   letter-spacing:.06em;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;}

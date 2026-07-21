@@ -65,6 +65,21 @@ def parse_win_label(lbl):
     return parse_bucket(t)
 
 
+def nivel_vs_top(stored_top, win_lo, win_hi):
+    """Nivel EXACTO/TOP-2/TOP-3/PERDIDA comparando el bucket GANADOR contra el top-1/2/3
+    CONGELADO en el freeze (froze['top'] / froze48['top']). Esta es LA fuente de verdad del
+    scoring (2026-07-21, pedido Santiago: leaderboard decia PERDIDA y el historial TOP-3 para el
+    mismo dia — cada vista re-derivaba su propio ranking; ahora todas scorean el top inmutable).
+    Devuelve None si no hay top congelado valido (caller decide fallback legacy)."""
+    if not stored_top:
+        return None
+    for i, lbl in enumerate(stored_top[:3]):
+        lo, hi = parse_win_label(lbl)
+        if (lo, hi) == (win_lo, win_hi) and not (lo is None and hi is None):
+            return ("EXACTO", "TOP-2", "TOP-3")[i]
+    return "PERDIDA"
+
+
 def bucket_label(lo, hi, unit):
     deg = "°F" if unit == "F" else "°C"
     if lo is None and hi is None:
@@ -392,7 +407,8 @@ def bot_history(start=HISTORY_START, end=None, refresh=False, today=None, kind="
             if not (start <= tg <= min(end, today)):
                 continue
             rows.append(_score_row(st, tg, float(f48["mu"]),
-                                   float(f48.get("sg") or 1.5), "froze48", winners))
+                                   float(f48.get("sg") or 1.5), "froze48", winners,
+                                   stored_top=f48.get("top")))
         rows.sort(key=lambda r: (r["target"], r["station"]))
         return rows
     # sigma fallback por estacion desde predictions_forward
@@ -422,12 +438,15 @@ def bot_history(start=HISTORY_START, end=None, refresh=False, today=None, kind="
                                       (fb[2] if fb else sig_med.get(st, 1.5)))
         if src == "forward-fallback" or not (mu == mu):
             continue   # sin evidencia congelada -> no entra al KPI (honestidad)
-        rows.append(_score_row(st, tg, mu, sg, src, winners))
+        stored_top = ((audit.get(f"{st}|{tg.isoformat()}") or {}).get("froze") or {}).get("top")
+        rows.append(_score_row(st, tg, mu, sg, src, winners, stored_top=stored_top))
     return rows
 
 
-def _score_row(st, tg, mu, sg, src, winners):
-    """Scorea UN pick congelado contra el ganador oficial (comun a froze y froze48)."""
+def _score_row(st, tg, mu, sg, src, winners, stored_top=None):
+    """Scorea UN pick congelado contra el ganador oficial (comun a froze y froze48).
+    Con stored_top (froze['top'] del audit) el nivel sale de nivel_vs_top — el ranking INMUTABLE
+    fijado en el freeze. El ranking sintetico re-derivado queda SOLO como fallback legacy."""
     unit = STATIONS[st][3]
     w = winners.get((st, tg)) or {}
     win_lbl = w.get("lbl")
@@ -441,6 +460,11 @@ def _score_row(st, tg, mu, sg, src, winners):
         win_b = next((b for b in buckets if resolve_bucket_open(w, b)), None)
         pick_b = next((b for b in buckets if b[0] <= fbk <= b[1]), None)
         probs = {b: bucket_prob(mu - 0.5, sg, b[0], b[1]) for b in buckets}
+        nivel = nivel_vs_top(stored_top, w.get("lo"), w.get("hi"))
+        if nivel is not None:
+            rec.update(nivel=nivel, pwin=probs.get(win_b),
+                       pick_lbl=stored_top[0], win_lbl=win_lbl)
+            return rec
         rank = sorted(buckets, key=lambda b: -probs[b])
         if pick_b:   # pick-first (mismo ranking que timeline/leaderboard)
             rank = [pick_b] + [b for b in rank if b != pick_b]
@@ -451,9 +475,12 @@ def _score_row(st, tg, mu, sg, src, winners):
                    pick_lbl=bucket_label(pick_b[0], pick_b[1], unit) if pick_b else None,
                    win_lbl=win_lbl)
     else:
-        pick_w = 2 if unit == "F" else 1
-        plo = fbk - (fbk % pick_w) if unit == "F" else fbk
-        rec["pick_lbl"] = bucket_label(plo, plo + pick_w - 1, unit)
+        if stored_top:
+            rec["pick_lbl"] = stored_top[0]
+        else:
+            pick_w = 2 if unit == "F" else 1
+            plo = fbk - (fbk % pick_w) if unit == "F" else fbk
+            rec["pick_lbl"] = bucket_label(plo, plo + pick_w - 1, unit)
     return rec
 
 

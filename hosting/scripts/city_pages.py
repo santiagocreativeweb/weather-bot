@@ -229,18 +229,27 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
         if len(entry) > 1:
             picks.append(entry)
 
-    # mercado hoy/mañana
+    # mercado hoy/mañana — con badges top-1/2/3 CONGELADOS (HOY usa froze.top; MAÑANA usa el
+    # froze48.top si ya esta fijado — pedido Santiago 2026-07-21) + tabla de pronosticos NO
+    # (buckets fuera del top-3, con el precio del freeze) para las ciudades top-7 del ranking.
+    apt_no = bool(pos and pos <= 7)
     markets = []
     for d in (d_mkt, d_mkt + dt.timedelta(days=1)):
         info = mk.get(code, {}).get(d)
         rec = audit.get(f"{code}|{d.isoformat()}") or {}
-        fr = rec.get("froze") or {}
+        fr, f48r = rec.get("froze") or {}, rec.get("froze48") or {}
         mu = sg = None
         frozen = False
         if fr.get("mu") is not None:
             mu, sg, frozen = fr["mu"], fr.get("sg") or 1.5, True
         elif preds.get((code, d)):
             mu, sg = preds[(code, d)]
+        # top congelado que manda en esta card: froze (24h) o, si no existe aun, froze48
+        tops, tops_src = [], None
+        if fr.get("mu") is not None and fr.get("top"):
+            tops, tops_src = fr["top"][:3], "24h"
+        elif f48r.get("mu") is not None and f48r.get("top"):
+            tops, tops_src = f48r["top"][:3], "48h"
         lmx = (live_obs.get((code, d)) or {}).get("max")
         rows = []
         if info and info.get("buckets"):
@@ -256,17 +265,36 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
                 if p is None:
                     continue
                 pb = D.pbot_floor(mu, sg, lo, hi) if mu is not None else None
-                cls = ("win" if info.get("winner") == lab else
-                       ("pick" if (fb is not None and (lo is None or fb >= lo) and (hi is None or fb <= hi)) else ""))
+                if tops:
+                    cls = ("win" if info.get("winner") == lab else
+                           "pick" if lab == tops[0] else
+                           "t2b" if len(tops) > 1 and lab == tops[1] else
+                           "t3b" if len(tops) > 2 and lab == tops[2] else "")
+                else:
+                    cls = ("win" if info.get("winner") == lab else
+                           ("pick" if (fb is not None and (lo is None or fb >= lo) and (hi is None or fb <= hi)) else ""))
                 dead = fl is not None and hi is not None and hi < fl
                 rows.append(dict(lab=lab, mid=round(p, 3), pbot=(round(pb, 3) if pb is not None else None),
                                  edge=(round((pb - p) * 100) if pb is not None else None),
                                  cls=cls, dead=dead))
+        # tabla NO congelada (solo top-7): book + top del freeze que manda
+        nos = None
+        if apt_no and tops:
+            src = fr if tops_src == "24h" else f48r
+            book = src.get("book") or []
+            if book:
+                nos = [dict(lab=lab, px=px,
+                            tag=("EXACTO" if lab == tops[0] else
+                                 "TOP-2" if len(tops) > 1 and lab == tops[1] else
+                                 "TOP-3" if len(tops) > 2 and lab == tops[2] else "NO"))
+                       for lab, px in book]
         markets.append(dict(head=("HOY" if d == d_mkt else "MAÑANA"), date=D.fecha_es(d),
+                            iso=d.isoformat(),
                             mu=(round(mu, 1) if mu is not None else None), sg=(round(sg, 1) if sg else None),
-                            frozen=frozen, live_max=(round(lmx, 1) if lmx is not None else None),
+                            frozen=frozen, tops_src=tops_src,
+                            live_max=(round(lmx, 1) if lmx is not None else None),
                             winner=info.get("winner") if info else None,
-                            url=I.pm_url(code, d), wu=D.wu_url(code, d), rows=rows))
+                            url=I.pm_url(code, d), wu=D.wu_url(code, d), rows=rows, nos=nos))
 
     tl = None if no_live else market_timeline(code, d_mkt, audit)
 
@@ -277,22 +305,24 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
     picks30 = [dict(x=r["target"].isoformat(), y=round(r["mu"], 1))
                for r in hist_rows if r["station"] == code and d0 <= r["target"] <= today]
 
-    # pws
+    # pws — ahora con max/min PARCIALES del dia ademas de la actual (pedido Santiago 2026-07-21)
     ref = pws_ref.get(code) or []
     cur = live_pws.get(code) or {}
-    pws = [dict(id=r["pws_id"], lat=float(r["lat"] or 0), lon=float(r["lon"] or 0),
-                bias=round(float(r["bias"]), 2), std=round(float(r["std"]), 2),
-                km=round(float(r["dist_km"] or 0), 1), now=cur.get(r["pws_id"])) for r in ref if r.get("lat")]
-    est_vals = sorted(p["now"] - p["bias"] for p in pws if p["now"] is not None)
-    est = round(est_vals[len(est_vals) // 2], 1) if est_vals else None
+    pws = []
+    for r in ref:
+        if not r.get("lat"):
+            continue
+        v = cur.get(r["pws_id"]) or {}
+        pws.append(dict(id=r["pws_id"], lat=float(r["lat"] or 0), lon=float(r["lon"] or 0),
+                        bias=round(float(r["bias"]), 2), std=round(float(r["std"]), 2),
+                        km=round(float(r["dist_km"] or 0), 1),
+                        now=v.get("now"), hi=v.get("hi"), lo=v.get("lo")))
 
-    # modelos
-    def _mrows(src):
-        sub = sorted([r for r in perf if r["station"] == code and r["src"] == src],
-                     key=lambda r: (-(r["rate"] if r["rate"] == r["rate"] else -1),
-                                    r["mae"] if r["mae"] == r["mae"] else 99))
-        return [dict(m=r["model"], hits=r["hits"], n=r["n"], rate=round(r["rate"], 2),
-                     mae=(round(r["mae"], 2) if r["mae"] == r["mae"] else None)) for r in sub[:6]]
+    def _med(key):
+        vals = sorted(p[key] - p["bias"] for p in pws if p.get(key) is not None)
+        return round(vals[len(vals) // 2], 1) if vals else None
+    est, est_hi, est_lo = _med("now"), _med("hi"), _med("lo")
+
     best = _read_rank().get(code)
 
     # historial — con el pick 48h al lado del de 24h (pedido Santiago 2026-07-17), cada uno con
@@ -305,6 +335,30 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
             for r in sorted([x for x in hist_rows if x["station"] == code],
                             key=lambda r: r["target"], reverse=True)[:14]]
 
+    # DIA POR DIA para el selector de fechas (2026-07-21, pedido Santiago): desde el arranque de
+    # la ciudad (primer registro del audit) hasta mañana. Cada dia: ambos picks congelados, el
+    # resultado y el book del freeze (para la tabla NO). El timeline de un dia pasado se pide al
+    # server (/timeline) al elegirlo.
+    h24map = {r["target"]: r for r in hist_rows if r["station"] == code}
+    day_keys = sorted({dt.date.fromisoformat(k.split("|")[1]) for k in audit
+                       if k.startswith(code + "|") and I._valid_date(k.split("|")[1])})
+    days = []
+    for dd in day_keys:
+        rc = audit.get(f"{code}|{dd.isoformat()}") or {}
+        f24d, f48d = rc.get("froze") or {}, rc.get("froze48") or {}
+        r24, r48 = h24map.get(dd), h48.get(dd)
+        if f24d.get("mu") is None and f48d.get("mu") is None and not r24:
+            continue
+        days.append(dict(
+            d=dd.isoformat(), lbl=dd.strftime("%d/%m"),
+            p24=(dict(mu=f24d.get("mu"), top=(f24d.get("top") or [])[:3])
+                 if f24d.get("mu") is not None else None),
+            p48=(dict(mu=f48d.get("mu"), top=(f48d.get("top") or [])[:3])
+                 if f48d.get("mu") is not None else None),
+            win=(r24 or {}).get("win_lbl"), niv=(r24 or {}).get("nivel"),
+            niv48=(r48 or {}).get("nivel"),
+            book=(f24d.get("book") or f48d.get("book") or None)))
+
     return dict(
         code=code, city=ciudad, country=pais, cont=cont, unit=unit, deg=deg,
         lat=lat, lon=lon,
@@ -315,8 +369,8 @@ def build_city_data(code, today, mk, preds, audit, hist_rows, perf, obs_map, pws
                    tnow=(round(float(tnow), 1) if tnow is not None else None), same=same,
                    pos=pos, total=len(rank_rows)),
         picks=picks, markets=markets, tl=tl, obs=obs, picks30=picks30,
-        station=dict(lat=lat, lon=lon, code=code), pws=pws, est=est,
-        models=dict(vivo=_mrows("vivo"), retro=_mrows("retro")),
+        station=dict(lat=lat, lon=lon, code=code), pws=pws,
+        est=est, est_hi=est_hi, est_lo=est_lo, apt_no=apt_no, days=days,
         best=(list(best) if best else None), history=hist)
 
 
@@ -384,7 +438,9 @@ def main(a):
         for code in codes:
             ref = pws_ref.get(code)
             if ref:
-                live_pws[code] = P.pws_current([r["pws_id"] for r in ref], STATIONS[code][3])
+                d_loc = (dt.datetime.now(dt.timezone.utc).replace(tzinfo=None)
+                         + dt.timedelta(hours=local_offset(code, today))).date()
+                live_pws[code] = P.pws_today([r["pws_id"] for r in ref], STATIONS[code][3], d=d_loc)
 
     # cuando se regenera UNA sola ciudad, preservar el resto del data file existente
     existing = {}
@@ -478,6 +534,24 @@ _CSS_EXTRA = """
   padding:6px 10px;font-size:13px;font-family:inherit;font-weight:700;}
 .viz-root .autoref{font-size:10.5px;color:var(--mut);font-family:var(--mono);display:inline-flex;align-items:center;gap:6px;}
 .viz-root .autoref input{accent-color:var(--fc);}
+/* [2026-07-21] estilo terminal para la tabla del timeline + dia-por-dia + tabla NO + badges */
+.viz-root .links a.chip{display:inline-block;margin:0 6px 4px 0;text-decoration:none;cursor:pointer;}
+.viz-root .track{display:inline-block;width:100%;max-width:230px;height:8px;background:var(--s2);
+  border-radius:4px;overflow:hidden;vertical-align:middle;}
+.viz-root .fill{display:block;height:100%;background:#42c9ff;border-radius:4px;}
+.viz-root table.tltab2{border-collapse:collapse;width:100%;font-size:12px;font-family:var(--mono);}
+.viz-root table.tltab2 th{font-size:9px;color:var(--mut);text-transform:uppercase;text-align:left;
+  padding:3px 6px;border-bottom:1px solid var(--bd);letter-spacing:.05em;}
+.viz-root table.tltab2 td{padding:4px 6px;border-bottom:1px solid var(--grid);}
+.viz-root table.tltab2 td.num{text-align:right;}
+.viz-root table.tltab2 td.trk{width:38%;}
+.viz-root tr.tl-r1 td{color:var(--pick);font-weight:700;}
+.viz-root tr.tl-r2 td{color:var(--t2);} .viz-root tr.tl-r3 td{color:var(--t3);}
+.viz-root tr.nt-ex td{color:var(--pick);font-weight:700;} .viz-root tr.nt-t2 td{color:var(--t2);}
+.viz-root tr.nt-t3 td{color:var(--t3);} .viz-root tr.nt-no td{color:var(--mut);}
+.viz-root table.ct tr.t2b td{color:var(--t2);font-weight:700;}
+.viz-root table.ct tr.t3b td{color:var(--t3);font-weight:700;}
+.viz-root #dtl-sl{width:100%;accent-color:var(--live);margin-top:6px;}
 .leaflet-container{background:#0a1016;font-family:inherit;}
 .leaflet-tooltip.pwstip{background:#0e151d;color:#e8f0f7;border:1px solid #2b3f52;border-radius:6px;
   font-family:"JetBrains Mono","Consolas",monospace;font-size:11px;}
