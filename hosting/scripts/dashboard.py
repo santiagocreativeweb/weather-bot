@@ -480,7 +480,10 @@ def build_timeline(code, d, hours=24):
     # del freeze el mu mostrado queda CLAVADO en el valor congelado (el audit ya no graba revisiones
     # post-freeze, esto es cinturon-y-tiradores + verificabilidad visual de que nada se mueve).
     frz_ts = int(freeze_utc(code, d).replace(tzinfo=dt.timezone.utc).timestamp())
-    froze_mu = ((load_audit().get(key) or {}).get("froze") or {}).get("mu")
+    _rec_a = load_audit().get(key) or {}
+    _fr = _rec_a.get("froze") or {}
+    _f48 = _rec_a.get("froze48") or {}
+    froze_mu = _fr.get("mu")
     mu_series, pick, ranks = [], [], []
     for t in times:
         cur = None
@@ -507,7 +510,12 @@ def build_timeline(code, d, hours=24):
         ranks.append(([pick_lab] + rest)[:3])
     out = {"ok": True, "times": times, "labels": labels, "prices": prices,
            "mu": mu_series, "pick": pick, "ranks": ranks, "unit": "°F" if unit == "F" else "°C",
-           "city": STATION_META[code][2], "frz": frz_ts, "hours": hours}
+           "city": STATION_META[code][2], "frz": frz_ts, "frz48": frz_ts - 86400, "hours": hours,
+           # [2026-07-21, pedido Santiago] los DOS picks congelados con su hora, para que el
+           # modal muestre que se fijo en la ventana 48h y que en la 24h.
+           "froze": {"mu": _fr.get("mu"), "top": (_fr.get("top") or [])[:3]},
+           "froze48": {"mu": _f48.get("mu"), "top": (_f48.get("top") or [])[:3],
+                       "cap": _f48.get("cap")}}
     tl[(code, d.isoformat(), hours)] = (now, out)
     return out
 
@@ -1048,6 +1056,10 @@ html,body{margin:0;padding:0;min-height:100vh;background:#05080c;
 #tl-modal input[type=range]{flex:1;accent-color:#25e6a4;}
 #tl-modal .tl-time{font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#ffc24a;
   min-width:260px;text-align:right;white-space:nowrap;}
+#tl-modal .tl-frz{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;margin:0 0 8px;
+  font-family:"JetBrains Mono","Cascadia Mono",monospace;}
+#tl-modal .tl-f48{color:#8fa6b8;} #tl-modal .tl-f48 b{color:#a6bccd;}
+#tl-modal .tl-f24{color:#ffc24a;} #tl-modal .tl-f24 b{color:#ffc24a;}
 #tl-modal .tl-bot{font-size:12px;margin:0 0 10px;color:#a6bccd;font-family:"JetBrains Mono","Cascadia Mono",monospace;
   padding:8px 11px;background:#131d27;border-radius:8px;border:1px solid #213042;}
 #tl-modal .tl-bot b{color:#25e6a4;} #tl-modal .tl-bot .tl-y{color:#ffd23e;} #tl-modal .tl-bot .tl-o{color:#ff9142;}
@@ -1820,12 +1832,33 @@ FILTER_JS = """
       +'<button class="tl-hb'+(win===48?' on':'')+'" data-h="48">48h</button></span>'
       +'<input type="range" id="tl-sl" min="0" max="'+(n-1)+'" value="'+(n-1)+'" step="1">'
       +'<span class="tl-time" id="tl-time"></span></div>'
+      +'<div class="tl-frz" id="tl-frz"></div>'
       +'<div class="tl-bot" id="tl-bot"></div><table id="tl-tab"></table>'
       +'<div class="tl-note">arrastra el slider: cada paso = 30 min · Δ = cuanto se movio el precio de ese momento al '+anchorTxt+' · '
       +j.city+(isPast?' · mercado ya resuelto: ventana = '+win+'h antes del cierre':'')+'</div>';
     body.querySelectorAll('.tl-hb').forEach(function(b){
       b.addEventListener('click',function(){ tlHours=+b.dataset.h; tlOpen(st, fe); });
     });
+    // [2026-07-21, pedido Santiago] franja FIJA con los DOS picks congelados y su hora: en 48hs
+    // se ve que se fijo en esa ventana (froze48) y en 24hs cual es el pick oficial (froze).
+    (function(){
+      function tsAR(ts){var t=new Date((ts-3*3600)*1000);function f2(x){return (x<10?'0':'')+x;}
+        return f2(t.getUTCDate())+'/'+f2(t.getUTCMonth()+1)+' '+f2(t.getUTCHours())+':'+f2(t.getUTCMinutes());}
+      function topf(t){if(!t||!t.length)return '';
+        return ' → 🎯'+t[0]+(t[1]?' · 🥈'+t[1]:'')+(t[2]?' · 🥉'+t[2]:'');}
+      var f48=j.froze48||{}, f24=j.froze||{}, L=[];
+      if(f48.mu!=null)
+        L.push('<span class="tl-f48">⏳ <b>48h</b> fijado '+(f48.cap?f48.cap+' AR':tsAR(j.frz48)+' AR')
+          +' · μ '+f48.mu.toFixed(1)+j.unit+topf(f48.top)+'</span>');
+      else if(j.frz48)
+        L.push('<span class="tl-f48">⏳ 48h: se fijaba '+tsAR(j.frz48)+' AR (sin captura)</span>');
+      if(f24.mu!=null)
+        L.push('<span class="tl-f24">🔒 <b>24h</b> fijado '+tsAR(j.frz)+' AR · μ '
+          +f24.mu.toFixed(1)+j.unit+topf(f24.top)+'</span>');
+      else if(j.frz)
+        L.push('<span class="tl-f24">🔒 24h: se fija '+tsAR(j.frz)+' AR (04:30 local)</span>');
+      document.getElementById('tl-frz').innerHTML=L.join('');
+    })();
     var sl=document.getElementById('tl-sl');
     function f2(x){return (x<10?'0':'')+x;}
     function draw(){
@@ -2528,6 +2561,14 @@ def watch(today_s, horizon, interval, max_iters, serve=0):
         class Handler(http.server.SimpleHTTPRequestHandler):
             def __init__(self, *a, **k):
                 super().__init__(*a, directory=dd, **k)
+
+            def end_headers(self):
+                # [FIX 2026-07-21, reporte Santiago "stats no se actualiza desde el 16/07"]:
+                # sin Cache-Control el browser (sobre todo el celu) cachea heuristicamente los
+                # .html regenerados y sirve versiones viejas por horas. no-cache = revalidar
+                # SIEMPRE contra el server (Last-Modified) antes de mostrar.
+                self.send_header("Cache-Control", "no-cache")
+                super().end_headers()
 
             def do_GET(self):
                 u = urllib.parse.urlparse(self.path)

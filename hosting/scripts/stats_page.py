@@ -14,7 +14,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from dashboard import STATION_META, CSS, ddmmyyyy, fecha_es, STATIONS               # noqa: E402
+from dashboard import STATION_META, CSS, ddmmyyyy, fecha_es, STATIONS, to_art       # noqa: E402
 from check_predictions import resolved_buckets, fetch_obs_iem, winner_by_temp        # noqa: E402
 from wxbt.market import bucket_prob                                                  # noqa: E402
 from wxbt.forward_scoring import frozen_forecast, audit_only_targets                 # noqa: E402
@@ -218,9 +218,11 @@ def main():
     city_opts = "".join(f'<option value="{st}">{city} · {st}</option>' for st, city in cities)
     payload = json.dumps({"t24": _mini(recs), "t48": _mini(recs48)}, ensure_ascii=False)
 
+    updated = to_art(dt.datetime.now(dt.timezone.utc)).strftime("%d/%m/%Y %H:%M")
     body = f'''<div class="viz-root">
 <div class="topbar">{nav_html("stats")}<div class="row1"><h1>📊 ESTADÍSTICAS — rendimiento del bot</h1>
 <span class="subt">track record vivo vs ganador oficial de Polymarket · crece cada día</span></div>
+<div class="updbar">🕒 Actualizada: <b>{updated}</b> (hora Argentina) · se regenera con run_daily y los botones del dashboard</div>
 <div class="vfilters" style="margin-top:10px">
 <button class="chip on" data-tab="t24">⏱ 24hs — pick fijado 04:30 local</button>
 <button class="chip" data-tab="t48">⏳ 48hs — fijado un día antes ({s48["n"]} resueltos)</button>
@@ -315,6 +317,8 @@ acumula desde el 16/07. Los filtros de continente/ciudad recalculan las cards.</
 
     extra = '''
 .viz-root .vfilters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.viz-root .updbar{font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:4px;}
+.viz-root .updbar b{color:var(--live);}
 .viz-root select.citysel{background:var(--s2);color:var(--ink);border:1px solid var(--bd);
   border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit;}
 .viz-root .daysec{margin:16px 0 8px;}
