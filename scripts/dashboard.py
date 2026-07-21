@@ -1034,14 +1034,20 @@ html,body{margin:0;padding:0;min-height:100vh;background:#05080c;
   font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#25e6a4;letter-spacing:.05em;font-weight:700;}
 #tl-modal .tl-x{cursor:pointer;color:#617688;font-weight:700;padding:2px 10px;border-radius:6px;font-size:16px;}
 #tl-modal .tl-x:hover{color:#ff5d70;background:rgba(255,93,112,.1);}
-#tl-modal .tl-ctl{display:flex;gap:14px;align-items:center;margin:8px 0 12px;}
-#tl-modal .tl-hbtns{display:inline-flex;gap:4px;}
+/* [FIX 2026-07-21, reporte Santiago] el texto de la hora cambia de largo al mover el slider
+   ("AHORA" vs "1.0h antes del AHORA") y le robaba ancho a la barra -> la barra "respiraba".
+   Ahora el texto tiene ancho RESERVADO fijo y el slider flex:1 estable; en pantallas angostas
+   el texto baja de linea (wrap) en vez de encoger la barra. */
+#tl-modal .tl-ctl{display:flex;gap:14px;align-items:center;margin:8px 0 12px;flex-wrap:wrap;}
+#tl-modal .tl-ctl #tl-sl{flex:1 1 220px;min-width:180px;}
+#tl-modal .tl-time{flex:0 0 auto;min-width:248px;white-space:nowrap;}
+#tl-modal .tl-hbtns{display:inline-flex;gap:4px;flex:0 0 auto;}
 #tl-modal .tl-hb{background:#101a24;color:#8fa6b8;border:1px solid #2b3f52;border-radius:6px;
   padding:3px 9px;font-size:11px;font-family:inherit;cursor:pointer;}
 #tl-modal .tl-hb.on{color:#ffc24a;border-color:#ffc24a;}
 #tl-modal input[type=range]{flex:1;accent-color:#25e6a4;}
 #tl-modal .tl-time{font-family:"JetBrains Mono","Cascadia Mono",monospace;font-size:13px;color:#ffc24a;
-  min-width:150px;text-align:right;white-space:nowrap;}
+  min-width:260px;text-align:right;white-space:nowrap;}
 #tl-modal .tl-bot{font-size:12px;margin:0 0 10px;color:#a6bccd;font-family:"JetBrains Mono","Cascadia Mono",monospace;
   padding:8px 11px;background:#131d27;border-radius:8px;border:1px solid #213042;}
 #tl-modal .tl-bot b{color:#25e6a4;} #tl-modal .tl-bot .tl-y{color:#ffd23e;} #tl-modal .tl-bot .tl-o{color:#ff9142;}
