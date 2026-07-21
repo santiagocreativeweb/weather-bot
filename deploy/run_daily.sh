@@ -14,5 +14,6 @@ python scripts/city_pages.py                                    # dashboard por 
 python scripts/leaderboard.py                                   # track record
 python scripts/stats_page.py                                    # estadisticas (tabs 24/48h)
 python scripts/telegram_bot.py           --push                 # resumen diario al bot
+python scripts/check_freshness.py                               # centinela: avisa si algo quedo viejo
 echo "===== fin $(date -u) UTC ====="
 exit 0

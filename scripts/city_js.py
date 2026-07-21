@@ -102,7 +102,7 @@ CITY_JS = SHARED_JS + r"""
       var i48=r.niv48?(IC[r.niv48]||['⏳','']):null;
       var c48=(r.pick48!=null)?(esc(r.pick48)+(i48?(' <span class="gv '+i48[1]+'">'+i48[0]+'</span>'):'')):'—';
       return '<tr><td>'+esc(r.date)+'</td><td>'+esc(r.pick)+'</td><td>'+c48+'</td><td>'+esc(r.win)+'</td><td><span class="gv '+ic[1]+'">'+ic[0]+' '+(r.niv||'pend.')+'</span></td></tr>';}).join('');
-    return '<div class="panelbox"><h4>🗓 Historial — pick 24h y 48h</h4><table class="ct"><thead><tr><th>fecha</th><th>pick 24h 🔒</th><th>pick 48h ⏳</th><th>ganó</th><th>resultado</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    return '<div class="panelbox"><h4>🗓 Historial — pick 24h y 48h</h4><table class="ct histt"><thead><tr><th>fecha</th><th>pick 24h 🔒</th><th>pick 48h ⏳</th><th>ganó</th><th>resultado</th></tr></thead><tbody>'+rows+'</tbody></table>'+
       '<div style="margin-top:8px"><button class="chip" id="histref">🔄 Actualizar resultados</button> <span class="subt" id="histrefmsg"></span></div>'+
       '<p class="subt" style="margin:4px 0 0">resultado = pick 24h (KPI oficial); el ✅/❌ junto al pick 48h es su propio resultado (acumula desde 16/07).</p></div>';
   }

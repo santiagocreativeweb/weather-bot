@@ -68,6 +68,7 @@ python3 scripts/leaderboard.py
 python3 scripts/stats_page.py
 python3 scripts/city_pages.py
 python3 scripts/telegram_bot.py          --push
+python3 scripts/check_freshness.py
 exit 0
 """
 

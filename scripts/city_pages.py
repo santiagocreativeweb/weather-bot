@@ -551,6 +551,10 @@ _CSS_EXTRA = """
 .viz-root tr.nt-t3 td{color:var(--t3);} .viz-root tr.nt-no td{color:var(--mut);}
 .viz-root table.ct tr.t2b td{color:var(--t2);font-weight:700;}
 .viz-root table.ct tr.t3b td{color:var(--t3);font-weight:700;}
+/* [FIX 2026-07-21] historial: headers derecha + datos izquierda = columnas "corridas". Todo a
+   la izquierda en esta tabla (es texto, no numeros). */
+.viz-root table.ct.histt th{text-align:left;}
+.viz-root table.ct.histt td{text-align:left;white-space:nowrap;}
 .viz-root #dtl-sl{width:100%;accent-color:var(--live);margin-top:6px;}
 .leaflet-container{background:#0a1016;font-family:inherit;}
 .leaflet-tooltip.pwstip{background:#0e151d;color:#e8f0f7;border:1px solid #2b3f52;border-radius:6px;
